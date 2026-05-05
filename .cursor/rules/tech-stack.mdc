@@ -1,0 +1,42 @@
+---
+description: Tecnologias e dependencias do projeto
+globs: **/*
+alwaysApply: false
+---
+
+# Tech Stack
+
+## Runtime
+- **Node.js** (>= 18.x)
+- PATH obrigatorio no Windows: `$env:PATH = "C:\Program Files\nodejs;$env:PATH"`
+
+## Servidor
+- **Express** 4.x (minimo de middleware - sem body-parser desnecessario, sem cors a nao ser que precise)
+
+## Banco de Dados
+- **Sybase SQL Anywhere (ASA 9.0)** via ODBC
+- DSN principal: `pbcvs9` (replica PBCVS / SGD)
+- **SGSAI (opcional)**: segundo DSN `SGSAI` em `config/conexao.json` → bloco `sgsai` — PSAI/modulos/tramites mais completos (ver PBCVS Discovery)
+- Pacote npm: `odbc` (^2.4.9)
+- Timeout conexao: 60s | Timeout query: 600s
+
+## Graficos (somente no dashboard interativo)
+- **Chart.js** via CDN (nenhuma lib pesada instalada localmente)
+
+## Dependencias npm aceitas
+| Pacote | Versao | Uso | Escopo |
+|--------|--------|-----|--------|
+| express | ^4.21.2 | Servidor HTTP | Aplicativo principal |
+| odbc | ^2.4.9 | Conexao ODBC com Sybase | Aplicativo principal |
+| exceljs | ^4.4.0 | Exportacao de dados para Excel | Scripts auxiliares (scripts/) |
+| jszip | ^3.10.1 | Dependencia do exceljs (manipulacao ZIP) | Scripts auxiliares |
+| puppeteer | ^23.0.0 | Captura de screenshots dos dashboards | devDependency - scripts auxiliares |
+
+**Nota**: exceljs, jszip e puppeteer NAO fazem parte do aplicativo principal (servidor/indicadores/estudos). Sao usados apenas por scripts utilitarios em `scripts/`.
+
+## O que NAO usar
+- Nenhum ORM (Sequelize, Knex, etc.)
+- Nenhum framework CSS pesado (Bootstrap, Tailwind) - CSS puro
+- Nenhum bundler (Webpack, Vite) - arquivos servidos diretamente
+- Nenhum template engine npm (EJS, Pug) - templates HTML proprios
+- Nenhuma lib de datas pesada (Moment.js) - utils proprias

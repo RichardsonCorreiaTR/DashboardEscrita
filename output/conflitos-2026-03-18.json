@@ -1,0 +1,1190 @@
+{
+  "resumoAtividadesSA": {
+    "Jerusa": {
+      "totalMinutos": 5582,
+      "atividades": {
+        "SAM-Analisando SAM": 1896,
+        "Manutenção de máquinas e software periféricos": 358,
+        "Lanche": 96,
+        "Esclarecimento de Dúvidas para Testes NEs": 35,
+        "Esclarecimento de Dúvidas para Testes SAs": 184,
+        "NE-Definindo NE": 379,
+        "SAI-Revisão em SAI de NE": 239,
+        "Reunião ou ação RDM": 5,
+        "Reunião de Dúvida da GP - SAs": 370,
+        "SAI-Revisão em SAI de SAM": 977,
+        "Esclarecimento de Dúvidas para Suporte às UN": 35,
+        "Registro no My time": 5,
+        "Esclarecimento de Dúvidas para Desenvolvimento SAs": 116,
+        "Esclarecimento de Dúvidas para Desenvolvimento NEs": 47,
+        "NE-Analisando NE": 38,
+        "Manutenção nos e-mails(Regras, spam e etc)": 61,
+        "Folga concedida pela Empresa": 177,
+        "Reunião de definição de SAM": 58,
+        "Participando de Treinamento": 32,
+        "Reunião sobre procedimentos de trabalho da Gerência de Produto": 181,
+        "Consulta Médica": 88,
+        "Esclarecimento de Dúvidas da Gerência de Produto SAM": 12,
+        "Reunião para Gerar SAI de SAM": 16,
+        "SAM-Definindo SAM": 127,
+        "Treinamento (fornecendo)": 39,
+        "SAL-Analisando SAL": 11
+      },
+      "diasTrabalhados": 12
+    },
+    "Ana Paula": {
+      "totalMinutos": 5620,
+      "atividades": {
+        "Reunião sobre procedimentos de trabalho da Gerência de Produto": 282,
+        "SAI-Gerando SAI de SAM": 892,
+        "SAM-Analisando SAM": 275,
+        "Reunião de dúvida do Desenvolvimento/Teste SAs": 219,
+        "Esclarecimento de Dúvidas da Gerência de Produto SAL": 85,
+        "Esclarecimento de Dúvidas da Gerência de Produto SAM": 630,
+        "Esclarecimento de Dúvidas para Suporte às UN": 94,
+        "Esclarecimento de Dúvidas para Especialista SAs": 95,
+        "Reunião de definição de NE": 42,
+        "Esclarecimento de Dúvidas da Gerência de Produto SAIL": 169,
+        "SAI-Revisão em SAI de SAM": 959,
+        "Lanche": 76,
+        "[Onvio] 'Atividades relacionadas a IA": 18,
+        "Reunião de definição de SAM": 350,
+        "Reunião 1:1 / Performance Checkin": 40,
+        "Esclarecimento de Dúvidas da Gerência de Produto SS": 24,
+        "Reunião para Gerar SAI de NE": 73,
+        "Consulta Médica": 387,
+        "Esclarecimento de Dúvidas da Gerência de Produto NE": 105,
+        "SAI Revisão em SAI  - Especialista": 342,
+        "Manutenção de máquinas e software periféricos": 8,
+        "Registro no My time": 19,
+        "Participando de Workshop/reunião - RH": 64,
+        "Reunião de Dúvida da GP - SAs": 53,
+        "SAM-Definindo SAM": 41,
+        "SAI-Gerando SAI de SAIL": 103,
+        "SAI-Gerando SAI de NE": 8,
+        "Esclarecimento de Dúvidas para Desenvolvimento SAs": 66,
+        "Reunião de definição de SAL": 30,
+        "Reunião para Gerar SAI de SAM": 22,
+        "Esclarecimento de Dúvidas para Testes SAs": 25,
+        "Esclarecimento de dúvida RH Domínio": 14,
+        "Reunião de dúvida do Desenvolvimento/Teste NEs": 10
+      },
+      "diasTrabalhados": 12
+    },
+    "Vivian": {
+      "totalMinutos": 1446,
+      "atividades": {
+        "Férias": 1446
+      },
+      "diasTrabalhados": 3
+    },
+    "Helen": {
+      "totalMinutos": 4914,
+      "atividades": {
+        "Respondendo SS": 3061,
+        "Lanche": 193,
+        "Daily Meeting - Reunião Diária": 208,
+        "Reunião 1:1 / Performance Checkin": 20,
+        "Reunião sobre procedimentos de trabalho da Gerência de Produto": 15,
+        "[Onvio] 'Atividades relacionadas a IA": 193,
+        "Consulta Médica": 102,
+        "Pessoal": 520,
+        "Reunião sobre versão (Programação, planejamento, intervenção etc": 73,
+        "SAM-Analisando SAM": 419,
+        "SAIL-Analisando SAIL": 110
+      },
+      "diasTrabalhados": 10
+    },
+    "Douglas": {
+      "totalMinutos": 4093,
+      "atividades": {
+        "[Onvio] 'Atividades relacionadas a IA": 31,
+        "Esclarecimento de Dúvidas para Desenvolvimento SAs": 156,
+        "SAM-Analisando SAM": 518,
+        "Lanche": 150,
+        "SAI-Gerando SAI de SAM": 903,
+        "Esclarecimento de Dúvidas da Gerência de Produto SAM": 41,
+        "SAI-Revisão em SAI de SAM": 626,
+        "Reunião de Dúvida da GP - SAs": 377,
+        "Validando SAs": 166,
+        "Esclarecimento de Dúvidas da Gerência de Produto SAL": 141,
+        "Reunião 1:1 / Performance Checkin": 31,
+        "Reunião sobre procedimentos de trabalho da Gerência de Produto": 103,
+        "Reunião de definição de SAM": 73,
+        "Reunião definição de novos produtos/projetos": 52,
+        "Esclarecimento de Dúvidas da Gerência de Produto SS": 76,
+        "SAI-Gerando SAI de SAL": 59,
+        "Manutenção de máquinas e software periféricos": 22,
+        "Respondendo SS": 212,
+        "SAL-Analisando SAL": 180,
+        "Esclarecimento de Dúvidas para Testes SAs": 51,
+        "Reunião de dúvida do Desenvolvimento/Teste SAs": 52,
+        "SAI-Gerando SAI de SAIL": 15,
+        "SAI-Revisão em SAI de SAIL": 58
+      },
+      "diasTrabalhados": 9
+    },
+    "Taiane": {
+      "totalMinutos": 4936,
+      "atividades": {
+        "Desenvolvimento/Alteração de Manual": 112,
+        "Reunião definição de novos produtos/projetos": 203,
+        "Daily Meeting - Reunião Diária": 157,
+        "SAM-Definindo SAM": 3805,
+        "Lanche": 93,
+        "Reunião sobre procedimentos de trabalho da Gerência de Produto": 13,
+        "[Onvio] 'Atividades relacionadas a IA": 68,
+        "SAI-Revisão em SAI de SAM": 455,
+        "Organizando Backlog": 30
+      },
+      "diasTrabalhados": 11
+    },
+    "Talita": {
+      "totalMinutos": 4838,
+      "atividades": {
+        "Consulta Médica": 60,
+        "SAM-Analisando SAM": 185,
+        "Lanche": 64,
+        "SAM-Definindo SAM": 120,
+        "Reunião de Dúvida da GP - SAs": 307,
+        "Validando SAs": 212,
+        "Reunião ou ação RDM": 89,
+        "SAIL-Analisando SAIL": 802,
+        "SAIL-Definindo SAIL": 139,
+        "SAL-Analisando SAL": 761,
+        "NE-Analisando NE": 234,
+        "NE-Definindo NE": 421,
+        "Participando de Treinamento": 32,
+        "Respondendo SS": 498,
+        "Manutenção de máquinas e software periféricos": 78,
+        "SAI - Testes": 836
+      },
+      "diasTrabalhados": 10
+    },
+    "Elisangela": {
+      "totalMinutos": 4980,
+      "atividades": {
+        "SAL-Analisando SAL": 1315,
+        "Reunião de Dúvida da GP - SAs": 330,
+        "Lanche": 293,
+        "Outros ** Evite Usar": 750,
+        "SAM-Analisando SAM": 1227,
+        "Reunião definição de novos produtos/projetos": 19,
+        "Reunião sobre procedimentos de trabalho da Gerência de Produto": 9,
+        "SAI-Revisão em SAI de SAM": 285,
+        "Participando de Treinamento": 29,
+        "Manutenção de máquinas e software periféricos": 37,
+        "SAM-Definindo SAM": 668,
+        "Registro no My time": 18
+      },
+      "diasTrabalhados": 11
+    }
+  },
+  "psaisTrabalhadasSA": [
+    53203,
+    80178,
+    86339,
+    105827,
+    117170,
+    117550,
+    118343,
+    119743,
+    120551,
+    120992,
+    122984,
+    123462,
+    123677,
+    125491,
+    125993,
+    126813,
+    127201,
+    127289,
+    127963,
+    127976,
+    128033,
+    128195,
+    128284,
+    128652,
+    128653,
+    128750,
+    128754,
+    128798,
+    128807,
+    128822,
+    128823,
+    128834,
+    128877,
+    128909,
+    128913,
+    128950,
+    128959,
+    128973,
+    128987,
+    128994,
+    128998,
+    129004,
+    129051,
+    129052,
+    129055,
+    129064,
+    129075,
+    129084,
+    129086,
+    129160,
+    129180,
+    129210
+  ],
+  "saisTrabalhadasSA": [],
+  "detalhePorPsai": {
+    "53203": [
+      {
+        "analista": "Douglas",
+        "data": "2026-03-10 15:30:41.5600",
+        "situacao": "Em analise do Especialista"
+      }
+    ],
+    "80178": [
+      {
+        "analista": "Douglas",
+        "data": "2026-03-06 14:23:26.9533",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-09 10:40:12.0766",
+        "situacao": "Respondido Especialista"
+      }
+    ],
+    "86339": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-17 09:29:50.0333",
+        "situacao": "Respondido Especialista"
+      },
+      {
+        "analista": "Helen",
+        "data": "2026-03-17 09:40:03.9866",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Helen",
+        "data": "2026-03-17 11:18:15.4066",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Helen",
+        "data": "2026-03-17 11:20:38.9100",
+        "situacao": "Definida"
+      }
+    ],
+    "105827": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-13 10:22:04.3700",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-13 15:03:29.5500",
+        "situacao": "A Desenvolver"
+      }
+    ],
+    "117170": [
+      {
+        "analista": "Vivian",
+        "data": "2026-03-10 09:37:58.2600",
+        "situacao": "Reprovada"
+      }
+    ],
+    "117550": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-11 07:51:33.7233",
+        "situacao": "A Desenvolver"
+      }
+    ],
+    "118343": [
+      {
+        "analista": "Douglas",
+        "data": "2026-03-09 16:00:57.0866",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-09 16:03:10.8800",
+        "situacao": "Respondido Especialista"
+      }
+    ],
+    "119743": [
+      {
+        "analista": "Douglas",
+        "data": "2026-03-04 17:21:48.1000",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-05 11:04:57.9666",
+        "situacao": "Respondido Especialista"
+      }
+    ],
+    "120551": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-11 07:30:42.3466",
+        "situacao": "A Desenvolver"
+      }
+    ],
+    "120992": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-16 09:25:32.0300",
+        "situacao": "Em analise"
+      }
+    ],
+    "122984": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-12 17:03:23.4466",
+        "situacao": "Aprovada"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-12 17:03:28.0233",
+        "situacao": "A definir"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-12 17:03:36.0933",
+        "situacao": "Em Definicao"
+      }
+    ],
+    "123462": [
+      {
+        "analista": "Douglas",
+        "data": "2026-03-09 10:57:34.0600",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-09 14:52:15.3466",
+        "situacao": "Respondido Especialista"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-10 14:24:14.7533",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-10 14:31:05.1166",
+        "situacao": "Em Definicao"
+      }
+    ],
+    "123677": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-16 09:26:02.2100",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-16 10:00:10.3700",
+        "situacao": "Respondido Especialista"
+      },
+      {
+        "analista": "Helen",
+        "data": "2026-03-16 11:18:22.8266",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Helen",
+        "data": "2026-03-16 13:10:45.7000",
+        "situacao": "Em Definicao"
+      }
+    ],
+    "125491": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-16 15:25:44.2400",
+        "situacao": "Respondido Especialista"
+      }
+    ],
+    "125993": [
+      {
+        "analista": "Douglas",
+        "data": "2026-03-10 15:23:06.0533",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-10 15:23:33.6466",
+        "situacao": "Respondido Especialista"
+      }
+    ],
+    "126813": [
+      {
+        "analista": "Douglas",
+        "data": "2026-03-13 14:14:25.1233",
+        "situacao": "Reprovada"
+      }
+    ],
+    "127201": [
+      {
+        "analista": "Elisangela",
+        "data": "2026-03-09 11:18:33.8966",
+        "situacao": "Reprovada"
+      }
+    ],
+    "127289": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-04 08:59:08.0133",
+        "situacao": "A Desenvolver"
+      }
+    ],
+    "127963": [
+      {
+        "analista": "Taiane",
+        "data": "2026-03-06 17:30:45.2800",
+        "situacao": "Definida"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-06 17:31:45.1266",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-09 17:54:33.6066",
+        "situacao": "Respondido Especialista"
+      },
+      {
+        "analista": "Taiane",
+        "data": "2026-03-11 09:48:57.3166",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Taiane",
+        "data": "2026-03-17 13:34:43.3266",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Taiane",
+        "data": "2026-03-17 13:36:48.8733",
+        "situacao": "Definida"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-17 13:52:33.9200",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-18 08:53:33.7666",
+        "situacao": "Respondido Especialista"
+      }
+    ],
+    "127976": [
+      {
+        "analista": "Elisangela",
+        "data": "2026-03-09 11:37:09.3066",
+        "situacao": "Aprovada"
+      },
+      {
+        "analista": "Elisangela",
+        "data": "2026-03-09 11:37:14.5366",
+        "situacao": "A definir"
+      },
+      {
+        "analista": "Elisangela",
+        "data": "2026-03-09 11:37:19.2833",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Elisangela",
+        "data": "2026-03-16 10:48:43.2066",
+        "situacao": "Definida"
+      }
+    ],
+    "128033": [
+      {
+        "analista": "Vivian",
+        "data": "2026-03-04 08:05:11.6133",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Vivian",
+        "data": "2026-03-04 09:38:27.0766",
+        "situacao": "Analisada"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-04 09:48:48.0600",
+        "situacao": "Em Analise do Coordenador"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-04 09:50:09.0033",
+        "situacao": "A Desenvolver"
+      }
+    ],
+    "128195": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-04 08:58:18.9866",
+        "situacao": "A aprovar"
+      }
+    ],
+    "128284": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-04 15:14:18.2066",
+        "situacao": "Definida"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-06 09:22:39.8933",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-06 15:03:12.8533",
+        "situacao": "Respondido Especialista"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-06 15:59:43.9133",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-06 16:00:28.8066",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-10 10:38:49.7033",
+        "situacao": "Definida"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-10 10:41:35.6000",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-10 11:01:18.9000",
+        "situacao": "A Desenvolver"
+      }
+    ],
+    "128652": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-04 08:58:28.3466",
+        "situacao": "A aprovar"
+      }
+    ],
+    "128653": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-04 08:58:32.9833",
+        "situacao": "A aprovar"
+      }
+    ],
+    "128750": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-04 08:45:12.3733",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-04 08:58:37.0533",
+        "situacao": "A aprovar"
+      }
+    ],
+    "128754": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-04 08:56:52.6166",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-04 08:57:08.4766",
+        "situacao": "A aprovar"
+      }
+    ],
+    "128798": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-04 15:46:57.6133",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-04 15:47:14.7866",
+        "situacao": "A aprovar"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-04 15:47:18.7100",
+        "situacao": "Aprovada"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-04 15:47:22.1766",
+        "situacao": "A definir"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-04 15:47:28.4200",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-04 16:00:19.2133",
+        "situacao": "Definida"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-04 16:00:23.8933",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-04 16:01:23.1533",
+        "situacao": "A Desenvolver"
+      }
+    ],
+    "128807": [
+      {
+        "analista": "Vivian",
+        "data": "2026-03-04 18:01:11.0066",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Vivian",
+        "data": "2026-03-05 17:25:32.6500",
+        "situacao": "A aprovar"
+      },
+      {
+        "analista": "Vivian",
+        "data": "2026-03-05 17:25:37.2400",
+        "situacao": "Aprovada"
+      },
+      {
+        "analista": "Vivian",
+        "data": "2026-03-05 17:25:41.2566",
+        "situacao": "A definir"
+      },
+      {
+        "analista": "Vivian",
+        "data": "2026-03-05 17:25:45.5666",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Vivian",
+        "data": "2026-03-06 11:45:21.4266",
+        "situacao": "Definida"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-06 14:38:14.5466",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-06 17:11:29.4866",
+        "situacao": "A Desenvolver"
+      }
+    ],
+    "128822": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-05 09:21:03.1500",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-05 09:21:32.3166",
+        "situacao": "A aprovar"
+      }
+    ],
+    "128823": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-05 09:28:43.3166",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-05 09:29:18.5866",
+        "situacao": "A aprovar"
+      }
+    ],
+    "128834": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-05 12:40:51.3833",
+        "situacao": "A Desenvolver"
+      }
+    ],
+    "128877": [
+      {
+        "analista": "Vivian",
+        "data": "2026-03-06 14:42:28.9500",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Vivian",
+        "data": "2026-03-09 13:45:00.4033",
+        "situacao": "Reprovada"
+      }
+    ],
+    "128909": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-10 17:32:28.3066",
+        "situacao": "Em Analise do Coordenador"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-11 07:59:07.0733",
+        "situacao": "A Desenvolver"
+      }
+    ],
+    "128913": [
+      {
+        "analista": "Vivian",
+        "data": "2026-03-09 13:39:09.2266",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-13 10:37:56.2733",
+        "situacao": "Analisada"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-16 20:27:14.5033",
+        "situacao": "Em Definicao"
+      }
+    ],
+    "128950": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-10 09:23:06.0666",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-10 09:32:09.3966",
+        "situacao": "A aprovar"
+      }
+    ],
+    "128959": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-10 10:00:26.0700",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-10 10:00:42.2466",
+        "situacao": "A aprovar"
+      }
+    ],
+    "128973": [
+      {
+        "analista": "Vivian",
+        "data": "2026-03-10 11:35:55.7200",
+        "situacao": "Em Definicao"
+      }
+    ],
+    "128987": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-10 14:41:31.2400",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-10 14:41:46.6866",
+        "situacao": "A aprovar"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-10 14:41:50.9366",
+        "situacao": "Aprovada"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-10 14:41:55.1600",
+        "situacao": "A definir"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-10 14:41:59.2000",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-16 13:26:16.8100",
+        "situacao": "Aguardando resposta do Especiali"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-16 13:26:24.2866",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-16 13:26:35.9066",
+        "situacao": "Aguardando Resposta do Desenvolv"
+      }
+    ],
+    "128994": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-11 08:07:48.6466",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-11 08:08:05.1633",
+        "situacao": "A aprovar"
+      }
+    ],
+    "128998": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-11 08:40:46.5566",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-11 08:41:28.3300",
+        "situacao": "A aprovar"
+      }
+    ],
+    "129004": [
+      {
+        "analista": "Douglas",
+        "data": "2026-03-11 09:53:23.6033",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-11 11:50:48.7366",
+        "situacao": "A aprovar"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-11 11:50:54.0400",
+        "situacao": "Aprovada"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-11 11:50:58.0666",
+        "situacao": "A definir"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-11 11:51:03.0800",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-11 11:53:24.6066",
+        "situacao": "Definida"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-11 12:11:43.8866",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-11 12:19:25.4066",
+        "situacao": "Aguardando Resposta do Desenvolv"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-13 16:25:00.7933",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-13 16:27:10.3833",
+        "situacao": "Respondido Especialista"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-13 16:27:37.7400",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-13 16:27:48.3366",
+        "situacao": "A aprovar"
+      },
+      {
+        "analista": "Douglas",
+        "data": "2026-03-13 16:33:41.9633",
+        "situacao": "Reprovada"
+      }
+    ],
+    "129051": [
+      {
+        "analista": "Taiane",
+        "data": "2026-03-12 09:05:48.2500",
+        "situacao": "Em analise"
+      }
+    ],
+    "129052": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-12 09:24:54.6400",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-12 10:01:02.7833",
+        "situacao": "A aprovar"
+      }
+    ],
+    "129055": [
+      {
+        "analista": "Talita",
+        "data": "2026-03-12 09:48:14.1800",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Talita",
+        "data": "2026-03-12 09:48:29.3666",
+        "situacao": "A aprovar"
+      }
+    ],
+    "129064": [
+      {
+        "analista": "Vivian",
+        "data": "2026-03-12 10:17:07.0033",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-13 15:18:38.7033",
+        "situacao": "A aprovar"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-13 15:18:43.8666",
+        "situacao": "Aprovada"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-13 15:18:50.7633",
+        "situacao": "A definir"
+      },
+      {
+        "analista": "Vivian",
+        "data": "2026-03-13 15:22:56.7166",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Vivian",
+        "data": "2026-03-13 15:23:01.5466",
+        "situacao": "Definida"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-13 15:23:17.5933",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-13 15:30:24.8900",
+        "situacao": "A Desenvolver"
+      }
+    ],
+    "129075": [
+      {
+        "analista": "Taiane",
+        "data": "2026-03-12 13:54:04.4833",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Taiane",
+        "data": "2026-03-12 13:57:18.6666",
+        "situacao": "A aprovar"
+      },
+      {
+        "analista": "Taiane",
+        "data": "2026-03-12 13:57:22.8666",
+        "situacao": "Aprovada"
+      },
+      {
+        "analista": "Taiane",
+        "data": "2026-03-12 13:57:26.6366",
+        "situacao": "A definir"
+      },
+      {
+        "analista": "Taiane",
+        "data": "2026-03-12 13:57:30.3233",
+        "situacao": "Em Definicao"
+      }
+    ],
+    "129084": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-12 16:32:25.5633",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-12 16:33:14.1400",
+        "situacao": "A aprovar"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-12 16:33:18.5800",
+        "situacao": "Aprovada"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-12 16:33:24.5433",
+        "situacao": "A definir"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-12 16:33:28.8533",
+        "situacao": "Em Definicao"
+      }
+    ],
+    "129086": [
+      {
+        "analista": "Vivian",
+        "data": "2026-03-12 16:37:28.9466",
+        "situacao": "Em analise"
+      }
+    ],
+    "129160": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-16 16:56:11.8200",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-16 16:56:27.2966",
+        "situacao": "A aprovar"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-16 16:56:31.9233",
+        "situacao": "Aprovada"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-16 16:56:35.2966",
+        "situacao": "A definir"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-16 16:56:38.6333",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-16 17:01:06.1500",
+        "situacao": "Definida"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-16 17:01:11.1866",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-16 17:03:50.0800",
+        "situacao": "Aguardando Resposta do Desenvolv"
+      }
+    ],
+    "129180": [
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-17 10:46:41.8000",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-17 10:46:54.1266",
+        "situacao": "A aprovar"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-17 10:46:58.2766",
+        "situacao": "Aprovada"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-17 10:47:02.5033",
+        "situacao": "A definir"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-17 10:47:07.0933",
+        "situacao": "Em Definicao"
+      }
+    ],
+    "129210": [
+      {
+        "analista": "Helen",
+        "data": "2026-03-17 15:44:02.5600",
+        "situacao": "Em analise"
+      },
+      {
+        "analista": "Helen",
+        "data": "2026-03-17 15:47:26.8466",
+        "situacao": "A aprovar"
+      },
+      {
+        "analista": "Helen",
+        "data": "2026-03-17 15:47:32.2800",
+        "situacao": "Aprovada"
+      },
+      {
+        "analista": "Helen",
+        "data": "2026-03-17 15:47:40.3866",
+        "situacao": "A definir"
+      },
+      {
+        "analista": "Helen",
+        "data": "2026-03-17 15:47:45.5233",
+        "situacao": "Em Definicao"
+      },
+      {
+        "analista": "Helen",
+        "data": "2026-03-17 16:07:02.8500",
+        "situacao": "Aguardando resposta do Especiali"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-17 16:10:17.7866",
+        "situacao": "Em analise do Especialista"
+      },
+      {
+        "analista": "Ana Paula",
+        "data": "2026-03-17 16:12:01.7366",
+        "situacao": "Aguardando Resposta do Desenvolv"
+      }
+    ]
+  },
+  "detalhePorSai": {},
+  "conflitos": [],
+  "duplicidades": [],
+  "totalNEsPendentes": 322,
+  "totalPsaisSA": 52,
+  "totalSaisSA": 0
+}

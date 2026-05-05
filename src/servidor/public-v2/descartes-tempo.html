@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descartes x Tempo | Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app-v2.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <style>
+    .dt-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 14px; margin-bottom: 20px; }
+    .dt-card { background: var(--v2-fundo-card); border-radius: var(--v2-radius-sm); padding: 16px; position: relative; box-shadow: var(--v2-sombra); border-left: 4px solid var(--v2-texto-sec); }
+    .dt-card h3 { margin: 0 0 10px; font-size: 1rem; }
+    .dt-stat { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.85rem; }
+    .dt-stat strong { font-size: 1.05rem; }
+    .dt-motivos { margin-top: 8px; font-size: 0.78rem; color: var(--v2-texto-sec); }
+    .dt-alerta { color: var(--v2-vermelho); font-weight: 600; }
+    .dt-ok { color: var(--v2-verde); }
+    .dt-tabela { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .dt-tabela th, .dt-tabela td { padding: 6px 10px; text-align: center; border: 1px solid var(--v2-borda); }
+    .dt-tabela th { background: var(--v2-fundo); font-weight: 600; color: var(--v2-texto-sec); font-size: 0.75rem; }
+    .dt-tabela td:first-child, .dt-tabela td:nth-child(2) { text-align: left; }
+    .dt-tabela .sem-tempo { background: var(--v2-vermelho-bg); color: #991b1b; font-weight: 600; }
+    .dt-tabela .sem-sai { color: var(--v2-texto-sec); font-style: italic; }
+    .dt-filtros { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+    .dt-filtros select { padding: 5px 10px; border-radius: var(--v2-radius-sm); border: 1px solid var(--v2-borda); font-size: 0.85rem; }
+    .dt-legenda { background: var(--v2-fundo); border: 1px solid var(--v2-borda); border-radius: var(--v2-radius-sm); padding: 10px 14px; margin-bottom: 16px; font-size: 0.82rem; color: var(--v2-texto-sec); line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+  <nav id="nav-v2"></nav>
+
+  <div class="v2-main">
+
+    <header class="v2-header">
+      <div>
+        <h1 class="v2-header__title">Descartes x Tempo Lancado</h1>
+        <span class="v2-header__subtitle">Validacao: tempo registrado no GA para PSAIs descartadas</span>
+      </div>
+      <div class="v2-header__acoes">
+        <div class="v2-filtros">
+          <label for="seletor-ano" class="v2-filtro__label">Ano</label>
+          <select id="seletor-ano" class="v2-filtro__select">
+            <option value="2025" selected>2025</option>
+            <option value="2024">2024</option>
+          </select>
+        </div>
+        <button id="btn-carregar" class="v2-btn v2-btn--primario">Consultar</button>
+      </div>
+    </header>
+
+    <div id="loading" class="v2-loading" hidden>
+      <div class="v2-loading__spinner"></div>
+      <p>Consultando banco de dados...</p>
+    </div>
+
+    <main id="conteudo" class="dashboard"></main>
+
+    <footer style="margin-top:auto;padding-top:var(--v2-gap-lg);font-size:0.75rem;color:var(--v2-texto-sec);">
+      Dashboard Escrita Fiscal v2 &middot; Coord. Vitor Justino
+    </footer>
+  </div>
+
+  <script src="/js/nav-v2.js"></script>
+  <script src="/js/app-descartes-tempo.js"></script>
+</body>
+</html>

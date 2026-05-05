@@ -1,0 +1,131 @@
+---
+description: Regras de negocio criticas - SGD e Escrita Fiscal
+globs: src/indicadores/**/*,src/estudos/**/*,src/core/**/*,config/**/*,docs/diretrizes/**/*
+alwaysApply: false
+---
+
+# Regras de Negocio - SGD e Escrita Fiscal
+
+> MEMORIA do negocio. Atualizado em: 18/02/2026
+> Dividido em 3 arquivos: negocio.mdc (regras criticas), negocio-versoes.mdc (versoes/PIAZZA), negocio-sql.mdc (SQL/situacoes)
+
+## Regras CRITICAS confirmadas pelo usuario
+
+1. **Idade da NE** = DATEDIFF(dia, CadastroPSAI, hoje). SEMPRE a partir de CadastroPSAI.
+2. **Meta 5 dias UTEIS** = dias uteis (excluir sabados e domingos, possivelmente feriados).
+3. **Tempo medio NE = 1.000 min** = constante historica (NAO mais usada no calculo, mantida apenas como referencia).
+4. **Meta "Tempo trabalhado"** = chegar a 36,4% em dezembro/2026 (progressao ao longo do ano).
+4b. **Tempo correcao NE** = % do tempo (Dev+Teste+Prep) gasto em NE vs total (SAIs liberadas + SAIs em paralelo).
+    Fontes: `sai_roteiro_desenvolvimento.tempo_realizado` + `sai_roteiro_testes.tempo_teste_realizado`
+    + `sai_roteiro_testes.tempo_preparacao_realizado`. NAO usa gaGerenciadorAtividades.
+    Confirmado por Marianna Saggiorato (16/02/2026): "Pegamos de cada SAI vinculada na versao".
+4c. **SAI em Paralelo** = SAIs alocadas em versoes especiais (ex: "(P) - PacotesIA", "(P) - ImportacaoEsoci")
+    que NAO serao liberadas na versao corrente, mas cujo tempo trabalhado durante o periodo da versao
+    deve ser contabilizado no denominador do indicador Tempo Correcao NE.
+    O denominador passa a ser: Tempo SAIs liberadas + Tempo SAIs paralelo (no periodo).
+    Breakdown: Tempo NE | Tempo SAs | Tempo Paralelo.
+5. **Mes sem Criticas/Graves** = mostrar 0% em verde (nao N/A).
+6. **Metricas sao por VERSAO**, nao por mes calendario. Versoes nao coincidem com meses (ex: 22/jan a 23/fev).
+7. **Ciclo da NE na versao**:
+   - `i_versoes` preenchido = **alocada** na versao (pode ser retirada)
+   - `nomeVersao` + `previsaoLiberacao` preenchidos = **commitada/pronta** (dev concluido)
+   - `Liberacao` preenchido = **versao liberada** (de fato no cliente)
+   - **Liberacao REAL** = `nomeVersao IS NOT NULL AND Liberacao IS NOT NULL`
+8. **Filtro produto_grupo**: COALESCE(psai.i_produto_grupo, 1) = 1 (produto principal)
+9. **NE_PREVENCAO**: NAO e filtro! E apenas classificacao (0=externa, 1=interna/prevencao). Considerar TODAS, detalhar a origem.
+10. **Situacao 26** = "Liberado em versoes anteriores" (limpeza de backlog pelo coordenador).
+
+## NE convertida para SAIL (excecao conhecida)
+- Saldo versao 10.6A-01 retorna 298, mas o real e **299**
+- 1 NE foi reclassificada como SAIL e o historico do banco nao rastreia isso
+- Excecao documentada, nao e bug no calculo
+
+## Equipe Escrita Fiscal (25 pessoas - Richardson + Marielli)
+| Nome | CODIGO_SGD | i_usuarios | Slug | Senioridade |
+|------|------------|------------|------|-------------|
+| Richardson Picinini Correia (Coord.) | 6828 | 73 | richardson | coordenador (gestor, nao registra tempo em vanalise_registro_atividades) |
+| Marielli Cardoso das Neves (Coord.) | 110669 | 186 | marielli | coordenador (gestor, nao registra tempo em vanalise_registro_atividades) |
+| Bruna Ferro | 119694 | 191 | bruna | especialista (Marielli) |
+| Patricia Costa | 108955 | 181 | patricia | especialista (Marielli) |
+| Bárbara Leite | 1069309 | 952 | barbara-leite | pleno (Marielli) |
+| Gabriely Marques Jesuina | 1079572 | 1284 | gabriely | junior (Marielli) |
+| Juliana Kuerten Guizoni | 865290 | 771 | juliana | pleno (Marielli) |
+| Laysa Gabriela da Silva Daleffe Barbosa | 1242239 | 1309 | laysa | junior (Marielli) |
+| Rafaela Gubert Ribeiro | 1146992 | 620 | rafaela-ribeiro | junior (Marielli) |
+| Rafaela Silva Sampaio | 1317326 | 1244 | rafaela-sampaio | junior (Marielli) |
+| Renan das Neves Maioto | 1025089 | 890 | renan | pleno (Marielli) |
+| Sabrina Neves | 1061056 | 944 | sabrine | junior (Marielli) |
+| Vinicyos Gonçalves Marques | 1382400 | 1283 | vinicyos | junior (Marielli) |
+| Fabio Coral Sasso | 769104 | 1192 | fabio | pleno |
+| Victor Velho Ferreeira | 54762 | 479 | victor | especialista |
+| Giovani Cunha | 5867 | 251 | giovani | especialista |
+| Jennifer Rodrigues | 79127 | 91 | jennifer | especialista |
+| Mateus Alves | 1116513 | 1010 | mateus | junior |
+| Flávia Felipe Cardoso | 1220798 | 1282 | flavia | junior |
+| Daniela Stuup Ferreira | 427967 | 778 | daniela | pleno |
+| Erick Vicente | 1306310 | 1237 | erick | pleno |
+| Carolina Esmeraldino | 501722 | 947 | carolina | senior |
+| Bárbara Teixeira Melo | 999820 | 864 | barbara-melo | pleno |
+| Felipe Ferreira (Felipi) | 1059913 | 943 | felipi | pleno |
+
+## Area ampliada (nomeArea Escrita / Escrita Fiscal): ~44 pessoas
+Inclui GP, Desenvolvimento, Teste. Indicadores de "Tempo trabalhado" usam a area INTEIRA.
+
+## Gravidades NE (valores no banco)
+- 'Normal' (18.257 historico)
+- 'Grave' (1.923 historico)
+- 'Critica' (14 historico)
+
+## Tabelas de tempo por SAI (usadas no indicador Tempo Correcao NE)
+
+### sai_roteiro_desenvolvimento (674k registros)
+- `i_sai`, `indice` (1 SAI = N roteiros), `tempo_previsto`, `tempo_realizado` (min)
+- `data_exclusao` (filtrar IS NULL), `i_responsaveis`, `i_versoes`, `i_sistemas`
+
+### sai_roteiro_testes (723k registros)
+- `i_sai`, `tempo_teste_realizado`, `tempo_preparacao_realizado` (min)
+- `tempo_teste_previsto`, `tempo_preparacao_previsto`, `data_exclusao` (filtrar IS NULL)
+
+### Tempo total SAI = Dev + Teste + Preparacao
+
+## JOIN critico
+gaGerenciadorAtividades.i_usuarios = CAST(UDUSUARIOS.CODIGO_SGD AS INT)
+
+## Metas Individuais da Equipe (2026)
+
+### Metas por cargo
+- **Jr/Pleno**: tempo-trabalho-analise (>=80%), pontos-definicao (>=80pts), indice-revisoes (<=0.60)
+- **Especialista**: tempo-trabalho-geracao (>=80%), indice-revisoes (<=0.60), respostas-ss-3d (100%), gerar-sai-ne-sal-3d (100% em <=3d)
+- **Override Ana Ligia**: acumula gerar-sai-ne-sal-3d (responsabilidade Sr.)
+
+### Fontes de dados das metas
+- **Tempo trabalhado**: `bethadba.vanalise_registro_atividades` por `i_usuarios` e mes
+  - SAI-NE = atividades com "NE", "SAI", "SS", "Vida" no nome
+  - Ausencias = Feriado, Ferias, Folga, Saida Particular, Afastamento
+  - Encoding: `CAST(NomeAtividade AS BINARY)` para contornar Latin-1 do ODBC
+- **Pontos definicao**: `UP.SAI_PSAI` + `bethadba.sai` por `psai.i_responsaveis` = `codigo-sgd`
+- **Indice revisoes**: `sai_revisoes` + `sai_revisoes_motivos` (motivos A/C: 1,2,4,5)
+  - Considerar **somente** Alteracao na definicao (A) e Complemento na definicao (C)
+  - **NAO considerar** Formatacao (F=7), Outros (O=8), motivo 6 (A de outro tipo) nem E (3, inativo)
+  - Analistas: por `psai.i_responsaveis` | Especialista: por `sai.i_usuarios`
+  - **Numerador** (revisoes): contado pela **data da revisao** (`sai_revisoes.entrada`), NAO pela data da SAI
+  - **Denominador** (SAIs): contado pela **data de cadastro** (`CadastroSAI`)
+  - Queries usam UNION ALL para separar denominador (CadastroSAI) e numerador (sr.entrada)
+- **Respostas SS**: `bethadba.ss_tramites` por `i_usuarios`, prazo 3 dias
+- **Gerar SAI / Retornar PSAI**: `bethadba.psai_tramites` por `i_usuarios` = `codigo-sgd`
+  - Ciclo: analista envia (sit=2 Analisada) -> coordenador responde (sit 4, 11 ou 12)
+  - Tempo = dias uteis (exclui sab/dom) entre data_envio_sit2 e data_resposta_coordenador <= 3
+  - Formula SQL: N - (N+DOW(d1)-2)/7 - (N+DOW(d1)-1)/7 onde N=DATEDIFF(day,d1,d2)
+  - Conta apenas o PRIMEIRO tramite do coordenador apos cada sit=2
+  - Multiplos ciclos por PSAI sao contados individualmente
+  - Em NE Escrita 2026 sit=3 NAO e usado; sit=2 e o trigger real
+
+### Periodo das metas
+- Metas sao por **mes calendario** (jan-dez), NAO por versao
+- Diferente dos indicadores de produto que usam versao/PIAZZA
+- Totalizador anual: soma meses atingidos vs nao atingidos
+
+### Cache de metas
+- Arquivo: `data/cache/metas-equipe.json`
+- Suporta toggle ODBC (ao vivo) / Cache (disco) igual diretrizes
+- Fallback automatico para cache quando ODBC falha

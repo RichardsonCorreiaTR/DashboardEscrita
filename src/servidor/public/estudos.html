@@ -1,0 +1,394 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estudos e Analises - Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</head>
+<body class="com-sidebar">
+
+  <!-- SIDEBAR -->
+  <nav id="nav-container"></nav>
+
+  <!-- CONTEUDO -->
+  <div class="pagina">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header__info">
+        <h1 class="header__title" id="titulo-pagina">Analise Semanal - NE por Versao</h1>
+        <span class="header__subtitle" id="subtitulo-pagina">Entradas brutas, medias e projecao</span>
+      </div>
+      <div class="header__controls">
+        <div class="header__versao">
+          <label for="seletor-versao">Versao:</label>
+          <select id="seletor-versao"></select>
+          <span id="periodo-label" class="header__periodo"></span>
+        </div>
+        <div class="header__acoes">
+          <span id="atualizado-label" class="header__timestamp"></span>
+          <div class="btn-group">
+            <button id="btn-odbc" class="btn btn--primario" title="Consultar ODBC">ODBC</button>
+            <button id="btn-cache" class="btn btn--outline" title="Consultar cache">Cache</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- BANNER OFFLINE -->
+    <div id="banner-offline" class="banner-offline" hidden>
+      <span id="banner-offline-msg"></span>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading" class="loading">
+      <div class="loading__spinner"></div>
+      <p id="loading-msg">Consultando banco de dados...</p>
+    </div>
+
+    <!-- ERRO -->
+    <div id="erro-global" class="erro-global" hidden>
+      <p id="erro-mensagem"></p>
+      <button id="btn-retry" class="btn btn--outline">Tentar novamente</button>
+    </div>
+
+    <!-- VIEW: SEMANAL POR VERSAO -->
+    <main class="dashboard view-toggle" id="view-semanal-versao">
+
+      <!-- KPIs -->
+      <section class="estudo-resumo" id="kpis-semanal"></section>
+
+      <!-- SAUDE -->
+      <section id="saude-container" style="margin-bottom:1.25rem"></section>
+
+      <!-- GRAFICOS -->
+      <section class="estudo-graficos" id="graficos-semanal">
+        <div class="estudo-grafico">
+          <div class="estudo-grafico__titulo">Entradas Brutas por Semana</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-entradas-semana"></canvas></div>
+        </div>
+        <div class="estudo-grafico">
+          <div class="estudo-grafico__titulo">Media Diaria (Dias Uteis vs Corridos)</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-media-diaria"></canvas></div>
+        </div>
+      </section>
+
+      <!-- TABELA -->
+      <section class="estudo-tabela-wrap">
+        <div class="estudo-tabela-wrap__titulo">Detalhamento Semanal</div>
+        <table class="tabela-detalhes" id="tabela-semanal">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- RESUMO EXECUTIVO -->
+      <section class="estudo-tabela-wrap" style="margin-top:1.25rem" id="resumo-executivo-section" hidden>
+        <div class="estudo-tabela-wrap__titulo">Resumo Executivo - Impacto ao Cliente</div>
+        <div id="resumo-executivo-kpis" class="estudo-resumo" style="margin-bottom:0.75rem"></div>
+        <div id="resumo-executivo-areas" style="padding:0 0.75rem;font-size:0.85rem"></div>
+        <div id="resumo-executivo-body" style="padding:0.75rem;font-size:0.85rem;line-height:1.6;color:var(--cor-texto-sec)"></div>
+        <table class="tabela-detalhes" id="resumo-executivo-tabela" style="margin-top:0.75rem">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+        <div id="resumo-executivo-outros" style="padding:0.75rem;font-size:0.85rem"></div>
+      </section>
+
+    </main>
+
+    <!-- VIEW: HISTORICA -->
+    <main class="dashboard view-toggle" id="view-semanal-historica">
+
+      <!-- KPIs Historicos -->
+      <section class="estudo-resumo" id="kpis-historico"></section>
+
+      <!-- PAINEL DE TENDENCIA SEMANAL -->
+      <section id="tendencia-container"></section>
+
+      <!-- GRAFICOS HISTORICOS -->
+      <section class="estudo-graficos" id="graficos-historico">
+        <div class="estudo-grafico estudo-grafico--wide">
+          <div class="estudo-grafico__titulo">Entradas Brutas por Versao (Historico)</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-historico-entradas"></canvas></div>
+        </div>
+        <div class="estudo-grafico">
+          <div class="estudo-grafico__titulo">Media Diaria por Versao (Dias Uteis)</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-historico-media"></canvas></div>
+        </div>
+        <div class="estudo-grafico">
+          <div class="estudo-grafico__titulo">Entradas Medias por Semana (S1-S4)</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-historico-semanas"></canvas></div>
+        </div>
+        <div class="estudo-grafico estudo-grafico--wide">
+          <div class="estudo-grafico__titulo">Tendencia de Concentracao Semanal (%)</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-tendencia-semanas"></canvas></div>
+        </div>
+      </section>
+
+      <!-- TABELA HISTORICA -->
+      <section class="estudo-tabela-wrap">
+        <div class="estudo-tabela-wrap__titulo">Todas as Versoes</div>
+        <table class="tabela-detalhes" id="tabela-historico">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+    </main>
+
+    <!-- VIEW: ISV - SAUDE DA VERSAO -->
+    <main class="dashboard view-toggle" id="view-isv-ne">
+
+      <!-- KPIs ISV -->
+      <section class="estudo-resumo" id="isv-kpis"></section>
+
+      <!-- GRAFICOS ISV -->
+      <section class="estudo-graficos" id="graficos-isv">
+        <div class="estudo-grafico estudo-grafico--wide">
+          <div class="estudo-grafico__titulo">ISV ao Longo das Versoes</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-isv-timeline"></canvas></div>
+        </div>
+        <div class="estudo-grafico estudo-grafico--wide">
+          <div class="estudo-grafico__titulo">Decomposicao por Fator (Empilhado)</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-isv-breakdown"></canvas></div>
+        </div>
+      </section>
+
+      <!-- TABELA ISV -->
+      <section class="estudo-tabela-wrap">
+        <div class="estudo-tabela-wrap__titulo">ISV por Versao - Detalhamento</div>
+        <table class="tabela-detalhes" id="tabela-isv">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- METODOLOGIA ISV -->
+      <section class="estudo-tabela-wrap" style="margin-top:1.25rem">
+        <div class="estudo-tabela-wrap__titulo">Metodologia do ISV</div>
+        <div id="isv-metodologia" style="padding:1rem;font-size:0.85rem;line-height:1.5;color:var(--cor-texto-sec)">
+          <p><strong>ISV - Indice de Saude da Versao</strong> (0 a 100 pontos)</p>
+          <p>Quanto MAIS pontos, MELHOR (menos entradas de NE e menor impacto ao cliente).</p>
+
+          <p style="margin-top:0.75rem"><strong>Base (100 pts):</strong></p>
+          <ul>
+            <li><strong>Ritmo vs Estagio (39 pts):</strong> Compara entradas acumuladas com a mediana historica no mesmo ponto de conclusao da versao.</li>
+            <li><strong>Tendencia 6 Meses (28 pts):</strong> Compara a taxa diaria atual com a media dos ultimos 6 meses. Se estiver caindo, pontua mais.</li>
+            <li><strong>Projecao vs Historico (22 pts):</strong> Compara a projecao conservadora de entradas totais com a mediana historica de versoes completas.</li>
+            <li><strong>Aceleracao Semanal (11 pts):</strong> Verifica se as entradas estao acelerando (pior) ou desacelerando (melhor) ao longo das semanas.</li>
+          </ul>
+
+          <p style="margin-top:0.75rem"><strong>Modificador: Impacto ao Cliente (&plusmn;8 pts):</strong></p>
+          <p>Ajusta a pontuacao base considerando o impacto real que as NEs causam aos clientes:</p>
+          <ol>
+            <li><strong>SSCs vinculadas:</strong> Conta quantas Solicitacoes de Servico ao Cliente (SSC) foram abertas em decorrencia das NEs da versao. Calcula o ratio SSC/NE (chamados por erro).</li>
+            <li><strong>Peso por gravidade:</strong> NEs Criticas contam 3x mais e Graves 2x mais que Normais no calculo do indice composto. Ou seja, uma versao com muitas Criticas/Graves e penalizada mais fortemente.</li>
+            <li><strong>Escala logaritmica:</strong> O ratio SSC/NE e transformado em escala log para normalizar outliers (ex: fevereiro/2026 com ratio 12.8x nao distorce tudo).</li>
+            <li><strong>Comparacao historica:</strong> O indice composto da versao e comparado com percentis historicos (P25/P50/P75/P90). Se estiver abaixo da mediana historica, ganha bonus (+1 a +8). Se estiver acima, recebe penalidade (-1 a -8).</li>
+          </ol>
+
+          <p style="margin-top:0.75rem"><strong>Classificacao final:</strong> Confortavel (&ge;75) | Normal (&ge;55) | Atencao (&ge;35) | Critico (&lt;35)</p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- VIEW: ISV - YEAR BY YEAR -->
+    <main class="dashboard view-toggle" id="view-isv-yoy">
+
+      <section class="estudo-resumo" id="isv-yoy-kpis"></section>
+
+      <section class="estudo-graficos">
+        <div class="estudo-grafico estudo-grafico--wide">
+          <div class="estudo-grafico__titulo">ISV por Mes - Comparativo Anual</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-isv-yoy-line"></canvas></div>
+        </div>
+        <div class="estudo-grafico">
+          <div class="estudo-grafico__titulo">ISV Medio por Ano</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-isv-yoy-bar"></canvas></div>
+        </div>
+      </section>
+
+      <section class="estudo-tabela-wrap">
+        <div class="estudo-tabela-wrap__titulo">ISV e Entradas - Mes a Mes por Ano</div>
+        <table class="tabela-detalhes" id="tabela-isv-yoy">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="estudo-tabela-wrap" style="margin-top:1.25rem">
+        <div class="estudo-tabela-wrap__titulo">Analise e Tendencias</div>
+        <div id="isv-yoy-analise" style="padding:1rem;font-size:0.85rem;line-height:1.6;color:var(--cor-texto-sec)"></div>
+      </section>
+
+    </main>
+
+    <!-- VIEW: LIBERACOES DE SA V2 -->
+    <main class="dashboard view-toggle" id="view-liberacoes-sa-v2">
+
+      <!-- RESUMO EXECUTIVO (narrativa) -->
+      <section id="v2-resumo-executivo" style="margin-bottom:1rem"></section>
+
+      <!-- BLOCO 1: O QUE ACONTECEU (KPIs) -->
+      <section class="estudo-resumo" id="v2-bloco1" style="margin-bottom:1.25rem"></section>
+
+      <!-- GRAFICOS V2 -->
+      <section class="estudo-graficos" id="graficos-v2">
+        <div class="estudo-grafico estudo-grafico--wide">
+          <div class="estudo-grafico__titulo">Liberacoes de SA por Versao e Tipo</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-v2-sa-tipo"></canvas></div>
+        </div>
+        <div class="estudo-grafico">
+          <div class="estudo-grafico__titulo">Carga Ponderada por Versao</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-v2-carga"></canvas></div>
+        </div>
+        <div class="estudo-grafico">
+          <div class="estudo-grafico__titulo">Complexidade - Versao Atual</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-v2-complex"></canvas></div>
+        </div>
+      </section>
+
+      <!-- BLOCO 2: IMPACTO ESTIMADO EM NE -->
+      <section id="v2-bloco2" style="margin-bottom:1.25rem"></section>
+
+      <!-- BLOCO 3: O QUE FAZER -->
+      <section id="v2-bloco3" style="margin-bottom:1.25rem"></section>
+
+      <!-- PROVA DO ALGORITMO -->
+      <section class="prova-section">
+        <h2 class="prova-section__titulo">Prova do Algoritmo</h2>
+        <p class="prova-section__sub">Validacao historica, analise multi-versao e explicacao do modelo</p>
+
+        <!-- Backtest: previsto vs real -->
+        <div id="v2-prova-backtest" style="margin-bottom:1.25rem"></div>
+
+        <!-- Volatilidade multi-lag -->
+        <div id="v2-prova-volatilidade" style="margin-bottom:1.25rem"></div>
+
+        <!-- Explicacao do algoritmo -->
+        <div id="v2-prova-algoritmo" style="margin-bottom:1.25rem"></div>
+      </section>
+
+      <!-- DIARIO DO MODELO -->
+      <section class="prova-section">
+        <h2 class="prova-section__titulo">Diario do Modelo</h2>
+        <p class="prova-section__sub">Exemplo do calculo, previsoes congeladas e historico de estrategias</p>
+        <div id="v2-diario-exemplo" style="margin-bottom:1.25rem"></div>
+        <div id="v2-diario-previsoes" style="margin-bottom:1.25rem"></div>
+        <div id="v2-diario-estrategias" style="margin-bottom:1.25rem"></div>
+      </section>
+
+      <!-- TABELA V2 (detalhes por versao) -->
+      <section class="estudo-tabela-wrap">
+        <div class="estudo-tabela-wrap__titulo">Liberacoes de SA por Versao (V2)</div>
+        <table class="tabela-detalhes" id="tabela-v2">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+    </main>
+
+    <!-- VIEW: DESCARTES (REPROVADA/PRESCRITA) -->
+    <main class="dashboard view-toggle" id="view-descartes-ne">
+
+      <!-- KPIs Descartes -->
+      <section class="estudo-resumo" id="descartes-kpis"></section>
+
+      <!-- DIAGNOSTICO -->
+      <section id="descartes-diagnostico" style="margin-bottom:1.25rem"></section>
+
+      <!-- GRAFICOS -->
+      <section class="estudo-graficos" id="graficos-descartes">
+        <div class="estudo-grafico estudo-grafico--wide">
+          <div class="estudo-grafico__titulo">% Descarte por Versao (CsD + Reprovada + Prescrita) com Faixas EWMA</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-descartes-pct"></canvas></div>
+        </div>
+        <div class="estudo-grafico estudo-grafico--wide">
+          <div class="estudo-grafico__titulo">Descartes por Motivo e Versao</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-descartes-motivo"></canvas></div>
+        </div>
+      </section>
+
+      <!-- TABELA -->
+      <section class="estudo-tabela-wrap">
+        <div class="estudo-tabela-wrap__titulo">Descartes por Versao - Detalhamento</div>
+        <table class="tabela-detalhes" id="tabela-descartes">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- ANALISE DE DESCRICOES -->
+      <section class="estudo-tabela-wrap" style="margin-top:1.25rem">
+        <div class="estudo-tabela-wrap__titulo">Analise de Descricoes Descartadas - Situacao Mais Provavel</div>
+        <div id="descartes-analise" style="padding:1rem"></div>
+      </section>
+
+    </main>
+
+    <!-- VIEW: LIBERACOES DE SA (V1 - legado) -->
+    <main class="dashboard view-toggle" id="view-liberacoes-sa">
+
+      <!-- KPIs Liberacoes -->
+      <section class="estudo-resumo" id="kpis-liberacoes"></section>
+
+      <!-- IIL + PREVISAO + CORRELACAO -->
+      <section id="correlacao-container"></section>
+
+      <!-- GRAFICOS LIBERACOES -->
+      <section class="estudo-graficos" id="graficos-liberacoes">
+        <div class="estudo-grafico estudo-grafico--wide">
+          <div class="estudo-grafico__titulo">Liberacoes por Versao (SAM / SAL / SAIL)</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-sa-versao"></canvas></div>
+        </div>
+        <div class="estudo-grafico">
+          <div class="estudo-grafico__titulo">Evolucao: Carga Ponderada vs Qtde SAs</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-sa-evolucao"></canvas></div>
+        </div>
+        <div class="estudo-grafico">
+          <div class="estudo-grafico__titulo">Distribuicao por Faixa de Complexidade</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-sa-nivel"></canvas></div>
+        </div>
+        <div class="estudo-grafico estudo-grafico--wide">
+          <div class="estudo-grafico__titulo">Modelo de Previsao: Preditor (N) vs NEs (N+1)</div>
+          <div class="estudo-grafico__canvas"><canvas id="chart-sa-correlacao"></canvas></div>
+        </div>
+      </section>
+
+      <!-- TABELA LIBERACOES -->
+      <section class="estudo-tabela-wrap">
+        <div class="estudo-tabela-wrap__titulo">Liberacoes de SA por Versao</div>
+        <table class="tabela-detalhes" id="tabela-liberacoes">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <span>Dados via ODBC - Sybase ASA 9.0</span>
+    </footer>
+
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="/js/nav.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/app-estudos.js"></script>
+  <script src="/js/app-liberacoes-v2-graficos.js"></script>
+  <script src="/js/app-liberacoes-v2-tabela.js"></script>
+  <script src="/js/app-liberacoes-v2-prova.js"></script>
+  <script src="/js/app-liberacoes-v2-diario.js"></script>
+  <script src="/js/app-liberacoes-v2.js"></script>
+  <script src="/js/app-isv.js"></script>
+  <script src="/js/app-isv-yoy.js"></script>
+  <script src="/js/app-descartes.js"></script>
+</body>
+</html>

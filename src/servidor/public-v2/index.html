@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visao Geral | Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app-v2.css">
+</head>
+<body>
+
+  <nav id="nav-v2"></nav>
+
+  <div class="page">
+
+    <div id="loading" class="loading-indicator">
+      <div class="spinner"></div>
+      <span>Carregando visao geral...</span>
+    </div>
+
+    <div id="erro" class="error-banner" hidden></div>
+
+    <section id="hub-hero" class="hub-hero" hidden>
+      <div class="hero-row">
+        <div class="hero-group">
+          <span class="hero-group__label">Indicadores no prazo</span>
+          <span class="hero-group__value" id="hero-count">--</span>
+          <span class="hero-group__unit">de 5</span>
+        </div>
+        <span class="hero-sep">|</span>
+        <div class="hero-group">
+          <span class="hero-group__label">Versao atual</span>
+          <span id="hero-versao" style="font-size:1.25rem;font-weight:700;">--</span>
+        </div>
+        <div class="hero-right">
+          <span id="hero-badge"></span>
+          <span id="hero-timestamp" style="font-size:0.75rem;color:var(--texto-sec);display:block;margin-top:4px;"></span>
+        </div>
+      </div>
+      <p id="hub-narrativa" class="narrative" style="margin-top:16px;"></p>
+    </section>
+
+    <section id="hub-grid" class="hub-grid" hidden></section>
+
+    <section id="hub-sobre" class="card" hidden>
+      <div class="card__header">
+        <span class="card__title">Sobre o projeto</span>
+        <span id="sobre-status"></span>
+      </div>
+      <p class="narrative">
+        Dashboard independente para calculo e acompanhamento de indicadores da Escrita Fiscal.
+        Conecta via ODBC ao Sybase ASA 9.0 (SGD) e apresenta dados em tempo real.
+      </p>
+      <div class="expandable" id="sobre-expandable">
+        <button class="expandable__trigger">Detalhes tecnicos</button>
+        <div class="expandable__content">
+          <p id="sobre-detalhes" class="narrative"></p>
+        </div>
+      </div>
+    </section>
+
+    <footer style="margin-top:auto;padding-top:24px;font-size:0.75rem;color:var(--texto-sec);">
+      Dashboard Escrita Fiscal v2 &middot; Coord. Vitor Justino
+    </footer>
+
+  </div>
+
+  <script src="/js/nav-v2.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/hub-v2.js"></script>
+</body>
+</html>

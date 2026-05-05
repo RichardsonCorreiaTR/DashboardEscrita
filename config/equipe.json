@@ -1,0 +1,248 @@
+{
+  "modulo": "escrita-fiscal",
+  "nome": "Escrita Fiscal",
+  "i-equipes": 12,
+  "i-departamentos": 2,
+  "i-area": 6,
+  "nome-area-banco": "Escrita",
+  "analistas": [
+    {
+      "nome": "Richardson Picinini Correia",
+      "i-usuarios": 73,
+      "codigo-sgd": 6828,
+      "slug": "richardson",
+      "apelido": "Richardson",
+      "senioridade": "coordenador",
+      "papel": "coordenador"
+    },
+    {
+      "nome": "Marielli Cardoso das Neves",
+      "i-usuarios": 186,
+      "codigo-sgd": 110669,
+      "slug": "marielli",
+      "apelido": "Marielli",
+      "senioridade": "coordenador",
+      "papel": "coordenador"
+    },
+    {
+      "nome": "Fabio Coral Sasso",
+      "i-usuarios": 1192,
+      "codigo-sgd": 769104,
+      "slug": "fabio",
+      "apelido": "Fabio",
+      "senioridade": "pleno",
+      "papel": "analista",
+      "coordenador-slug": "richardson"
+    },
+    {
+      "nome": "Flávia Felipe Cardoso",
+      "i-usuarios": 1282,
+      "codigo-sgd": 1220798,
+      "slug": "flavia",
+      "apelido": "Flávia",
+      "senioridade": "junior",
+      "papel": "analista",
+      "coordenador-slug": "richardson"
+    },
+    {
+      "nome": "Daniela Stuup Ferreira",
+      "i-usuarios": 778,
+      "codigo-sgd": 427967,
+      "slug": "daniela",
+      "apelido": "Daniela",
+      "senioridade": "pleno",
+      "papel": "analista",
+      "coordenador-slug": "richardson"
+    },
+    {
+      "nome": "Erick Vicente",
+      "i-usuarios": 1237,
+      "codigo-sgd": 1306310,
+      "slug": "erick",
+      "apelido": "Erick",
+      "senioridade": "pleno",
+      "papel": "analista",
+      "coordenador-slug": "richardson"
+    },
+    {
+      "nome": "Carolina Esmeraldino",
+      "i-usuarios": 947,
+      "codigo-sgd": 501722,
+      "slug": "carolina",
+      "apelido": "Carolina",
+      "senioridade": "senior",
+      "papel": "analista",
+      "coordenador-slug": "richardson"
+    },
+    {
+      "nome": "Bárbara Teixeira Melo",
+      "i-usuarios": 864,
+      "codigo-sgd": 999820,
+      "slug": "barbara-melo",
+      "apelido": "Bárbara Melo",
+      "senioridade": "pleno",
+      "papel": "analista",
+      "coordenador-slug": "richardson"
+    },
+    {
+      "nome": "Felipi Ferreira",
+      "i-usuarios": 943,
+      "codigo-sgd": 1059913,
+      "slug": "felipi",
+      "apelido": "Felipi",
+      "senioridade": "pleno",
+      "papel": "analista",
+      "coordenador-slug": "richardson"
+    },
+    {
+      "nome": "Mateus Alves",
+      "i-usuarios": 1010,
+      "codigo-sgd": 1116513,
+      "slug": "mateus",
+      "apelido": "Mateus",
+      "senioridade": "junior",
+      "papel": "analista",
+      "coordenador-slug": "richardson"
+    },
+    {
+      "nome": "Victor Velho Ferreeira",
+      "i-usuarios": 479,
+      "codigo-sgd": 54762,
+      "slug": "victor",
+      "apelido": "Victor",
+      "senioridade": "especialista",
+      "papel": "analista",
+      "coordenador-slug": "richardson"
+    },
+    {
+      "nome": "Giovani Cunha",
+      "i-usuarios": 251,
+      "codigo-sgd": 5867,
+      "slug": "giovani",
+      "apelido": "Giovani",
+      "senioridade": "especialista",
+      "papel": "analista",
+      "coordenador-slug": "richardson"
+    },
+    {
+      "nome": "Jennifer Rodrigues",
+      "i-usuarios": 91,
+      "codigo-sgd": 79127,
+      "slug": "jennifer",
+      "apelido": "Jennifer",
+      "senioridade": "especialista",
+      "papel": "analista",
+      "coordenador-slug": "richardson"
+    },
+    {
+      "nome": "Bruna Ferro",
+      "i-usuarios": 191,
+      "codigo-sgd": 119694,
+      "slug": "bruna",
+      "apelido": "Bruna",
+      "senioridade": "especialista",
+      "papel": "analista",
+      "coordenador-slug": "marielli"
+    },
+    {
+      "nome": "Patricia Costa",
+      "i-usuarios": 181,
+      "codigo-sgd": 108955,
+      "slug": "patricia",
+      "apelido": "Patricia",
+      "senioridade": "especialista",
+      "papel": "analista",
+      "coordenador-slug": "marielli"
+    },
+    {
+      "nome": "Bárbara Leite",
+      "i-usuarios": 952,
+      "codigo-sgd": 1069309,
+      "slug": "barbara-leite",
+      "apelido": "Bárbara Leite",
+      "senioridade": "pleno",
+      "papel": "analista",
+      "coordenador-slug": "marielli"
+    },
+    {
+      "nome": "Gabriely Marques Jesuina",
+      "i-usuarios": 1284,
+      "codigo-sgd": 1079572,
+      "slug": "gabriely",
+      "apelido": "Gabriely",
+      "senioridade": "junior",
+      "papel": "analista",
+      "coordenador-slug": "marielli"
+    },
+    {
+      "nome": "Juliana Kuerten Guizoni",
+      "i-usuarios": 771,
+      "codigo-sgd": 865290,
+      "slug": "juliana",
+      "apelido": "Juliana",
+      "senioridade": "pleno",
+      "papel": "analista",
+      "coordenador-slug": "marielli"
+    },
+    {
+      "nome": "Laysa Gabriela da Silva Daleffe Barbosa",
+      "i-usuarios": 1309,
+      "codigo-sgd": 1242239,
+      "slug": "laysa",
+      "apelido": "Laysa",
+      "senioridade": "junior",
+      "papel": "analista",
+      "coordenador-slug": "marielli"
+    },
+    {
+      "nome": "Rafaela Gubert Ribeiro",
+      "i-usuarios": 620,
+      "codigo-sgd": 1146992,
+      "slug": "rafaela-ribeiro",
+      "apelido": "Rafaela Ribeiro",
+      "senioridade": "junior",
+      "papel": "analista",
+      "coordenador-slug": "marielli"
+    },
+    {
+      "nome": "Rafaela Silva Sampaio",
+      "i-usuarios": 1244,
+      "codigo-sgd": 1317326,
+      "slug": "rafaela-sampaio",
+      "apelido": "Rafaela Sampaio",
+      "senioridade": "junior",
+      "papel": "analista",
+      "coordenador-slug": "marielli"
+    },
+    {
+      "nome": "Renan das Neves Maioto",
+      "i-usuarios": 890,
+      "codigo-sgd": 1025089,
+      "slug": "renan",
+      "apelido": "Renan",
+      "senioridade": "pleno",
+      "papel": "analista",
+      "coordenador-slug": "marielli"
+    },
+    {
+      "nome": "Sabrina Neves",
+      "i-usuarios": 944,
+      "codigo-sgd": 1061056,
+      "slug": "sabrine",
+      "apelido": "Sabrine",
+      "senioridade": "junior",
+      "papel": "analista",
+      "coordenador-slug": "marielli"
+    },
+    {
+      "nome": "Vinicyos Gonçalves Marques",
+      "i-usuarios": 1283,
+      "codigo-sgd": 1382400,
+      "slug": "vinicyos",
+      "apelido": "Vinicyos",
+      "senioridade": "junior",
+      "papel": "analista",
+      "coordenador-slug": "marielli"
+    }
+  ]
+}

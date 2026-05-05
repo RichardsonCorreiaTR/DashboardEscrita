@@ -1,0 +1,50 @@
+---
+description: Visao geral do projeto Dashboard Diretrizes
+globs: **/*
+alwaysApply: true
+---
+
+# Dashboard Diretrizes
+
+## O que e
+Projeto Node.js independente para calcular indicadores de produto e equipe da Escrita Fiscal (Thomson Reuters/Betha), gerar dashboards interativos e relatorios estaticos compartilhaveis.
+
+## Quem usa
+- **Richardson Picinini Correia** (coordenador Escrita Fiscal) - usuario principal
+- **Equipe Escrita Fiscal** (6 pessoas) - consumidores dos relatorios
+
+## Caminhos importantes
+| O que | Onde |
+|-------|------|
+| Projeto | `C:\1 - A\B\Programas\DashboardEscrita` |
+| PBCVS Discovery | `C:\Users\6038243\OneDrive - Thomson Reuters Incorporated\Aplicacoes Cursor\PBCVS Discovery` |
+| OneDrive compartilhado | `C:\Users\6038243\OneDrive - Thomson Reuters Incorporated\Extração Dados NE` |
+
+## Agentes de interface (3 especializados)
+
+| Agente | Skill | Quando usar |
+|--------|-------|-------------|
+| **UX-Writer** | `.cursor/skills/ux-writer/SKILL.md` | Textos, narrativas, microcopy, linguagem de negocio |
+| **UX-Experience** | `.cursor/skills/ux-experience/SKILL.md` | Fluidez, hierarquia, 5 segundos, layout de dados |
+| **UI-Design** | `.cursor/skills/ui-design/SKILL.md` | Componentes, cores, fontes, padrao visual TR/Saffron |
+
+- **Regra orquestradora:** `.cursor/rules/ux-dashboard.mdc`
+- **Referencia UX:** `docs/referencia-ux-product-engineering.md`
+- **Backlog UX:** `docs/gap-ux-dashboard-diretrizes-vs-pe.md`
+
+## Como rodar
+```powershell
+$env:PATH = "C:\Program Files\nodejs;$env:PATH"
+cd "C:\1 - A\B\Programas\DashboardEscrita"
+npm start
+```
+
+## Blueprint do projeto
+O arquivo `PROJETO.md` na raiz contem o blueprint completo. Leia-o INTEIRO antes de qualquer mudanca estrutural.
+
+## Referencia ao PBCVS Discovery
+Antes de montar QUALQUER query SQL, consulte o PBCVS Discovery:
+1. `MAPA-COMPLETO.md` - tabelas e star-schema
+2. `RELACIONAMENTOS.md` - como JOINar
+3. `GLOSSARIO-SGD.md` - terminologia do negocio
+4. `resultados/02-colunas.json` - nomes exatos das colunas

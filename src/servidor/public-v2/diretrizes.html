@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diretrizes | Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app-v2.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <nav id="nav-v2"></nav>
+
+  <div class="page">
+
+    <div class="filter-card">
+      <div class="filter-card__row">
+        <span class="filter-card__label">Versao</span>
+        <select id="seletor-versao" class="select"></select>
+        <span id="periodo-label" style="font-size:0.8125rem;color:var(--texto-sec);"></span>
+        <div class="filter-card__sep"></div>
+        <span id="atualizado-label" style="font-size:0.75rem;color:var(--texto-sec);"></span>
+        <div style="margin-left:auto;display:flex;gap:8px;">
+          <button id="btn-odbc" class="btn btn--primary" title="Consultar banco ODBC (dados ao vivo)">Consultar ODBC</button>
+          <button id="btn-cache" class="btn" title="Usar dados do cache (ultimo dado salvo)">Cache</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="banner-offline" class="error-banner" hidden>
+      <span id="banner-offline-msg"></span>
+    </div>
+
+    <div id="loading" class="loading-indicator">
+      <div class="spinner"></div>
+      <span>Consultando indicadores...</span>
+    </div>
+
+    <div id="erro-global" class="error-banner" hidden>
+      <p id="erro-mensagem"></p>
+      <button id="btn-retry" class="btn" style="margin-top:12px">Tentar novamente</button>
+    </div>
+
+    <main id="conteudo" hidden>
+
+      <section id="hero-resumo" class="card" style="margin-bottom:24px;"></section>
+
+      <section id="leitura-geral" class="narrative" style="margin-bottom:24px;" hidden></section>
+
+      <p id="instrucao" style="font-size:0.8125rem;color:var(--texto-sec);margin-bottom:16px;">
+        Clique em um indicador para ver detalhes, graficos e tabelas.
+      </p>
+
+      <section class="indicator-grid" id="cards-container"></section>
+
+      <section class="card" id="detalhes-container" hidden style="margin-top:24px;">
+        <div class="card__header">
+          <span id="detalhes-titulo" class="card__title"></span>
+          <button id="btn-fechar-detalhes" class="btn btn--sm" aria-label="Fechar detalhes">&times;</button>
+        </div>
+        <div id="detalhes-body"></div>
+      </section>
+
+    </main>
+
+    <footer style="margin-top:auto;padding-top:24px;font-size:0.75rem;color:var(--texto-sec);">
+      Dados via ODBC &mdash; Sybase ASA 9.0
+    </footer>
+
+  </div>
+
+  <script src="/js/nav-v2.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/charts.js"></script>
+  <script src="/js/detalhes.js"></script>
+  <script src="/js/diretrizes-resumo.js"></script>
+  <script src="/js/app-diretrizes-v2.js"></script>
+</body>
+</html>

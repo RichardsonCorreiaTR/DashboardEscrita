@@ -1,0 +1,69 @@
+---
+description: Regras de versoes, PIAZZA e categorias de NE
+globs: src/indicadores/**/*,src/estudos/**/*,src/core/**/*
+alwaysApply: false
+---
+
+# Versoes, PIAZZA e Categorias NE
+
+> Parte 2 de negocio. Ver tambem: negocio.mdc (regras criticas), negocio-sql.mdc (SQL/situacoes)
+
+## Funcoes PIAZZA - FUNCIONAM via ODBC
+
+```sql
+PIAZZA.FG_GET_DATA_INICIO_VERSAO('10.6A-02', 1)  -- inicio
+PIAZZA.FG_GET_DATA_FIM_VERSAO('10.6A-02', 1)      -- fim
+```
+- **OBRIGATORIO** usar schema `PIAZZA.` (sem schema nao funciona)
+- Parametro 1 = nome da versao (string), Parametro 2 = i_sistemas (1 = produto Folha no catalogo PIAZZA; independente do campo nomeArea)
+- Resultados sao cacheados em `src/core/versao.js`
+
+## Convencao de nomes de versao
+
+- Padrao: `10.{anoBase}A-{mes:02d}` onde anoBase = ano - 2020
+- 2025: 10.5A-01 a 10.5A-12 | 2026: 10.6A-01 a 10.6A-12
+- Modulo: `src/core/versao.js`
+
+## Arquivos de versao (antecipacoes)
+
+- Sub-release lancada APOS a versao anterior como **antecipacao** da proxima
+- **Nomenclatura**: `{versao_anterior}.XX` (ex: `10.6A-01.09`)
+- **PIAZZA**: NAO retorna datas para arquivos (inicio=null, fim=null)
+- **Padrao LIKE**: `10.6A-01.%` para arquivos da versao 10.6A-02
+- **Funcao**: `versao.padraoArquivoVersao('10.6A-02')` retorna `'10.6A-01.%'`
+
+## Categorias de NE por status de liberacao
+
+| Categoria | Condicao SQL | Significado |
+|-----------|-------------|-------------|
+| **Liberada na versao** | `nomeVersao = versao AND Liberacao IS NOT NULL` | Liberada diretamente |
+| **Liberada em arquivo** | `nomeVersao LIKE anterior.% AND Liberacao IS NOT NULL` | Via antecipacao |
+| **Em arquivo (pend.)** | `nomeVersao LIKE anterior.% AND Liberacao IS NULL` | No arquivo, nao publicada |
+| **Pendente (commitada)** | `nomeVersao = versao AND Liberacao IS NULL` | Dev concluido, aguardando |
+| **Alocada (projecao)** | `i_versoes = {id} AND nomeVersao IS NULL` | Em desenvolvimento |
+
+## Regras de contagem
+- **Total liberadas** = liberadas na versao + liberadas em arquivo
+- **Total projecao** = pendentes + em arquivo (pend.) + alocadas
+- Para `i_versoes`, subquery: `i_versoes IN (SELECT DISTINCT i_versoes FROM SAI_PSAI WHERE nomeVersao = versao)`
+
+## Datas de versao 2025-2026 (confirmadas via PIAZZA)
+
+| Versao | Inicio | Fim |
+|--------|--------|-----|
+| 10.5A-01 | 2024-12-26 | 2025-01-23 |
+| 10.5A-02 | 2025-01-23 | 2025-02-24 |
+| 10.5A-03 | 2025-02-24 | 2025-03-25 |
+| 10.5A-04 | 2025-03-25 | 2025-04-24 |
+| 10.5A-05 | 2025-04-24 | 2025-05-22 |
+| 10.5A-06 | 2025-05-22 | 2025-06-23 |
+| 10.5A-07 | 2025-06-23 | 2025-07-24 |
+| 10.5A-08 | 2025-07-24 | 2025-08-23 |
+| 10.5A-09 | 2025-08-23 | 2025-09-24 |
+| 10.5A-10 | 2025-09-24 | 2025-10-23 |
+| 10.5A-11 | 2025-10-23 | 2025-11-24 |
+| 10.5A-12 | 2025-11-24 | 2025-12-26 |
+| 10.6A-01 | 2025-12-26 | 2026-01-22 |
+| 10.6A-02 | 2026-01-22 | 2026-02-23 |
+| 10.6A-03 | 2026-02-24 | 2026-03-24 |
+| 10.6A-04 | 2026-03-24 | 2026-04-23 |

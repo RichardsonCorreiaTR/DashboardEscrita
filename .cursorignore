@@ -1,0 +1,6 @@
+﻿node_modules/
+data/historico.jsonl
+data/cache/
+output/arquivo/
+logs/
+*.log

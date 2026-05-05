@@ -1,0 +1,38 @@
+---
+description: Padroes de nomeacao de arquivos, variaveis e funcoes
+globs: **/*
+alwaysApply: false
+---
+
+# Convencoes de Nomeacao
+
+## Arquivos e pastas
+- **kebab-case**: `saldo-ne.js`, `date-utils.js`, `query-executor.js`
+- Pastas: `src/indicadores/produto/`, `src/relatorios/estilos/`
+
+## Variaveis e funcoes
+- **camelCase**: `calcularSaldo`, `totalEntradas`, `dadosBrutos`
+
+## Constantes
+- **UPPER_SNAKE_CASE**: `MAX_CACHE_TTL`, `ODBC_TIMEOUT`, `CACHE_TTL_30MIN`
+
+## Configs JSON
+- **kebab-case** para chaves: `"cache-ttl"`, `"timeout-conexao"`, `"i-usuarios"`
+
+## Indicadores
+- **id em kebab-case**: `saldo-ne`, `tempo-correcao`, `taxa-liberacao`
+- **Um arquivo por indicador**: `src/indicadores/produto/saldo-ne.js`
+
+## Imports (ordem obrigatoria)
+```javascript
+// 1. Node.js built-in
+const path = require('path');
+const fs = require('fs');
+
+// 2. Pacotes npm
+const express = require('express');
+
+// 3. Modulos locais
+const { executar } = require('../core/query-executor');
+const cache = require('../core/cache');
+```

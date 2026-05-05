@@ -1,0 +1,39 @@
+{
+  "_comentario": "Projecoes mensais da area Escrita para 2026. Valores extraidos da planilha de diretrizes. Atualizar manualmente quando mudar.",
+  "_fonte": "Planilha Diretrizes Produto 2026 - Metas.xlsx (guia Escrita Fiscal)",
+  "_ultima-atualizacao": "2026-03-23",
+  "ano": 2026,
+  "pessoas": {
+    "_nota": "Contagem MANUAL de colaboradores por mes",
+    "total": [44, 44, 44, 42, 42, 42, 42, 42, 42, 41, 41, 41],
+    "gp": [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16],
+    "desenvolvimento": [17.5, 17.5, 17.5, 16.5, 16.5, 16.5, 16.5, 16.5, 16.5, 15.5, 15.5, 15.5],
+    "teste": [10.5, 10.5, 10.5, 9.5, 9.5, 9.5, 9.5, 9.5, 9.5, 9.5, 9.5, 9.5]
+  },
+  "tempo-disponivel": {
+    "_nota": "Tempo disponivel previsto em MINUTOS por mes (Dev + Teste). Input manual.",
+    "total": [95250, 116007, 102338, 137008, 120693, 145136, 133525, 141266, 145136, 111526, 140248, 109794],
+    "desenvolvimento": [59888, 65795, 55406, 81276, 76388, 89017, 77406, 85147, 81276, 61110, 83110, 68443],
+    "teste": [35362, 50212, 46932, 55732, 44305, 56119, 56119, 56119, 63860, 50416, 57138, 41351]
+  },
+  "ne": {
+    "tempo-medio-min": 1000,
+    "liberacoes-previstas": [39, 37, 43, 43, 47, 47, 44, 45, 43, 35, 28, 35],
+    "entradas-previstas": [39, 37, 43, 29, 37, 30, 35, 32, 38, 36, 28, 35]
+  },
+  "metas": {
+    "saldo-ne": [90, 84, 92, 95, 100, 92, 104, 103, 103, 102, 90, 98],
+    "ne-95-dias": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+    "criticas-graves-5d-pct": [90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90],
+    "tempo-correcao-ne-pct": [11.95, 9.62, 7.76, 8.84, 11.13, 9.51, 8.21, 10.66, 10.45, 13.46, 11.33, 10.64],
+    "tempo-sail-sam-pct": [50.3, 64.4, 51.1, 63.5, 50.1, 60.6, 53.4, 54.1, 59.4, 51.4, 67, 53.4]
+  },
+  "ano-anterior": {
+    "_nota": "Valores de fechamento 2025 para comparacao",
+    "saldo-ne": 310,
+    "ne-95-dias": 250,
+    "tempo-correcao-ne-pct": 35.2,
+    "entrada-ne": 483,
+    "tempo-total": 1409279
+  }
+}

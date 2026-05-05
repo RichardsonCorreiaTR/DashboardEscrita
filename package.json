@@ -1,0 +1,35 @@
+{
+  "name": "dashboard-diretrizes",
+  "version": "0.1.0",
+  "description": "Dashboard de indicadores e diretrizes da Escrita Fiscal - Thomson Reuters/Betha",
+  "main": "src/servidor/app.js",
+  "scripts": {
+    "start": "node src/servidor/app.js",
+    "test-conexao": "node src/core/conexao.js --test",
+    "calcular": "node src/indicadores/index.js",
+    "screenshot-isv": "node scripts/screenshot-isv.js",
+    "offline": "node src/servidor/app-offline.js",
+    "start:v2": "node src/servidor/app-v2.js"
+  },
+  "keywords": [
+    "dashboard",
+    "diretrizes",
+    "escrita-fiscal",
+    "indicadores"
+  ],
+  "author": "Vitor Justino (Coord. Escrita Fiscal)",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "express": "^4.21.2",
+    "jszip": "^3.10.1",
+    "odbc": "^2.4.9"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "puppeteer": "^23.0.0"
+  }
+}

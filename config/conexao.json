@@ -1,0 +1,31 @@
+{
+  "odbc": {
+    "dsn": "pbcvs9",
+    "usuario": "marcelo",
+    "senha": "marcelo",
+    "timeout-conexao": 60000,
+    "timeout-query": 600000
+  },
+  "sgsai": {
+    "habilitado": false,
+    "dsn": "SGSAI",
+    "usuario": "",
+    "senha": "",
+    "timeout-conexao": 60000,
+    "timeout-query": 120000,
+    "nota": "Opcional: PSAI/modulos/tramites mais completos (PBCVS Discovery MAPA-COMPLETO-SGSAI.md). Preencha usuario/senha e habilitado true."
+  },
+  "restricoes": {
+    "campos-blob-proibidos": [
+      "DESCRICAO",
+      "ANTECIPACOES",
+      "CORRECOES",
+      "situacao_descricao",
+      "comportamento",
+      "definicao",
+      "descricao_destaque",
+      "motivo_descricao"
+    ],
+    "nota": "NUNCA usar SELECT * em tabelas com campos TEXT/BLOB - causa travamento"
+  }
+}

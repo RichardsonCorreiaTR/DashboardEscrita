@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proposta de Metas | Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app-v2.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <style>
+    .proposta-intro {
+      background: var(--v2-primario-bg); border: 1px solid #93c5fd;
+      border-radius: var(--v2-radius-sm); padding: 16px 20px; margin-bottom: 24px;
+      line-height: 1.6; color: var(--v2-texto);
+    }
+    .proposta-intro strong { color: var(--v2-primario); }
+    .proposta-secao { margin-bottom: 24px; border: 1px solid var(--v2-borda); border-radius: var(--v2-radius-sm); overflow: hidden; }
+    .secao-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; background: var(--v2-fundo); border-bottom: 1px solid var(--v2-borda);
+      cursor: pointer; user-select: none;
+    }
+    .secao-header:hover { background: #eef1f5; }
+    .secao-header h2 { margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+    .secao-header .seta { transition: transform 0.2s; font-size: 0.9rem; }
+    .proposta-secao--aberta .secao-header .seta { transform: rotate(90deg); }
+    .secao-body { display: none; padding: 20px; }
+    .proposta-secao--aberta .secao-body { display: block; }
+    .secao-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--v2-primario); color: #fff; font-size: 0.85rem; font-weight: 700;
+    }
+    .secao-explicacao { margin-bottom: 20px; }
+    .exp-bloco { margin-bottom: 12px; }
+    .exp-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--v2-texto-sec); font-weight: 600; margin-bottom: 2px; }
+    .exp-texto { color: var(--v2-texto-sec); font-size: 0.9rem; line-height: 1.6; }
+    .exp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 12px; }
+    .exp-campo { background: var(--v2-fundo); padding: 10px 12px; border-radius: var(--v2-radius-sm); font-size: 0.85rem; }
+    .secao-retro { margin-bottom: 20px; }
+    .retro-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+    .retro-header h3 { margin: 0; font-size: 1rem; }
+    .btn--carregar { background: var(--v2-primario); color: #fff; border: none; padding: 7px 16px; border-radius: var(--v2-radius-sm); font-size: 0.85rem; cursor: pointer; font-weight: 500; }
+    .btn--carregar:hover { opacity: 0.9; }
+    .retro-loading { display: flex; align-items: center; gap: 10px; color: var(--v2-texto-sec); font-size: 0.9rem; }
+    .retro-erro { background: var(--v2-vermelho-bg); border: 1px solid #fca5a5; color: #991b1b; padding: 10px 14px; border-radius: var(--v2-radius-sm); font-size: 0.85rem; }
+    .retro-tabela { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.82rem; }
+    .retro-tabela th, .retro-tabela td { padding: 6px 10px; text-align: center; border: 1px solid var(--v2-borda); }
+    .retro-tabela th { background: var(--v2-fundo); font-weight: 600; color: var(--v2-texto-sec); font-size: 0.75rem; }
+    .retro-tabela td:first-child { text-align: left; }
+    .retro-verde { background: var(--v2-verde-bg); color: #166534; }
+    .retro-amarelo { background: var(--v2-amarelo-bg); color: #854d0e; }
+    .retro-vermelho { background: var(--v2-vermelho-bg); color: #991b1b; }
+    .retro-vazio { color: #cbd5e1; }
+    .retro-media { background: var(--v2-fundo); }
+    .secao-sugestao { background: var(--v2-primario-bg); border: 1px solid #93c5fd; border-radius: var(--v2-radius-sm); padding: 14px 18px; }
+    .secao-sugestao h3 { margin: 0 0 8px; font-size: 0.95rem; color: var(--v2-primario); }
+    .sug-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+    .sug-item { background: #fff; border: 1px solid #dbeafe; border-radius: var(--v2-radius-sm); padding: 6px 14px; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+  <nav id="nav-v2"></nav>
+
+  <div class="v2-main">
+
+    <header class="v2-header">
+      <div>
+        <h1 class="v2-header__title">Proposta de Novas Metas</h1>
+        <span class="v2-header__subtitle">Escrita Fiscal — Retrospectiva 2025</span>
+      </div>
+    </header>
+
+    <main id="proposta-main" class="dashboard"></main>
+
+    <footer style="margin-top:auto;padding-top:var(--v2-gap-lg);font-size:0.75rem;color:var(--v2-texto-sec);">
+      Dashboard Escrita Fiscal v2 &middot; Coord. Vitor Justino
+    </footer>
+  </div>
+
+  <script src="/js/nav-v2.js"></script>
+  <script src="/js/proposta-metas-dados.js"></script>
+  <script src="/js/proposta-metas-charts.js"></script>
+  <script src="/js/app-proposta-metas.js"></script>
+</body>
+</html>

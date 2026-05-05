@@ -1,0 +1,493 @@
+============================================================================================
+  RELATORIO FINAL DEFINITIVO - CONFLITOS, DUPLICIDADES E RISCOS
+  ESCRITA FISCAL vs TIME SA (SABRINA)
+  Data: 18/03/2026 | Periodo: 04/03 a 18/03/2026 | Versao: 10.6A-03
+============================================================================================
+
+  Este relatorio substitui TODOS os anteriores. Foi gerado apos verificacao cruzada 
+  completa de:
+  - 52 PSAIs tramitadas pelo time SA nos ultimos 14 dias (49 SAMs + 3 NEs)
+  - 408 NEs pendentes da Escrita (sem liberacao e sem descarte)
+  - 17 PSAIs trabalhadas ativamente pelo time NE (via logs de analistas)
+  - 400+ registros de atividades dos 9 analistas SA
+  - 8 dias de logs da Ana Ligia, 7 de Camila, 6 de Luana, 4 de Talita, 3 de Jessica
+  - 6 logs da Taiane, 3 de Hellen, 2 de Jerusa
+
+  SUMARIO EXECUTIVO:
+  ╔═══════════════════════════════════════════════════════════════════════════════╗
+  ║  4 CONFLITOS DIRETOS (2 criticos + 2 altos)                                ║
+  ║  3 SOBREPOSICOES FUNCIONAIS (SAMs do SA impactam areas de NEs pendentes)    ║
+  ║  1 CONFLITO DE RESPONSABILIDADE (PSAI com ambos os times como responsavel)  ║
+  ║  5 PONTOS DE ATENCAO (NEs que o time NE trabalha em areas proximas do SA)   ║
+  ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+
+============================================================================================
+  CONFLITO 1 - CLUSTER IRRF / TRANSPORTADOR AUTONOMO / DIRF
+  RISCO: CRITICO | 6 PSAIs interligadas | 2 times atuando simultaneamente
+============================================================================================
+
+  Este cluster envolve PSAIs que mexem nos MESMOS relatorios e nas MESMAS funcoes do
+  codigo-fonte. Qualquer alteracao em uma afeta diretamente as outras.
+
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │  128834 (LIBERADA 10/03) ──► 128909 (EM DEV) ──► 128910 (PENDENTE)        │
+  │          │                        │                                        │
+  │          └────────────────────────┼──► 105827 (EM TESTE 10.6A-03)          │
+  │                                   │                                        │
+  │                                   └──► 128770 (A ESTIMAR) ◄── 128724      │
+  │                                                                            │
+  │  128698 (A DESENVOLVER) ──► MESMO TEMA (campo Dependente DIRF/105827)      │
+  └─────────────────────────────────────────────────────────────────────────────┘
+
+  --------------------------------------------------------------------------
+  1A. PSAI 128909 / SAI 100471 - A NE CENTRAL DO CLUSTER
+  --------------------------------------------------------------------------
+  Status: Em Desenvolvimento | Versao: 10.6A-03 | Nivel: 3
+  SSCs: 2 | SANEs: 9 | Tempo previsto: 1762 min (29.4h)
+
+  PROBLEMA: Divergencia no Demonstrativo de IRRF para Transportador Autonomo:
+  - Na base de calculo do grupo "Sistema" esta descontando INSS indevidamente
+  - No Extrator da DIRF esta considerando indevidamente o total da rubrica 9452 
+    na linha "Outros"
+
+  DEFINICAO TECNICA (RESUMO DAS ALTERACOES):
+  - RUBRICAS: Alterar incidencia IRRF de "79" para "9" em rubricas com 
+    classificacao "Servicos Frete". Incluir botao "Solucoes". Atualizar 
+    historico eSocial automaticamente. Gerar XML de alteracao se ja enviado.
+  - DEMONSTRATIVO IRRF: Para Transportador Autonomo (SEFIP 15,16,18,23,25) no 
+    grupo "Sistema", coluna "Base de calculo", NAO deduzir INSS nem deducao 
+    simplificada. Buscar base pelo rendimento bruto x percentual do tipo servico 
+    (Cargas=10%, Passageiros=60%, Nao especificado=100%).
+  - EXTRATOR DIRF: Complementar SAI 98201. Linha "Rendimentos tributaveis" segue 
+    mesma logica acima. Linha "Outros" nao considerar a diferenca. Coluna "Valor 
+    eSocial" nao considerar rubricas com incidencia IRRF "9".
+
+  REFERENCIA EXPLICITA A OUTRAS PSAIs NA DEFINICAO:
+  - "Esta situacao sera ajustada na Pre-SAI 128910" (sobre Base IRRF na tela RPA)
+  - "A diferenca da coluna deducao sera ajustada na Pre-SAI 105827"
+
+  QUEM:
+  - Ana Paula Duarte Huf (SA): Tramitou 10/03 e 11/03
+  - Jerusa Valentim de Souza (SA/NE): Responsavel PSAI, banco de teste
+
+  --------------------------------------------------------------------------
+  1B. PSAI 128910 / SAI 100473 - IRMA DA 128909 (Base IRRF ao editar RPA)
+  --------------------------------------------------------------------------
+  Status: A Estimar Tempo | Sem versao | Nivel: 1
+
+  PROBLEMA: Ao salvar e reabrir o RPA de Transportador Autonomo, o campo Base 
+  IRRF muda de 3.600 para 3.468 (deduz INSS indevidamente na reabertura).
+
+  CONEXAO: Explicitamente referenciada na definicao da 128909.
+  QUEM: Jerusa (SA/NE) como responsavel + Ana Ligia (NE)
+
+  --------------------------------------------------------------------------
+  1C. PSAI 105827 / SAI 100547 - SAM "DEPENDENTES" DIRF/IRRF (EM TESTE)
+  --------------------------------------------------------------------------
+  Status: Em Teste na 10.6A-03
+
+  DESCRICAO: Alterar o comportamento do sistema nos relatorios 'Demonstrativo de 
+  IRRF...' e 'Extrator da DIRF' para que seja considerado o mesmo valor de 
+  'Dependentes' entre o sistema e o eSocial.
+
+  QUEM SA: Ana Paula, Jerusa (tramitou 17/03 - log Jerusa confirma analise ativa)
+  QUEM NE: Ana Ligia (responsavel original)
+  
+  >>> CONFLITO COM 128698 <<<
+  Jerusa (SA) esta testando a 105827 que mexe nos campos de Dependentes do 
+  Demonstrativo IRRF e Extrator DIRF. Ana Ligia (NE) esta investigando a NE 
+  128698 que trata do MESMO campo Dependentes no Extrator DIRF. Ela disse no 
+  log de 06/03: "recebemos uma NE na PSAI 128698 sobre o campo Dependente do 
+  Extrator da DIRF... primeiro precisamos arrumar a definicao da SAI 83256."
+
+  --------------------------------------------------------------------------
+  1D. PSAI 128834 / SAI 100358 - JA LIBERADA em 10/03
+  --------------------------------------------------------------------------
+  Implementada e liberada. A 128909 foi gerada a partir dos mesmos testes.
+  QUEM: Ana Paula (SA), Jerusa (SA/NE)
+
+  --------------------------------------------------------------------------
+  1E. PSAI 128724 - EXTRATOR DIRF VALORES NEGATIVOS
+  --------------------------------------------------------------------------
+  Status: Em Definicao | Talita (SA/NE) trabalhou em 17/03
+
+  DESCRICAO: Valores negativos no Extrator DIRF. Mexe no mesmo arquivo de 
+  codigo (uo_rel_linhas_extrator_dirf.sru) que 128909 e 105827.
+
+  QUEM: Talita (SA) trabalhou em 17/03 na definicao
+
+  --------------------------------------------------------------------------
+  1F. PSAI 128770 / SAI 100512 - COMPROVANTE RENDIMENTOS BASE NEGATIVA
+  --------------------------------------------------------------------------
+  Status: A Estimar Tempo | Nivel: 3 | SSCs: 1 | SANEs: 2
+
+  DESCRICAO: Nao esta gerando o Comprovante de Rendimentos, esta demonstrando 
+  base negativa na coluna Valor Sistema do Extrator da DIRF.
+
+  QUEM NE: Camila Guimaraes (analisou em 09/03 - 2 sessoes detalhadas), 
+           Ana Ligia (responsavel)
+  QUEM SA: Ninguem (mas mesmo codigo que SA mexe)
+
+  --------------------------------------------------------------------------
+  1G. PSAI 128698 / SAI 100384 - CAMPO DEPENDENTE EXTRATOR DIRF (NOVO!)
+  --------------------------------------------------------------------------
+  Status: A Desenvolver
+
+  DESCRICAO: Nao esta demonstrando a deducao do Dependente do 13o integral no 
+  Extrator da DIRF quando ha calculo de diferenca de IRRF 13o na folha mensal 
+  paga no ano-base seguinte.
+
+  QUEM NE: Ana Ligia (trabalhou 06/03 - investigacao ativa, referenciou SAI 83256)
+  
+  >>> POR QUE E CONFLITO: O tema "Dependentes no Extrator DIRF" e EXATAMENTE 
+  o que a PSAI 105827 (em teste pelo SA) trata. Ana Ligia investiga pelo lado 
+  da NE e Jerusa pelo lado da SAM, sem evidencia de comunicacao entre elas.
+
+  --------------------------------------------------------------------------
+  RESUMO DO CLUSTER
+  --------------------------------------------------------------------------
+
+  │ PSAI    │ Tipo  │ Status           │ Time SA             │ Time NE             │
+  │─────────│───────│──────────────────│─────────────────────│─────────────────────│
+  │ 128909  │ NE    │ Em Dev 10.6A-03  │ Ana Paula, Jerusa   │ (mesmos)            │
+  │ 128910  │ NE    │ A Estimar        │ Jerusa              │ Ana Ligia           │
+  │ 105827  │ SAM   │ Em Teste 10.6A   │ Ana Paula, Jerusa   │ Ana Ligia (resp)    │
+  │ 128834  │ NE    │ LIBERADA         │ Ana Paula, Jerusa   │ -                   │
+  │ 128724  │ ?     │ Em Definicao     │ Talita              │ -                   │
+  │ 128770  │ NE    │ A Estimar        │ -                   │ Camila, Ana Ligia   │
+  │ 128698  │ NE    │ A Desenvolver    │ -                   │ Ana Ligia           │
+
+  RISCOS TECNICOS DO CLUSTER:
+  1. uo_rel_linhas_extrator_dirf.sru - 3+ PSAIs mexem neste arquivo
+  2. uo_rel_linhas_demonstrativo_irrf_folha_esocial.sru - 2+ PSAIs
+  3. SAI 98201 e referenciada por 128909, 105827 e 128770 como base
+  4. Campo "Dependentes" - Jerusa (SA) e Ana Ligia (NE) investigam o mesmo tema
+
+
+============================================================================================
+  CONFLITO 2 - AJUSTE INSS FERIAS + ZERAR VERBAS RESCISAO
+  RISCO: ALTO | 2 PSAIs interligadas | 2 times definindo simultaneamente
+============================================================================================
+
+  --------------------------------------------------------------------------
+  2A. PSAI 128913 / SEM SAI - NE EM DEFINICAO
+  --------------------------------------------------------------------------
+  Status: Em Definicao | Nivel: 2 | SSCs: 1 | SANEs: 2
+
+  PROBLEMA: Nao esta realizando ajuste de INSS segurado quando empregado possui 
+  ferias na competencia e rescisao com a opcao "Zerar verbas rescisorias devido 
+  a reclamatoria trabalhista".
+
+  CAUSA RAIZ (IDENTIFICADA PELA TALITA): SAI 98887 - efeito colateral nao previsto
+  A funcao of_calc_inss_dif_fer() em uo_calculo_inss.sru NAO possui verificacao
+  da flag ibZerarVerbasRescisorias.
+
+  CODIGO AFETADO (4 pontos):
+  - uo_calculo_inss.sru: of_calc_inss_dif_fer()
+  - uo_calculo.sru: of_soma_valor (linha 12985)
+  - uo_srv_rescisao.sru: tratamento ibZerarVerbasRescisorias
+  - uo_calculo_ferias.sru: calculo de bases para comparacao
+
+  5 CENARIOS DE TESTE JA GERADOS PELA TALITA (10/03)
+
+  QUEM:
+  │ Pessoa        │ Time │ O que fez                                          │
+  │───────────────│──────│────────────────────────────────────────────────────│
+  │ Vivian        │ SA   │ 09/03: Iniciou definicao (Em Definicao)            │
+  │ Talita        │ SA   │ 10/03: Gerou definicao COMPLETA com IA (~3h)       │
+  │               │      │   5 cenarios, analise de codigo, 4 pontos          │
+  │               │      │ 13/03: Analisada | 16/03: Retomou (Em Definicao)   │
+  │ Ana Ligia     │ NE   │ Responsavel PSAI - PODE estar fazendo definicao    │
+  │               │      │ propria sem saber que Talita ja fez                │
+
+  RISCO: A Talita investiu ~3h gerando definicao completa. Se Ana Ligia fizer 
+  outra definicao independente, sao ~3h+ de retrabalho duplicado.
+
+  --------------------------------------------------------------------------
+  2B. PSAI 128950 - SAM RUBRICAS 821/836 (CONFLITO POTENCIAL)
+  --------------------------------------------------------------------------
+  Status: Em Teste | Tipo: SAM | Talita (SA)
+
+  DESCRICAO: Implementar opcao para nao demonstrar rubricas de INSS Diferenca de 
+  Ferias (821 e 836) quando no calculo das ferias o INSS ja for calculado pelo teto.
+
+  CONFLITO: Mexe nas MESMAS RUBRICAS que a 128913. A propria Talita identificou 
+  isso no log de 10/03.
+
+  --------------------------------------------------------------------------
+  2C. PSAI 128959 - SAM ALIQUOTA INSS FERIAS (NOVO! NAO COBERTO ANTES)
+  --------------------------------------------------------------------------
+  Status: Em tramite pelo SA | Tipo: SAM | Talita (SA)
+
+  DESCRICAO: Alterar o sistema para nao calcular a rubrica "836- INSS DIF DE 
+  FERIAS" quando houver ferias fracionadas na competencia e alterar a aliquota 
+  de INSS.
+
+  >>> POR QUE E CONFLITO: Mexe na MESMA rubrica 836 que as PSAIs 128913 e 
+  128950. Tres PSAIs diferentes alterando logica da mesma rubrica!
+
+
+============================================================================================
+  CONFLITO 3 - PSAI 128698 x 105827 - CAMPO DEPENDENTES DIRF
+  RISCO: ALTO | Mesma investigacao por 2 pessoas de times diferentes
+============================================================================================
+
+  Ja detalhado no Cluster 1 item 1G. Resumo:
+
+  │ Pessoa     │ Time │ PSAI    │ Tema investigado                         │
+  │────────────│──────│─────────│──────────────────────────────────────────│
+  │ Ana Ligia  │ NE   │ 128698  │ Campo Dependente 13o Extrator DIRF       │
+  │ Jerusa     │ SA   │ 105827  │ Campo Dependentes IRRF/DIRF sistema=eSoc │
+
+  Ambas investigam "Dependentes no IRRF/DIRF" por caminhos diferentes sem 
+  evidencia de comunicacao.
+
+
+============================================================================================
+  CONFLITO 4 - SAM 127289 (SA) RESPONSABILIDADE COMPARTILHADA
+  RISCO: ALTO | 1 SAM com responsaveis de ambos os times
+============================================================================================
+
+  PSAI 127289 / SAI 100310 | Tipo: SAM | Ana Paula (SA) tramitou
+
+  DESCRICAO: Reestruturar a configuracao da rubrica com classificacao 'Servico 
+  Frete' e o envio das informacoes junto ao eSocial do Transportador Autonomo 
+  com categoria SEFIP 15, 16, 18, 23 ou 25, para ajustar a conferencia de IRRF 
+  'Sistema x eSocial'.
+
+  RESPONSAVEIS:
+  - Ana Ligia Vanella Passarelli (NE)
+  - Ana Paula Duarte Huf (SA) - 6x responsavel
+  - Jerusa Valentim de Souza (SA/NE)
+
+  >>> POR QUE E CONFLITO: Esta SAM trata de Transportador Autonomo + IRRF + 
+  SEFIP - EXATAMENTE o mesmo tema do Cluster 1 (PSAIs 128909/105827). Ana Ligia 
+  e responsavel aqui e tambem investiga 128698 sobre o mesmo tema. O risco e que 
+  alteracoes nesta SAM impactem ou sejam impactadas pelas NEs 128909/128910.
+
+
+============================================================================================
+  SOBREPOSICOES FUNCIONAIS - SAMs DO SA QUE IMPACTAM AREAS DE NEs DO TIME NE
+============================================================================================
+
+  Estas sao SAMs que o time SA esta trabalhando que mexem nas MESMAS AREAS 
+  FUNCIONAIS que NEs pendentes do time NE, gerando risco de impacto indireto.
+
+  --------------------------------------------------------------------------
+  SOBREPOSICAO A: AREA FERIAS (4 SAMs SA x 3 NEs NE)
+  --------------------------------------------------------------------------
+  
+  SAMs do SA trabalhando em ferias:
+  - 128750 (Talita): Salario Base de calculo do recibo de ferias - horistas
+  - 128994 (Talita): Programacao de ferias - filtro PROGRAMADAS
+  - 86339 (Ana Paula, Helen): Ferias em dobro para intermitente
+  - 129086 (Vivian): Estudo metodo antigo/novo envio rubricas ferias S-1200/S-2299
+  - 129051 (Taiane): Licenca premio + ferias ou 13o conforme CCT
+
+  NEs do NE trabalhando em ferias:
+  - 128706 (Luana, 10/03): Nao esta dilatando periodo aquisitivo para afastamento 
+    motivos 90/91 (Suspensao contratual)
+  - 128913 (Talita/Ana Ligia): INSS diferenca ferias + rescisao
+  - 125728 (Ana Ligia, 06/03): Media rubrica 8125 REFLEXO HE DSR com alteracao 
+    salarial e ferias em duas competencias
+
+  RISCO: Vivian (SA) gastou 1446 min (24h!) em atividades de ferias. Se alguma 
+  SAM alterar comportamento de calculo de ferias, pode impactar NEs pendentes.
+
+  --------------------------------------------------------------------------
+  SOBREPOSICAO B: AREA DIRF/EXTRATOR/COMPROVANTE RENDIMENTOS (5 SAMs x 4 NEs)
+  --------------------------------------------------------------------------
+  
+  SAMs do SA:
+  - 105827 (Ana Paula, Jerusa): Dependentes IRRF/DIRF
+  - 127289 (Ana Paula): Transportador Autonomo IRRF eSocial
+  - 125491 (Ana Paula): Extrator DIRF somente com IRRF retido
+  - 127976 (Elisangela): Comprovante rendimento por competencia/periodo
+  - 128754 (Talita): Rendimentos tributaveis para autonomos MEI
+
+  NEs do NE:
+  - 128698 (Ana Ligia): Dependente 13o no Extrator DIRF
+  - 128770 (Camila): Comprovante Rendimentos base negativa + Extrator DIRF
+  - 128572 (Camila, 17/03): Valores repetidos no Extrator DIRF coluna Valor Sistema
+  - 129135 (Luana): Comprovante Rendimento empregado transferido + contribuinte
+
+  RISCO: Qualquer alteracao na logica do Extrator DIRF pelas SAMs (105827, 125491) 
+  pode gerar efeitos colaterais nas NEs que tratam erros no mesmo relatorio.
+
+  --------------------------------------------------------------------------
+  SOBREPOSICAO C: AREA eSocial S-1210 (2 SAMs x 3 NEs)
+  --------------------------------------------------------------------------
+  
+  SAMs do SA:
+  - 127963 (Taiane, Ana Paula): Plano saude retificar grupo planSaude no S-1210
+  - 128807 (Vivian, Ana Paula): Nova consulta protocolos retorno eSocial
+
+  NEs do NE:
+  - 128926 (Luana, 11/03): Erro exporta/importa tabela S-1210 com perAnt
+  - 129072 (Luana, 12/03): Competencia retroativa S-1210 com fim dependente
+  - 129090 (Luana, 13/03): Competencia perAnt S-1210 retificacao
+
+  RISCO: 3 NEs diferentes mexem no S-1210 (evento eSocial de Pagamentos). Se a 
+  SAM 127963 alterar comportamento do S-1210, pode impactar essas NEs.
+
+
+============================================================================================
+  PSAI COM RESPONSABILIDADE DE AMBOS OS TIMES
+============================================================================================
+
+  Alem da 127289 (ja listada como Conflito 4), ha:
+
+  PSAI 128913 - Responsaveis: Ana Ligia (NE) + Talita (SA)
+    Tipo: NE | Em Definicao | Ja detalhada como Conflito 2
+
+  PSAI 105827 - Responsaveis: Ana Ligia (NE) + Ana Paula (SA) + Jerusa (SA/NE)
+    Tipo: SAM | Em Teste | Ja detalhada como Cluster 1
+
+
+============================================================================================
+  NEs QUE O TIME NE TRABALHA ATIVAMENTE E NAO TEM CONEXAO COM O SA
+  (sem conflito, mas registradas para completude)
+============================================================================================
+
+  │ PSAI    │ Analista NE │ Descricao resumida                              │
+  │─────────│─────────────│─────────────────────────────────────────────────│
+  │ 129089  │ Jessica     │ Erro banco FK_FOTROCAS_SINDPISO (erro tecnico)  │
+  │ 129040  │ Camila      │ Liquido incorreto extrato mensal rateio servico │
+  │ 128118  │ Ana Ligia   │ GPS Rescisao Complementar regime/aliquota       │
+  │ 128565  │ Ana Ligia   │ Tag infoProcJud duplicada S-1260                │
+  │ 127800  │ Ana Ligia   │ Base IRRF Ferias com Deducao Simplificada       │
+  │ 105457  │ Ana Ligia   │ INSS 13o rescisao complementar com alteracao    │
+  │ 125728  │ Ana Ligia   │ Media 8125 REFLEXO HE DSR ferias 2 competencias │
+  │ 128746  │ Luana       │ Alteracao de calculo via Utilitarios trava sist  │
+  │ 129135  │ Luana       │ Comprovante Rendimento transferencia+contribuinte│
+
+  Nota: 127800 e 125728 estao na area "ferias/IRRF" mas nao tem sobreposicao 
+  direta com nenhuma SAM do SA nos ultimos 14 dias.
+
+
+============================================================================================
+  TAIANE (SA) - PONTO DE ATENCAO
+============================================================================================
+
+  Taiane (SA) trabalhou nas PSAIs 127963 e 125491 que tambem tem tramites SA.
+  A Taiane tambem aparece em log proprio com SAIs 99721, 100581, 99447.
+  A SAI 100581 corresponde a PSAI 129090 (Luana do NE!).
+
+  >>> NOVO CONFLITO IDENTIFICADO: Taiane (SA) trabalha na SAI 100581 que e 
+  a mesma SAI da PSAI 129090 (competencia perAnt S-1210), e Luana (NE) 
+  tambem esta analisando essa mesma PSAI. Verificar alinhamento.
+
+
+============================================================================================
+  MAPA COMPLETO DE RISCOS - CLASSIFICACAO FINAL
+============================================================================================
+
+  ┌────────────────────────────────────────────────────────────────────────────────┐
+  │ # │ RISCO     │ Descricao                                │ Pessoas envolvidas │
+  │───│───────────│──────────────────────────────────────────│────────────────────│
+  │ 1 │ CRITICO   │ Cluster IRRF/Transportador/DIRF          │ AnaPaula, Jerusa,  │
+  │   │           │ 7 PSAIs, 3+ arquivos de codigo, 2 times  │ Talita, AnaLigia,  │
+  │   │           │                                          │ Camila             │
+  │───│───────────│──────────────────────────────────────────│────────────────────│
+  │ 2 │ ALTO      │ Definicao duplicada PSAI 128913           │ Talita, Vivian,    │
+  │   │           │ + conflito rubricas 821/836 (3 PSAIs!)   │ AnaLigia           │
+  │───│───────────│──────────────────────────────────────────│────────────────────│
+  │ 3 │ ALTO      │ Campo Dependentes: 128698 (NE) vs        │ AnaLigia, Jerusa   │
+  │   │           │ 105827 (SA) - mesma investigacao          │                    │
+  │───│───────────│──────────────────────────────────────────│────────────────────│
+  │ 4 │ ALTO      │ SAM 127289 responsab. compartilhada       │ AnaLigia, AnaPaula,│
+  │   │           │ + mesmo tema do Cluster 1                │ Jerusa             │
+  │───│───────────│──────────────────────────────────────────│────────────────────│
+  │ 5 │ MEDIO     │ PSAI 128959 - 3a PSAI nas rubricas       │ Talita (SA)        │
+  │   │           │ 821/836 (alem de 128913 e 128950)        │                    │
+  │───│───────────│──────────────────────────────────────────│────────────────────│
+  │ 6 │ MEDIO     │ PSAI 129090/SAI 100581 - Taiane (SA) e   │ Taiane, Luana      │
+  │   │           │ Luana (NE) na mesma SAI do S-1210         │                    │
+  │───│───────────│──────────────────────────────────────────│────────────────────│
+  │ 7 │ MEDIO     │ Sobreposicao Ferias: 5 SAMs do SA +      │ Vivian, Talita,    │
+  │   │           │ 3 NEs do NE na mesma area funcional      │ Luana, AnaLigia    │
+  │───│───────────│──────────────────────────────────────────│────────────────────│
+  │ 8 │ MEDIO     │ Sobreposicao DIRF/Extrator: 5 SAMs +     │ AnaPaula, Camila,  │
+  │   │           │ 4 NEs mexendo nos mesmos relatorios      │ AnaLigia, Luana    │
+  │───│───────────│──────────────────────────────────────────│────────────────────│
+  │ 9 │ BAIXO     │ Sobreposicao S-1210: 2 SAMs + 3 NEs     │ Taiane, AnaPaula,  │
+  │   │           │ mexendo no mesmo evento eSocial           │ Luana              │
+  │───│───────────│──────────────────────────────────────────│────────────────────│
+  │10 │ BAIXO     │ PSAI 128572 (Camila) - Extrator DIRF     │ Camila (NE)        │
+  │   │           │ Valores repetidos (area afetada por SAMs)│                    │
+  └────────────────────────────────────────────────────────────────────────────────┘
+
+
+============================================================================================
+  ACOES RECOMENDADAS - POR PRIORIDADE
+============================================================================================
+
+  [1] URGENTE - ESTA SEMANA
+  ─────────────────────────
+
+  a) Reuniao Vitor + Sabrina + Ana Paula + Jerusa + Ana Ligia:
+     - Mapear ownership do cluster IRRF/Transportador (7 PSAIs!)
+     - Ana Ligia + Jerusa: alinhar sobre campo Dependentes (128698 vs 105827)
+     - Garantir que DEV da 128909 saiba que 128834 ja foi liberada
+     - SAM 127289 e parte do cluster? Quem lidera a integracao?
+
+  b) Alinhar Ana Ligia + Talita sobre PSAI 128913:
+     - Talita ja tem definicao COMPLETA (cenarios, codigo, pontos de atencao)
+     - Ana Ligia e responsavel - verificar se comecou definicao propria
+     - Se nao, usar a da Talita como base (evita ~3h de retrabalho)
+
+  c) Alinhar Taiane + Luana sobre SAI 100581 / PSAI 129090:
+     - Ambos aparecem trabalhando neste item do S-1210
+
+  [2] ESTA QUINZENA
+  ──────────────────
+
+  d) Revisar as 3 PSAIs das rubricas 821/836 (128913 + 128950 + 128959):
+     - A Talita (SA) esta nas 3 - ela e a pessoa certa para mapear dependencias
+     - Garantir que a 128913 (NE) considere a opcao que a 128950 (SAM) introduz
+
+  e) Verificar PSAI 128724 (Talita) - Extrator DIRF negativos:
+     - Precisa ser sincronizada com 128909 e 105827 (mesmo arquivo de codigo)
+
+  f) Mapear impacto das SAMs de ferias (128750, 128994, 86339, 129086, 129051) 
+     nas NEs de ferias (128706, 125728, 128913)
+
+  [3] ESTRUTURAL
+  ──────────────
+
+  g) Ritual semanal 15min entre Vitor e Sabrina para sincronizar PSAIs/SAIs
+  h) Antes de tramitar PSAI, verificar se ha outra PSAI do mesmo tema/codigo
+  i) Compartilhar artefatos gerados com IA entre os times (Talita ja gera .md)
+  j) Para PSAIs que mexem no Extrator DIRF: designar UM responsavel tecnico 
+     que revise todas as alteracoes nesse relatorio
+
+
+============================================================================================
+  NUMEROS FINAIS
+============================================================================================
+
+  Time SA (Sabrina) - 14 dias:
+  - 52 PSAIs tramitadas (41 SAMs, 5 SALs, 3 SAILs, 3 NEs)
+  - 3 NEs com responsaveis do time NE (128834, 128909, 128913)
+  - 1 SAM com responsavel NE (127289)
+  - 9 analistas: Ana Paula (mais ativa), Talita, Douglas, Vivian, Elisangela, 
+    Helen, Taiane, Jerusa, Sabrina
+
+  Time NE - 14 dias (logs de analistas):
+  - 17 PSAIs trabalhadas ativamente
+  - 6 analistas com logs: Ana Ligia (8 dias), Camila (7), Luana (6), 
+    Talita (4), Jessica (3), Taiane (6)
+
+  Intersecoes identificadas:
+  - 4 conflitos diretos
+  - 3 sobreposicoes funcionais
+  - 10 itens no mapa de riscos
+  - ~30% das PSAIs do NE tem conexao tematica com SAMs do SA
+
+
+============================================================================================
+  FIM DO RELATORIO FINAL
+  Gerado em: 18/03/2026
+  Dados: banco PBCVS9 + ne-pendentes.json + logs analistas + cache analise-conflitos.json
+============================================================================================

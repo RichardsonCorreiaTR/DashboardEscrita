@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diretrizes - Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</head>
+<body class="com-sidebar">
+
+  <!-- SIDEBAR (renderizado por nav.js) -->
+  <nav id="nav-container"></nav>
+
+  <!-- CONTEUDO DA PAGINA -->
+  <div class="pagina">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header__info">
+        <h1 class="header__title">Diretrizes</h1>
+        <span class="header__subtitle">Indicadores de produto - Escrita Fiscal</span>
+      </div>
+      <div class="header__controls">
+        <div class="header__versao">
+          <label for="seletor-versao">Versao:</label>
+          <select id="seletor-versao"></select>
+          <span id="periodo-label" class="header__periodo"></span>
+        </div>
+        <div class="header__acoes">
+          <span id="atualizado-label" class="header__timestamp"></span>
+          <div class="btn-group">
+            <button id="btn-odbc" class="btn btn--primario" title="Consultar banco ODBC (dados ao vivo)">ODBC</button>
+            <button id="btn-cache" class="btn btn--outline" title="Consultar cache em disco (ultimo dado salvo)">Cache</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- BANNER OFFLINE -->
+    <div id="banner-offline" class="banner-offline" hidden>
+      <span id="banner-offline-msg"></span>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading" class="loading">
+      <div class="loading__spinner"></div>
+      <p>Consultando banco de dados...</p>
+    </div>
+
+    <!-- ERRO GLOBAL -->
+    <div id="erro-global" class="erro-global" hidden>
+      <p id="erro-mensagem"></p>
+      <button id="btn-retry" class="btn btn--outline">Tentar novamente</button>
+    </div>
+
+    <!-- CARDS -->
+    <main class="dashboard">
+      <section class="cards-grid" id="cards-container"></section>
+
+      <!-- AREA DE DETALHES -->
+      <section class="detalhes" id="detalhes-container" hidden>
+        <div class="detalhes__header">
+          <h2 id="detalhes-titulo"></h2>
+          <button id="btn-fechar-detalhes" class="btn btn--ghost">&times;</button>
+        </div>
+        <div class="detalhes__body" id="detalhes-body"></div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <span>Dados via ODBC - Sybase ASA 9.0</span>
+    </footer>
+
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="/js/nav.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/charts.js"></script>
+  <script src="/js/detalhes.js"></script>
+  <script src="/js/app-diretrizes.js"></script>
+</body>
+</html>

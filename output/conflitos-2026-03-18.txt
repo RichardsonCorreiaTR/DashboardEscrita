@@ -1,0 +1,148 @@
+================================================================================
+  ANALISE DE CONFLITOS PSAI/SAI - ESCRITA FISCAL vs TIME SA
+  Data: 18/03/2026 | Periodo: ultimas 2 semanas
+================================================================================
+
+--------------------------------------------------------------------------------
+  1. RESUMO EXECUTIVO
+--------------------------------------------------------------------------------
+  Total NEs pendentes Escrita Fiscal: 322
+  PSAIs trabalhadas pelo time SA (2 sem): 52
+  SAIs com atividade do time SA (2 sem):  0
+  Conflitos identificados: 0
+  Duplicidades em NEs pendentes: 0
+
+--------------------------------------------------------------------------------
+  2. ATIVIDADES DO TIME SA (ultimas 2 semanas)
+--------------------------------------------------------------------------------
+
+  Jerusa: 93.0h em 12 dias
+    - SAM-Analisando SAM: 31.6h
+    - SAI-Revisão em SAI de SAM: 16.3h
+    - NE-Definindo NE: 6.3h
+    - Reunião de Dúvida da GP - SAs: 6.2h
+    - Manutenção de máquinas e software periféricos: 6.0h
+
+  Ana Paula: 93.7h em 12 dias
+    - SAI-Revisão em SAI de SAM: 16.0h
+    - SAI-Gerando SAI de SAM: 14.9h
+    - Esclarecimento de Dúvidas da Gerência de Produto SAM: 10.5h
+    - Consulta Médica: 6.5h
+    - Reunião de definição de SAM: 5.8h
+
+  Vivian: 24.1h em 3 dias
+    - Férias: 24.1h
+
+  Helen: 81.9h em 10 dias
+    - Respondendo SS: 51.0h
+    - Pessoal: 8.7h
+    - SAM-Analisando SAM: 7.0h
+    - Daily Meeting - Reunião Diária: 3.5h
+    - Lanche: 3.2h
+
+  Douglas: 68.2h em 9 dias
+    - SAI-Gerando SAI de SAM: 15.1h
+    - SAI-Revisão em SAI de SAM: 10.4h
+    - SAM-Analisando SAM: 8.6h
+    - Reunião de Dúvida da GP - SAs: 6.3h
+    - Respondendo SS: 3.5h
+
+  Taiane: 82.3h em 11 dias
+    - SAM-Definindo SAM: 63.4h
+    - SAI-Revisão em SAI de SAM: 7.6h
+    - Reunião definição de novos produtos/projetos: 3.4h
+    - Daily Meeting - Reunião Diária: 2.6h
+    - Desenvolvimento/Alteração de Manual: 1.9h
+
+  Talita: 80.6h em 10 dias
+    - SAI - Testes: 13.9h
+    - SAIL-Analisando SAIL: 13.4h
+    - SAL-Analisando SAL: 12.7h
+    - Respondendo SS: 8.3h
+    - NE-Definindo NE: 7.0h
+
+  Elisangela: 83.0h em 11 dias
+    - SAL-Analisando SAL: 21.9h
+    - SAM-Analisando SAM: 20.4h
+    - Outros ** Evite Usar: 12.5h
+    - SAM-Definindo SAM: 11.1h
+    - Reunião de Dúvida da GP - SAs: 5.5h
+
+--------------------------------------------------------------------------------
+  3. PSAIs E SAIs TRABALHADAS PELO TIME SA
+--------------------------------------------------------------------------------
+
+  PSAIs (52):
+    PSAI 53203: Douglas | Em analise do Especialista
+    PSAI 80178: Douglas | Em analise do Especialista, Respondido Especialista
+    PSAI 86339: Ana Paula, Helen | Respondido Especialista, Em analise, Em Definicao, Definida
+    PSAI 105827: Ana Paula | Em analise do Especialista, A Desenvolver
+    PSAI 117170: Vivian | Reprovada
+    PSAI 117550: Ana Paula | A Desenvolver
+    PSAI 118343: Douglas | Em analise do Especialista, Respondido Especialista
+    PSAI 119743: Douglas | Em analise do Especialista, Respondido Especialista
+    PSAI 120551: Ana Paula | A Desenvolver
+    PSAI 120992: Ana Paula | Em analise
+    PSAI 122984: Ana Paula | Aprovada, A definir, Em Definicao
+    PSAI 123462: Douglas, Talita | Em analise do Especialista, Respondido Especialista, Em analise, Em Definicao
+    PSAI 123677: Ana Paula, Helen | Em analise do Especialista, Respondido Especialista, Em analise, Em Definicao
+    PSAI 125491: Ana Paula | Respondido Especialista
+    PSAI 125993: Douglas | Em analise do Especialista, Respondido Especialista
+    PSAI 126813: Douglas | Reprovada
+    PSAI 127201: Elisangela | Reprovada
+    PSAI 127289: Ana Paula | A Desenvolver
+    PSAI 127963: Taiane, Ana Paula | Definida, Em analise do Especialista, Respondido Especialista, Em analise, Em Definicao
+    PSAI 127976: Elisangela | Aprovada, A definir, Em Definicao, Definida
+    PSAI 128033: Vivian, Ana Paula | Em Definicao, Analisada, Em Analise do Coordenador, A Desenvolver
+    PSAI 128195: Talita | A aprovar
+    PSAI 128284: Talita, Douglas | Definida, Em analise do Especialista, Respondido Especialista, Em analise, Em Definicao, A Desenvolver
+    PSAI 128652: Talita | A aprovar
+    PSAI 128653: Talita | A aprovar
+    PSAI 128750: Talita | Em analise, A aprovar
+    PSAI 128754: Talita | Em analise, A aprovar
+    PSAI 128798: Ana Paula | Em analise, A aprovar, Aprovada, A definir, Em Definicao, Definida, Em analise do Especialista, A Desenvolver
+    PSAI 128807: Vivian, Ana Paula | Em analise, A aprovar, Aprovada, A definir, Em Definicao, Definida, Em analise do Especialista, A Desenvolver
+    PSAI 128822: Talita | Em analise, A aprovar
+    PSAI 128823: Talita | Em analise, A aprovar
+    PSAI 128834: Ana Paula | A Desenvolver
+    PSAI 128877: Vivian | Em Definicao, Reprovada
+    PSAI 128909: Ana Paula | Em Analise do Coordenador, A Desenvolver
+    PSAI 128913: Vivian, Talita | Em Definicao, Analisada
+    PSAI 128950: Talita | Em analise, A aprovar
+    PSAI 128959: Talita | Em analise, A aprovar
+    PSAI 128973: Vivian | Em Definicao
+    PSAI 128987: Ana Paula, Douglas | Em analise, A aprovar, Aprovada, A definir, Em Definicao, Aguardando resposta do Especiali, Em analise do Especialista, Aguardando Resposta do Desenvolv
+    PSAI 128994: Talita | Em analise, A aprovar
+    PSAI 128998: Talita | Em analise, A aprovar
+    PSAI 129004: Douglas | Em analise, A aprovar, Aprovada, A definir, Em Definicao, Definida, Em analise do Especialista, Aguardando Resposta do Desenvolv, Respondido Especialista, Reprovada
+    PSAI 129051: Taiane | Em analise
+    PSAI 129052: Talita | Em analise, A aprovar
+    PSAI 129055: Talita | Em analise, A aprovar
+    PSAI 129064: Vivian, Ana Paula | Em analise, A aprovar, Aprovada, A definir, Em Definicao, Definida, Em analise do Especialista, A Desenvolver
+    PSAI 129075: Taiane | Em analise, A aprovar, Aprovada, A definir, Em Definicao
+    PSAI 129084: Ana Paula | Em analise, A aprovar, Aprovada, A definir, Em Definicao
+    PSAI 129086: Vivian | Em analise
+    PSAI 129160: Ana Paula | Em analise, A aprovar, Aprovada, A definir, Em Definicao, Definida, Em analise do Especialista, Aguardando Resposta do Desenvolv
+    PSAI 129180: Ana Paula | Em analise, A aprovar, Aprovada, A definir, Em Definicao
+    PSAI 129210: Helen, Ana Paula | Em analise, A aprovar, Aprovada, A definir, Em Definicao, Aguardando resposta do Especiali, Em analise do Especialista, Aguardando Resposta do Desenvolv
+
+--------------------------------------------------------------------------------
+  4. CONFLITOS IDENTIFICADOS (NEs Escrita em que ambos os times atuam)
+--------------------------------------------------------------------------------
+
+  Nenhum conflito direto identificado.
+
+--------------------------------------------------------------------------------
+  5. DUPLICIDADES EM NEs PENDENTES
+--------------------------------------------------------------------------------
+
+  Nenhuma duplicidade identificada em PSAIs pendentes.
+
+--------------------------------------------------------------------------------
+  6. RECOMENDACOES
+--------------------------------------------------------------------------------
+
+  [GERAL]
+    - Estabelecer comunicacao semanal entre times NE e SA sobre PSAIs em andamento
+    - Verificar PSAIs listadas na secao 3 que nao apareceram como conflito
+      (podem nao ser NE Escrita, mas ainda assim impactar indiretamente)

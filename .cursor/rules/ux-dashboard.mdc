@@ -1,0 +1,57 @@
+---
+description: Orquestra os 3 agentes de interface (UX-Writer, UX-Experience, UI-Design) para dashboards v2
+globs: src/servidor/public-v2/**/*,src/relatorios/**/*
+alwaysApply: false
+---
+
+# Interface Dashboard v2 — Orquestrador
+
+## 3 agentes especializados
+
+Toda alteracao de interface DEVE passar por pelo menos 1 dos 3 agentes abaixo.
+Se a mudanca envolve mais de uma disciplina, usar os agentes na ordem indicada.
+
+| Agente | Skill | Escopo | Trigger |
+|--------|-------|--------|---------|
+| **UX-Writer** | `.cursor/skills/ux-writer/SKILL.md` | Textos, narrativas, microcopy, linguagem de negocio | "revisar texto", "copy", "narrativa", "linguagem" |
+| **UX-Experience** | `.cursor/skills/ux-experience/SKILL.md` | Fluidez, hierarquia, transicoes, regra dos 5 segundos | "experiencia", "fluidez", "5 segundos", "layout" |
+| **UI-Design** | `.cursor/skills/ui-design/SKILL.md` | Componentes, cores, fontes, padrao visual TR | "visual", "cores", "componentes", "padrao TR", "Saffron" |
+
+## Ordem de revisao (quando envolve os 3)
+
+1. **UX-Experience** primeiro — define hierarquia e fluxo
+2. **UX-Writer** segundo — preenche conteudo com linguagem correta
+3. **UI-Design** terceiro — aplica visual final
+
+## Requisito central
+
+> Em **5 segundos** qualquer pessoa deve bater o olho e tirar 1 insight.
+
+## Fontes de referencia
+
+| Fonte | Autoridade | Onde |
+|-------|-----------|------|
+| **Saffron** | Design system oficial TR | `saffron.thomsonreuters.com` (SAML) |
+| **Dominio** | Produto TR brasileiro | `dominiosistemas.com.br` |
+| **PE Dashboard** | Dashboard de engenharia TR | `docs/referencia-ux-product-engineering.md` |
+| **Tech TOC** | Tokens CSS corporativos | `github.com/tr/tech-toc_live` |
+| **TR Brand** | Paleta oficial da marca | secao 12-13 da referencia |
+
+## Tokens CSS (resumo rapido)
+
+```css
+/* Projeto */
+--fundo: #f5f5f5;  --card: #fff;  --texto: #1a1a1a;  --borda: #e5e5e5;
+--accent: #e05929;  --primario: #2563eb;
+--verde: #16a34a;  --amarelo: #ca8a04;  --vermelho: #dc2626;
+
+/* TR oficial (--tr-*) */
+--tr-orange: #FA6400;  --tr-link: #005DA2;  --tr-text: #404040;
+```
+
+## Restricoes globais
+
+- `tech-stack.mdc`: sem frameworks CSS; Chart.js via CDN.
+- `guardiao.mdc`: nao alterar calculos, queries ou validacoes.
+- Nenhum arquivo JS acima de 200 linhas.
+- Backend compartilhado (porta 5000) com mesmas APIs.

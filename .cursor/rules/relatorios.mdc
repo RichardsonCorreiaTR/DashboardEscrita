@@ -1,0 +1,44 @@
+---
+description: Convencoes visuais de dashboards e relatorios
+globs: src/relatorios/**/*
+alwaysApply: false
+---
+
+# Convencoes de Relatorios
+
+## Tipos de saida
+| Tipo | Interatividade | Formato |
+|------|----------------|---------|
+| Dashboard interativo | Filtros, drill-down, tempo real | HTML + JS + CSS (Chart.js CDN) |
+| Relatorio estatico | Abas via CSS puro (zero JS) | HTML + CSS inline |
+
+## Relatorio estatico - regras
+1. HTML 100% autossuficiente (CSS inline, zero JS, zero dependencia externa)
+2. Abre em qualquer navegador, qualquer dispositivo
+3. Funciona offline
+4. Gerado a partir de templates + dados calculados (NUNCA string concatenation manual)
+5. Sempre inclui: data/hora de geracao, versao, periodo, qtd registros usados
+6. Se houver problema de validacao → BANNER DE ERRO (nunca dados zerados silenciosos)
+
+## Componentes HTML reutilizaveis
+Localizacao: `src/relatorios/templates/componentes/`
+- `header.html` - cabecalho com titulo, periodo, data geracao
+- `card.html` - card de indicador com semaforo
+- `tabela.html` - tabela de dados com formatacao
+- `semaforo.html` - indicador visual verde/amarelo/vermelho
+
+## CSS unico
+- Arquivo: `src/relatorios/estilos/dashboard.css`
+- Reutilizado por TODOS os relatorios
+- Para relatorios estaticos: CSS e injetado inline no HTML
+
+## Cores do semaforo
+- Verde: `#27ae60` (meta atingida ou superada)
+- Amarelo: `#f39c12` (perto da meta, atencao)
+- Vermelho: `#e74c3c` (abaixo da meta, acao necessaria)
+- Cinza: `#95a5a6` (sem dados ou erro)
+
+## Fluxo de publicacao
+```
+Indicadores calculados → Gerador monta HTML → Validador confere → output/latest/ + output/arquivo/ + OneDrive
+```

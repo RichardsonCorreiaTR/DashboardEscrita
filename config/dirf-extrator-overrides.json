@@ -1,0 +1,11 @@
+{
+  "nota": "Ajustes manuais de exibição (CadastroPSAI) quando o SGD ainda reflete registro antigo.",
+  "entradas_psai": [
+    {
+      "i_sai": 100547,
+      "i_psai": 105827,
+      "entrada_exibir": "2026-03-03",
+      "nota": "Data corrigida em 03/03/2026 no processo; CadastroPSAI no banco ainda apontava registro antigo — exibição ajustada manualmente."
+    }
+  ]
+}

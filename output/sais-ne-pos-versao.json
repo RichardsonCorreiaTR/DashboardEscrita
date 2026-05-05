@@ -1,0 +1,292 @@
+{
+  "versao": "10.6A-02",
+  "periodoVersao": {
+    "inicio": "2026-01-22 15:42:19.4966",
+    "fim": "2026-02-24 18:31:43.1700"
+  },
+  "geradoEm": "2026-03-02T20:38:33.069Z",
+  "liberadasArquivo": [
+    {
+      "i_sai": 99851,
+      "i_psai": 127634,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-02-11 14:20:12.2400",
+      "devConclusao": "2026-02-25 09:14:00.0000",
+      "liberacao": "2026-02-25 09:22:14.9100",
+      "versao": "",
+      "devRealizadoMin": 51
+    },
+    {
+      "i_sai": 99238,
+      "i_psai": 125738,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-01-15 17:19:51.6433",
+      "devConclusao": "2026-02-25 09:03:00.0000",
+      "liberacao": "2026-02-25 17:52:22.7000",
+      "versao": "10.6A-03",
+      "devRealizadoMin": 322
+    },
+    {
+      "i_sai": 99934,
+      "i_psai": 127927,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-02-16 09:24:27.1633",
+      "devConclusao": "2026-02-25 01:48:00.0000",
+      "liberacao": "2026-02-25 17:52:25.5400",
+      "versao": "10.6A-03",
+      "devRealizadoMin": 225
+    },
+    {
+      "i_sai": 99968,
+      "i_psai": 127874,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-02-18 13:48:56.5800",
+      "devConclusao": "2026-02-25 01:48:00.0000",
+      "liberacao": "2026-02-25 17:52:27.0866",
+      "versao": "10.6A-03",
+      "devRealizadoMin": 271
+    },
+    {
+      "i_sai": 100032,
+      "i_psai": 128219,
+      "gravidade": "Critica",
+      "entradaSAI": "2026-02-20 10:35:57.4966",
+      "devConclusao": "2026-02-25 11:19:00.0000",
+      "liberacao": "2026-02-25 17:52:30.1833",
+      "versao": "10.6A-03",
+      "devRealizadoMin": 536
+    },
+    {
+      "i_sai": 100165,
+      "i_psai": 128445,
+      "gravidade": "Grave",
+      "entradaSAI": "2026-02-25 17:36:33.0266",
+      "devConclusao": null,
+      "liberacao": "2026-02-26 18:21:46.3133",
+      "versao": "10.6A-03",
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 100146,
+      "i_psai": 128424,
+      "gravidade": "Critica",
+      "entradaSAI": "2026-02-25 11:10:11.7766",
+      "devConclusao": "2026-02-27 07:48:00.0000",
+      "liberacao": "2026-02-27 10:19:51.8633",
+      "versao": "10.6A-03",
+      "devRealizadoMin": 1301
+    },
+    {
+      "i_sai": 100158,
+      "i_psai": 128529,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-02-25 16:08:24.6766",
+      "devConclusao": null,
+      "liberacao": "2026-03-02 17:30:38.7933",
+      "versao": "10.6A-03",
+      "devRealizadoMin": 0
+    }
+  ],
+  "pendentes": [
+    {
+      "i_sai": 87937,
+      "i_psai": 104238,
+      "gravidade": "Normal",
+      "entradaSAI": "2024-07-27 11:55:23.2600",
+      "devConclusao": "2026-02-27 20:22:00.0000",
+      "versao": "10.6A-03",
+      "devPrevistoMin": 1582,
+      "devRealizadoMin": 607
+    },
+    {
+      "i_sai": 93307,
+      "i_psai": 118092,
+      "gravidade": "Normal",
+      "entradaSAI": "2025-04-02 08:49:38.2100",
+      "devConclusao": "2026-02-26 11:02:00.0000",
+      "versao": "10.6A-03",
+      "devPrevistoMin": 801,
+      "devRealizadoMin": 225
+    },
+    {
+      "i_sai": 96147,
+      "i_psai": 119702,
+      "gravidade": "Normal",
+      "entradaSAI": "2025-08-19 14:40:14.5866",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 791,
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 96962,
+      "i_psai": 118706,
+      "gravidade": "Normal",
+      "entradaSAI": "2025-09-24 17:30:22.5133",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 1165,
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 97247,
+      "i_psai": 122894,
+      "gravidade": "Normal",
+      "entradaSAI": "2025-10-09 17:41:39.7000",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 2610,
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 97376,
+      "i_psai": 122909,
+      "gravidade": "Normal",
+      "entradaSAI": "2025-10-15 11:56:11.1566",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 1956,
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 97659,
+      "i_psai": 121830,
+      "gravidade": "Normal",
+      "entradaSAI": "2025-10-28 10:09:47.8300",
+      "devConclusao": "2026-02-24 17:43:00.0000",
+      "versao": "10.6A-03",
+      "devPrevistoMin": 803,
+      "devRealizadoMin": 2914
+    },
+    {
+      "i_sai": 98178,
+      "i_psai": 122293,
+      "gravidade": "Normal",
+      "entradaSAI": "2025-11-21 15:51:57.4400",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 1202,
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 98260,
+      "i_psai": 124562,
+      "gravidade": "Normal",
+      "entradaSAI": "2025-11-26 13:27:15.9200",
+      "devConclusao": "2026-02-27 16:51:00.0000",
+      "versao": "10.6A-03",
+      "devPrevistoMin": 875,
+      "devRealizadoMin": 423
+    },
+    {
+      "i_sai": 98773,
+      "i_psai": 125573,
+      "gravidade": "Normal",
+      "entradaSAI": "2025-12-22 15:14:07.5133",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 1510,
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 98942,
+      "i_psai": 125366,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-01-05 13:45:24.0100",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 2538,
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 99237,
+      "i_psai": 126435,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-01-15 17:17:45.5033",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 1580,
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 99262,
+      "i_psai": 126473,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-01-16 15:57:45.9400",
+      "devConclusao": "2026-02-26 11:02:00.0000",
+      "versao": "10.6A-03",
+      "devPrevistoMin": 791,
+      "devRealizadoMin": 206
+    },
+    {
+      "i_sai": 99535,
+      "i_psai": 126766,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-01-28 15:15:33.0333",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 791,
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 99677,
+      "i_psai": 126846,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-02-03 15:21:11.3300",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 791,
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 99721,
+      "i_psai": 126939,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-02-04 17:27:30.0566",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 791,
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 99738,
+      "i_psai": 127495,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-02-05 13:30:11.0900",
+      "devConclusao": "2026-02-26 11:02:00.0000",
+      "versao": "10.6A-03",
+      "devPrevistoMin": 796,
+      "devRealizadoMin": 170
+    },
+    {
+      "i_sai": 99814,
+      "i_psai": 127645,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-02-10 15:21:24.5933",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 695,
+      "devRealizadoMin": 0
+    },
+    {
+      "i_sai": 100206,
+      "i_psai": 128226,
+      "gravidade": "Normal",
+      "entradaSAI": "2026-02-27 10:07:29.7066",
+      "devConclusao": null,
+      "versao": "10.6A-03",
+      "devPrevistoMin": 800,
+      "devRealizadoMin": 0
+    }
+  ],
+  "resumo": {
+    "liberadasArquivo": 8,
+    "pendentes": 19,
+    "total": 27,
+    "porGravidade": {
+      "Normal": 24,
+      "Critica": 2,
+      "Grave": 1
+    }
+  }
+}

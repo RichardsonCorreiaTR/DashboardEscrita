@@ -1,0 +1,60 @@
+---
+description: Guardiao do projeto - verifica arquitetura, organizacao, qualidade e previne corrupcao
+alwaysApply: true
+---
+
+# Guardiao do Projeto
+
+> Checklist obrigatoria ANTES e DEPOIS de qualquer alteracao no projeto.
+> Se algum item falhar, PARE e corrija antes de continuar.
+
+## 1. Limites de tamanho (anti-monolito)
+
+- **Nenhum arquivo .js acima de 200 linhas** - se passar, dividir ANTES de prosseguir
+- **Nenhuma funcao acima de 30 linhas** - extrair subfuncoes
+- **Nenhum .mdc acima de 200 linhas** - dividir em sub-regras tematicas se necessario
+- Debito tecnico mapeado (NAO aumentar esses arquivos):
+  - Frontend: `app-estudos.js` (1342), `detalhes.js` (400), `charts.js` (355), `app-descartes.js` (275), `app-diretrizes.js` (226)
+  - Backend: `liberacoes-sa.js` (411), `isv-ne.js` (256), `analise-historica-ne.js` (219), `analise-semanal-ne.js` (212), `descartes-ne.js` (210)
+  - Scripts: `simular-calibracao-v2.js` (248)
+- **NUNCA adicionar linhas a esses arquivos** sem antes reduzir o tamanho
+
+## 2. Organizacao de arquivos
+
+- **Indicadores**: `src/indicadores/{categoria}/` - UM arquivo por indicador, com interface padrao (id, nome, calcular)
+- **Modulos compartilhados**: `src/core/` (inclui consultas-ne.js) - NAO misturar helpers em pasta de indicadores
+- **Scripts auxiliares**: `scripts/` - NAO colocar em `src/` ou `output/`
+- **Estudos**: `src/estudos/` - analises agregadas
+- **Rotas**: `src/servidor/rotas/` - NAO colocar logica de calculo em rotas
+- Ao criar arquivo novo, verificar se ja existe algo similar (buscar antes de criar)
+
+## 3. Protecao de calculos
+
+- **NUNCA alterar logica de calculo** sem confirmacao explicita do usuario
+- **NUNCA modificar queries SQL** existentes sem antes consultar PBCVS Discovery
+- **NUNCA remover validacoes** (validator.js, validacao dentro de calcular())
+- **Testar conexao ODBC** antes de executar queries
+- Manter `config/indicadores.json` sincronizado quando adicionar/remover indicadores
+
+## 4. Protecao do contexto do agente
+
+- **NAO ler arquivos gigantes inteiros** sem necessidade (app-estudos.js, PROJETO.md)
+- Usar busca (Grep/SemanticSearch) para encontrar trechos especificos em vez de ler arquivos >200 linhas
+- **PROJETO.md** (811 linhas): ler SOMENTE a secao relevante, NAO o arquivo inteiro
+- **negocio.mdc** (183 linhas): monitorar tamanho. Se ultrapassar 200, dividir em sub-arquivos
+- **Evitar respostas com listagens enormes** - resumir e apontar localizacao
+- Antes de uma tarefa complexa, listar o que sera feito e pedir confirmacao
+
+## 5. Dependencias e tech-stack
+
+- Dependencias aceitas estao em `tech-stack.mdc` - consultar ANTES de instalar qualquer pacote
+- **Core do app** (servidor, indicadores, estudos): apenas express + odbc
+- **Scripts auxiliares**: exceljs, jszip, puppeteer permitidos SOMENTE em `scripts/`
+- Ao adicionar dependencia: atualizar `tech-stack.mdc` na mesma alteracao
+
+## 6. Documentacao viva
+
+- Novo indicador = novo arquivo em `docs/diretrizes/` + entrada em `config/indicadores.json`
+- Nova regra de negocio aprendida = registrar em `negocio.mdc`
+- Nova duvida = registrar em `duvidas.mdc`
+- Decisao arquitetural = registrar em `architecture.mdc`

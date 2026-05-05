@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIRF e Extrator | Escrita Fiscal</title>
+<style>
+:root{
+  --bg:#fafafd;--card:#fff;--alt:#f5f7ff;
+  --b:#edeff5;--bm:#dadada;
+  --t:#404040;--m:#6b7280;--l:#9ca3af;
+  --acc:#fa6400;--link:#005da2;
+  --ne:#2563eb;--sa:#ea580c;
+  --lib:#16a34a;--pend:#b45309;--desc:#9ca3af;
+  --ver:#7c3aed;
+  --r:12px;--rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
+.w{max-width:1060px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+/* ── HEADER COMPACTO ── */
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem 2rem;margin-bottom:1.25rem}
+.kk{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--acc)}
+h1{font-size:1.35rem;font-weight:600}
+
+/* ── HERO BAR ── */
+.hero-bar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:1rem 2.5rem;
+  padding:1rem 1.5rem;margin-bottom:1.25rem;
+  background:var(--card);border:1px solid var(--b);border-radius:var(--r);
+}
+.hero-big{display:flex;align-items:baseline;gap:.45rem}
+.hero-big b{font-size:2.4rem;font-weight:700;line-height:1}
+.hero-big span{font-size:.92rem;color:var(--m)}
+.hero-progress{flex:1;min-width:140px;max-width:320px}
+.prog-track{height:10px;border-radius:5px;background:var(--b);overflow:hidden;display:flex}
+.prog-lib{background:var(--lib)}.prog-pend{background:var(--pend)}.prog-desc{background:var(--desc)}
+.prog-legend{display:flex;gap:1rem;margin-top:.4rem;font-size:.72rem;color:var(--m)}
+.prog-legend b{font-weight:600}
+.hero-meta{font-size:.78rem;color:var(--m);line-height:1.5}
+.hero-meta b{color:var(--t);font-weight:600}
+
+/* ── DOT STRIP (substitui fishbone) ── */
+.strip-card{
+  background:var(--card);border:1px solid var(--b);border-radius:var(--r);
+  padding:1rem 1.25rem;margin-bottom:1.25rem;
+}
+#stripSvg{display:block;width:100%}
+
+/* ── BARRAS HORIZONTAIS ── */
+.bar-card{
+  background:var(--card);border:1px solid var(--b);border-radius:var(--r);padding:1rem 1.25rem;
+  margin-bottom:1.25rem;
+}
+.bar-title{font-size:.76rem;font-weight:600;margin-bottom:.75rem;color:var(--m)}
+.bar-row{display:flex;flex-direction:column;gap:4px}
+.bar-item{display:flex;align-items:center;gap:.5rem}
+.bar-label{width:60px;font-size:.68rem;color:var(--m);text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:18px;border-radius:4px;background:var(--b);overflow:hidden;display:flex}
+.bar-seg{height:100%;min-width:2px}
+.bar-seg.lib{background:var(--lib)}.bar-seg.pend{background:var(--pend)}.bar-seg.desc{background:var(--desc)}
+.bar-total{font-size:.62rem;color:var(--m);width:24px;text-align:left;flex-shrink:0}
+.bar-legend{display:flex;gap:.75rem;margin-top:.65rem;font-size:.66rem;color:var(--m)}
+.bar-legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:3px;vertical-align:middle}
+
+/* ── LEGEND ── */
+.legend{display:flex;gap:.75rem;flex-wrap:wrap;font-size:.7rem;color:var(--m);margin-bottom:.75rem}
+.legend span{display:inline-flex;align-items:center;gap:.3rem}
+.d{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.d.ne{background:var(--ne)}.d.sa{background:var(--sa)}.d.lib{background:var(--lib)}
+.d.pend{background:var(--pend)}.d.desc{background:var(--desc)}
+.d.ver{background:var(--ver);width:7px;height:7px;border-radius:2px;transform:rotate(45deg)}
+
+/* ── NARRATIVE (colapsável) ── */
+.narr{
+  background:var(--card);border:1px solid var(--b);border-radius:var(--r);
+  padding:.75rem 1.15rem;font-size:.84rem;line-height:1.6;margin-bottom:1.25rem;
+  border-left:3px solid var(--link);
+}
+.narr p{margin-bottom:.45rem}.narr p:last-child{margin-bottom:0}
+
+/* ── SECTIONS ── */
+section{margin-bottom:1.5rem}
+h2{font-size:1rem;font-weight:600;margin-bottom:.5rem}
+.hint{color:var(--m);font-size:.78rem;margin-bottom:.75rem}
+
+/* ── TIMELINE ── */
+.month-block{margin-bottom:1.25rem}
+.month-h{font-size:.82rem;font-weight:600;padding-bottom:.35rem;margin-bottom:.6rem;border-bottom:2px solid var(--b);display:flex;justify-content:space-between}
+.month-h small{font-weight:400;color:var(--m);font-size:.72rem}
+.evt{display:grid;grid-template-columns:12px 1fr;gap:.6rem;margin-bottom:.6rem}
+.evt-dot{width:10px;height:10px;border-radius:50%;margin-top:.45rem;border:2px solid var(--bm);background:var(--bg)}
+.evt.ne .evt-dot{border-color:var(--ne);background:#eff6ff}
+.evt.sa .evt-dot{border-color:var(--sa);background:#fff7ed}
+.evt-card{background:var(--card);border:1px solid var(--b);border-radius:var(--rs);padding:.6rem .85rem;font-size:.8rem;line-height:1.45}
+.evt-card.ne{border-left:3px solid var(--ne)}.evt-card.sa{border-left:3px solid var(--sa)}
+.evt-head{display:flex;flex-wrap:wrap;gap:.3rem .6rem;align-items:center;margin-bottom:.25rem}
+.evt-ids{font-weight:600;font-size:.84rem}
+.evt-date{color:var(--m);font-size:.72rem}
+.evt-resumo{color:var(--m);font-size:.78rem;margin-top:.2rem}
+.evt-detail{font-size:.72rem;color:var(--l);margin-top:.3rem}
+.badge{display:inline-block;padding:.12rem .36rem;border-radius:4px;font-size:.58rem;font-weight:600;text-transform:uppercase}
+.badge.lib{background:#f0fdf4;color:#15803d}.badge.pend{background:#fffbeb;color:#92400e}.badge.desc{background:#f3f4f6;color:var(--desc)}
+.badge.neb{background:#eff6ff;color:#1d4ed8}.badge.sab{background:#fff7ed;color:#c2410c}
+.badge.aj{background:#f5f3ff;color:#6d28d9;font-size:.52rem;cursor:help;text-transform:none}
+.badge.gc{background:#fef2f2;color:#b91c1c}.badge.gg{background:#fffbeb;color:#b45309}
+
+/* ── EXPANDABLE ── */
+details{margin-bottom:1rem}
+details summary{cursor:pointer;font-size:.84rem;color:var(--m);padding:.5rem 0;list-style:none;display:flex;align-items:center;gap:.4rem;font-weight:500;border-bottom:1px solid var(--b)}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:'▸';color:var(--acc);transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+details[open] summary{margin-bottom:.6rem}
+
+/* ── MISC ── */
+.aviso{background:#fffbeb;border:1px solid #fcd34d;color:#92400e;padding:.55rem .85rem;border-radius:var(--rs);margin-bottom:.6rem;font-size:.78rem}
+.info-box{background:var(--card);border:1px solid var(--b);border-radius:var(--r);padding:.85rem 1rem;font-size:.82rem;line-height:1.55}
+.info-box p{margin-bottom:.5rem}.info-box p:last-child{margin-bottom:0}
+.pm-src{color:var(--l);font-size:.68rem;margin-top:.4rem}
+.pm-leitura{font-size:.82rem;padding:.65rem .85rem;background:var(--alt);border-radius:var(--rs);border:1px solid var(--b);border-left:3px solid var(--ver);margin-bottom:.75rem}
+.pm-meta{font-size:.68rem;color:var(--m);margin-bottom:.5rem}
+.pm-ctx{font-size:.82rem;padding:.65rem .85rem;background:var(--bg);border-radius:var(--rs);border:1px solid var(--b);margin-bottom:.75rem}
+.pm-topic{border:1px solid var(--b);border-radius:var(--rs);padding:.65rem .85rem;margin-bottom:.5rem;background:var(--card)}
+.pm-topic h4{margin:0 0 .3rem;font-size:.8rem;font-weight:600}
+.pm-sintese{color:var(--m);font-size:.76rem;margin:0 0 .35rem}
+.pm-bul{margin:.2rem 0 0 1.15rem;padding:0;font-size:.76rem}
+.pm-bul li{margin-bottom:.25rem}
+.pm-links{font-size:.66rem;margin-top:.4rem;color:var(--l)}
+.pm-links a{color:var(--link);word-break:break-all}
+table{width:100%;border-collapse:collapse;font-size:.72rem;margin-top:.4rem}
+th,td{padding:.45rem .5rem;text-align:left;border-bottom:1px solid var(--b)}
+th{color:var(--m);font-weight:600;background:var(--alt);font-size:.64rem;text-transform:uppercase}
+tr:nth-child(even) td{background:rgba(0,0,0,.015)}
+.empty{padding:2.5rem;color:var(--m);text-align:center;font-size:.88rem}
+</style>
+</head>
+<body>
+<div class="w">
+
+<header>
+  <span class="kk">Escrita Fiscal</span>
+  <h1>DIRF e Extrator — Linha do tempo</h1>
+</header>
+
+<div id="avisoBox"></div>
+
+<!-- HERO BAR — "como estamos?" sem rolar -->
+<div class="hero-bar" id="heroBar"></div>
+
+<!-- DOT STRIP — NE acima da linha, SA abaixo -->
+<div class="strip-card">
+  <div class="legend" aria-label="Legenda">
+    <span><i class="d ne"></i>NE</span><span><i class="d sa"></i>SA</span>
+    <span><i class="d lib"></i>Liberada</span><span><i class="d pend"></i>Pendente</span>
+    <span><i class="d desc"></i>Descartada</span><span><i class="d ver"></i>Versão</span>
+  </div>
+  <svg id="stripSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+
+<!-- BARRAS HORIZONTAIS -->
+<div class="bar-card">
+  <div class="bar-title">Volume por mês</div>
+  <div class="bar-row" id="barChart"></div>
+  <div class="bar-legend">
+    <span><i style="background:var(--lib)"></i>Lib.</span>
+    <span><i style="background:var(--pend)"></i>Pend.</span>
+    <span><i style="background:var(--desc)"></i>Desc.</span>
+  </div>
+</div>
+
+<!-- NARRATIVA -->
+<details open>
+  <summary>Leitura em destaque</summary>
+  <div class="narr" id="historia"></div>
+</details>
+
+<!-- CRONOLOGIA -->
+<details>
+  <summary>Cronologia detalhada — por mês</summary>
+  <div class="timeline-wrap" id="timeline"></div>
+</details>
+
+<!-- COLAPSÁVEIS -->
+<details>
+  <summary>Pesquisa de mercado</summary>
+  <div class="info-box" id="pesquisaMercadoBox"></div>
+</details>
+<details>
+  <summary>Voz do cliente — SGSAI</summary>
+  <div class="feedback-voz" id="feedbackVoz"></div>
+</details>
+<details id="detValidacaoDef" style="display:none">
+  <summary>Definições dos PSAIs</summary>
+  <div id="tblValidacaoDef"></div>
+</details>
+<details>
+  <summary>Dados tabulares</summary>
+  <table id="tbl"><thead><tr>
+  <th>Entrada</th><th>Tipo</th><th>Grav.</th><th>SAI</th><th>PSAI</th><th>Status</th><th>Liberação</th><th>Ciclo</th><th>Versão</th><th>Resumo</th>
+  </tr></thead><tbody id="tb"></tbody></table>
+</details>
+
+<div style="display:none" id="filtroData"></div>
+
+</div>
+<script>
+const DATA={"geradoEm":"2026-04-07T12:41:23.614Z","ancora":{"i_psai":105827,"i_sai":100547,"tipoSAI":"SAM","entrada":"2026-03-03","motivo":"Primeira SAI com DIRF e extrator no PSAI (no corte cronológico)","entrada_sgd_original":"2024-01-26","entrada_ajuste_manual":"Data corrigida em 03/03/2026 no processo; CadastroPSAI no banco ainda apontava registro antigo — exibição ajustada manualmente."},"totais":{"itens":50,"liberadas":17,"pendentes":22,"descartadas":11},"filtro":{"amplo":false,"jornadaDesde":"2024-01-01","jornadaRotulo":"01/01/2024","intensificacaoDesde":"2025-10-01","intensificacaoRotulo":"01/10/2025","aviso":null,"label":"Modo estrito (padrão)","detalhe":"Lista: PSAI desde 01/01/2024 com dirf e extrator. Marco intensificação: 01/10/2025."},"itens":[{"i_psai":123614,"i_sai":98201,"tipoSAI":"SAM","entrada":"2025-10-22T11:43:50.293Z","Liberacao":"2026-01-22 15:39:55.6366","Descarte":null,"data_liberacao":"2026-01-22","nomeVersao":"10.6A-01","gravidade":"Normal","situacao":"Liberado","resumo":"Criar novo relatório unificando os valores de IRRF folha e IRRF eSocial para conferência com o novo Extrator da DIRF","status":"liberada","ramo":"sa","qtd_ssc":320,"qtd_clientes_ssc":287,"ssc_por_situacao":"10×320","ciclo_dias":92,"ciclo_rotulo":"até liberação"},{"i_psai":124575,"i_sai":98695,"tipoSAI":"SAM","entrada":"2025-11-21T19:38:12.043Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"A Desenvolver","resumo":"Permitir a emissão do relatório extrator da DIRF de forma unificada por beneficiário(Colaborador)","status":"pendente","ramo":"sa","qtd_ssc":28,"qtd_clientes_ssc":26,"ssc_por_situacao":"3×9; 9×11; 12×8","ciclo_dias":137,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":125491,"i_sai":0,"tipoSAI":"SAM","entrada":"2025-12-15T17:53:40.863Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Respondido Especialista","resumo":"Incluir no relatório extrator da DIRF uma nova opção de emissão que permita gerar o relatório somente para colaboradores que possuam IRRF re…","status":"pendente","ramo":"sa","qtd_ssc":13,"qtd_clientes_ssc":12,"ssc_por_situacao":"9×13","ciclo_dias":113,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":126702,"i_sai":99447,"tipoSAI":"SAM","entrada":"2026-01-19T20:06:58.110Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"A Desenvolver","resumo":"Incluir opção para permitir a emissão multi-empresas no relatório 'Extrator da DIRF'","status":"pendente","ramo":"sa","qtd_ssc":52,"qtd_clientes_ssc":49,"ssc_por_situacao":"9×18; 12×34","ciclo_dias":78,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":126989,"i_sai":99460,"tipoSAI":"NE","entrada":"2026-01-23T19:06:01.576Z","Liberacao":"2026-01-29 15:23:43.5400","Descarte":null,"data_liberacao":"2026-01-29","nomeVersao":"10.6A-02","gravidade":"Normal","situacao":"Liberado","resumo":"Está demonstrando a base zerada na coluna eSocial no relatório Extrator da DIRF para empregado com transferência entre matriz e filial","status":"liberada","ramo":"ne","qtd_ssc":1,"qtd_clientes_ssc":1,"ssc_por_situacao":"10×1","ciclo_dias":6,"ciclo_rotulo":"até liberação"},{"i_psai":127083,"i_sai":0,"tipoSAI":"SAM","entrada":"2026-01-27T12:39:20.256Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"A definir","resumo":"Avaliar os pontos de impacto no relatório do extrator da DIRF devido as alterações da tela feitas pelo módulo Escrita","status":"pendente","ramo":"sa","qtd_ssc":1,"qtd_clientes_ssc":1,"ssc_por_situacao":"9×1","ciclo_dias":70,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":127150,"i_sai":99642,"tipoSAI":"NE","entrada":"2026-01-28T13:00:22.836Z","Liberacao":"2026-02-10 18:10:35.5200","Descarte":null,"data_liberacao":"2026-02-10","nomeVersao":"10.6A-02","gravidade":"Grave","situacao":"Liberado","resumo":"Em algumas situações está demonstrando incorretamente o campo de Indenização e Resc. de Contrato, Inclusive a Título de PDV e Acidente de Tr…","status":"liberada","ramo":"ne","qtd_ssc":59,"qtd_clientes_ssc":51,"ssc_por_situacao":"10×59","ciclo_dias":13,"ciclo_rotulo":"até liberação"},{"i_psai":127183,"i_sai":99532,"tipoSAI":"SAM","entrada":"2026-01-28T16:19:50.486Z","Liberacao":"2026-02-06 09:20:36.6366","Descarte":null,"data_liberacao":"2026-02-06","nomeVersao":"10.6A-02","gravidade":"Normal","situacao":"Liberado","resumo":"Avaliar a emissão do relatório \"Extrator da DIRF\" quando a geração incluir, simultaneamente, os dados dos módulos Folha e Escrita Fiscal.","status":"liberada","ramo":"sa","qtd_ssc":2,"qtd_clientes_ssc":2,"ssc_por_situacao":"10×2","ciclo_dias":9,"ciclo_rotulo":"até liberação"},{"i_psai":127186,"i_sai":99641,"tipoSAI":"NE","entrada":"2026-01-28T16:42:49.873Z","Liberacao":"2026-02-16 09:54:28.7900","Descarte":null,"data_liberacao":"2026-02-16","nomeVersao":"10.6A-02","gravidade":"Normal","situacao":"Liberado","resumo":"Está duplicando o valor de plano de saúde no relatório Extrator da DIRF quando o empregado possui férias/13°salário integral.","status":"liberada","ramo":"ne","qtd_ssc":36,"qtd_clientes_ssc":36,"ssc_por_situacao":"10×36","ciclo_dias":19,"ciclo_rotulo":"até liberação"},{"i_psai":127187,"i_sai":99672,"tipoSAI":"NE","entrada":"2026-01-28T16:44:35.090Z","Liberacao":"2026-02-16 09:54:30.5366","Descarte":null,"data_liberacao":"2026-02-16","nomeVersao":"10.6A-02","gravidade":"Normal","situacao":"Liberado","resumo":"Está demonstrando incorretamente a Previdência oficial no relatório Extrator da DIRF quando há cálculo de diferença de INSS descontado à mai…","status":"liberada","ramo":"ne","qtd_ssc":48,"qtd_clientes_ssc":44,"ssc_por_situacao":"10×48","ciclo_dias":19,"ciclo_rotulo":"até liberação"},{"i_psai":127189,"i_sai":99670,"tipoSAI":"NE","entrada":"2026-01-28T17:02:37.763Z","Liberacao":"2026-02-10 18:10:36.1800","Descarte":null,"data_liberacao":"2026-02-10","nomeVersao":"10.6A-02","gravidade":"Normal","situacao":"Liberado","resumo":"Não está gerando o valor do abono pecuniário de férias na coluna \"Valor Sistema\" do relatório Extrator da DIRF, quando a rubrica está config…","status":"liberada","ramo":"ne","qtd_ssc":56,"qtd_clientes_ssc":55,"ssc_por_situacao":"10×56","ciclo_dias":13,"ciclo_rotulo":"até liberação"},{"i_psai":127258,"i_sai":99681,"tipoSAI":"NE","entrada":"2026-01-29T17:53:03.950Z","Liberacao":"2026-02-16 09:54:32.9466","Descarte":null,"data_liberacao":"2026-02-16","nomeVersao":"10.6A-02","gravidade":"Normal","situacao":"Liberado","resumo":"Está duplicando o valor do INSS na coluna \"Valor Sistema\" do relatório Extrator da DIRF, quando há mais de um cálculo com a mesma data de pa…","status":"liberada","ramo":"ne","qtd_ssc":70,"qtd_clientes_ssc":63,"ssc_por_situacao":"10×70","ciclo_dias":18,"ciclo_rotulo":"até liberação"},{"i_psai":127369,"i_sai":99973,"tipoSAI":"SAM","entrada":"2026-02-02T12:33:17.446Z","Liberacao":"2026-03-24 07:47:13.3133","Descarte":null,"data_liberacao":"2026-03-24","nomeVersao":"10.6A-03","gravidade":"Normal","situacao":"Liberado","resumo":"Ajustar a consideração de algumas rubricas padrão com incidência de IRRF igual a '9' e '79' na emissão do relatório 'Extrator DIRF', e adequ…","status":"liberada","ramo":"sa","qtd_ssc":1079,"qtd_clientes_ssc":856,"ssc_por_situacao":"10×1079","ciclo_dias":50,"ciclo_rotulo":"até liberação"},{"i_psai":127378,"i_sai":0,"tipoSAI":"NE","entrada":"2026-02-02T13:00:43.983Z","Liberacao":null,"Descarte":"2026-02-05 09:43:29.9700","data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Reprovada","resumo":"Está demonstrando incorretamente o campo de Pensão Alimentícia na coluna Valor eSocial, no relatório Extrator da DIRF quando há cálculo de 1…","status":"descartada","ramo":"ne","qtd_ssc":0,"qtd_clientes_ssc":0,"ssc_por_situacao":"","ciclo_dias":3,"ciclo_rotulo":"até descarte"},{"i_psai":127617,"i_sai":99805,"tipoSAI":"NE","entrada":"2026-02-05T14:09:32.073Z","Liberacao":"2026-02-19 11:22:11.2366","Descarte":null,"data_liberacao":"2026-02-19","nomeVersao":"10.6A-02","gravidade":"Normal","situacao":"Liberado","resumo":"Não está demonstrando o desconto do Dependente na coluna do Sistema do Extrator da DIRF quando utilizada a Dedução Simplificada e há imposto…","status":"liberada","ramo":"ne","qtd_ssc":206,"qtd_clientes_ssc":191,"ssc_por_situacao":"10×206","ciclo_dias":14,"ciclo_rotulo":"até liberação"},{"i_psai":127634,"i_sai":99851,"tipoSAI":"NE","entrada":"2026-02-05T18:07:59.643Z","Liberacao":"2026-02-25 09:22:14.9100","Descarte":"2026-02-25 09:22:14.9100","data_liberacao":"2026-02-25","nomeVersao":null,"gravidade":"Normal","situacao":"Liberado em vers�es anteriores","resumo":"Está demonstrando indevidamente valor no campo Plano Privado Coletivo de Assistência á Saúde na coluna Valor Sistema do Extrator da DIRF qua…","status":"descartada","ramo":"ne","qtd_ssc":10,"qtd_clientes_ssc":10,"ssc_por_situacao":"37×10","ciclo_dias":20,"ciclo_rotulo":"até descarte"},{"i_psai":127705,"i_sai":0,"tipoSAI":"NE","entrada":"2026-02-06T18:51:12.190Z","Liberacao":null,"Descarte":"2026-02-09 14:01:40.7166","data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Reprovada","resumo":"Está demonstrando incorretamente a Previdência Oficial na coluna Valor Sistema do Extrator da DIRF quando há mais de um tipo de folha com me…","status":"descartada","ramo":"ne","qtd_ssc":0,"qtd_clientes_ssc":0,"ssc_por_situacao":"","ciclo_dias":3,"ciclo_rotulo":"até descarte"},{"i_psai":127943,"i_sai":0,"tipoSAI":"SAM","entrada":"2026-02-12T12:27:21.226Z","Liberacao":null,"Descarte":"2026-02-12 16:51:14.0466","data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Reprovada","resumo":"Alterar o comportamento do Extrator DIRF para tratar adequadamente a rubrica 9452 para o Autônomo.","status":"descartada","ramo":"sa","qtd_ssc":0,"qtd_clientes_ssc":0,"ssc_por_situacao":"","ciclo_dias":0,"ciclo_rotulo":"até descarte"},{"i_psai":128117,"i_sai":0,"tipoSAI":"NE","entrada":"2026-02-18T12:06:16.400Z","Liberacao":null,"Descarte":"2026-02-20 10:19:13.8533","data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Reprovada","resumo":"Está considerando indevidamente a rubrica de reembolso de plano de saúde no campo Plano de Saúde Coletivo da coluna Valor Sistema do Extrato…","status":"descartada","ramo":"ne","qtd_ssc":0,"qtd_clientes_ssc":0,"ssc_por_situacao":"","ciclo_dias":2,"ciclo_rotulo":"até descarte"},{"i_psai":128226,"i_sai":100206,"tipoSAI":"NE","entrada":"2026-02-19T20:38:59.430Z","Liberacao":"2026-03-30 11:50:19.9166","Descarte":null,"data_liberacao":"2026-03-30","nomeVersao":"10.6A-04","gravidade":"Normal","situacao":"Em Teste","resumo":"Não está demonstrando os valores de alguns campos como plano de saúde, pensão alimentícia e verbas indenizadas no Extrator da DIRF quando no…","status":"liberada","ramo":"ne","qtd_ssc":75,"qtd_clientes_ssc":69,"ssc_por_situacao":"10×75","ciclo_dias":39,"ciclo_rotulo":"até liberação"},{"i_psai":128316,"i_sai":100140,"tipoSAI":"NE","entrada":"2026-02-23T14:14:29.106Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":"10.6A-04","gravidade":"Normal","situacao":"Em Desenvolvimento","resumo":"Está duplicando o valor da Indenização e Resc. de Contrato, Inclusive a Título de PDV e Acidente de Trabalho na coluna \"Valor Sistema\" do re…","status":"pendente","ramo":"ne","qtd_ssc":55,"qtd_clientes_ssc":51,"ssc_por_situacao":"9×15; 16×34; 3×6","ciclo_dias":43,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":128325,"i_sai":100126,"tipoSAI":"NE","entrada":"2026-02-23T16:53:29.080Z","Liberacao":"2026-03-24 07:47:55.7233","Descarte":null,"data_liberacao":"2026-03-24","nomeVersao":"10.6A-03","gravidade":"Normal","situacao":"Liberado","resumo":"Está somando indevidamente as rubricas de desconto por antecipação salarial referentes ao abono pecuniário de férias na coluna Valor Sistema…","status":"liberada","ramo":"ne","qtd_ssc":37,"qtd_clientes_ssc":33,"ssc_por_situacao":"10×37","ciclo_dias":29,"ciclo_rotulo":"até liberação"},{"i_psai":128368,"i_sai":100192,"tipoSAI":"NE","entrada":"2026-02-23T21:09:29.806Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":"10.6A-04","gravidade":"Normal","situacao":"Em Desenvolvimento","resumo":"Não está demonstrando no Valor Sistema em Rendimento Não tributável ou Isento do IRRF, no campo Outros do relatório Extrator da DIRF, quando…","status":"pendente","ramo":"ne","qtd_ssc":23,"qtd_clientes_ssc":21,"ssc_por_situacao":"16×18; 3×1; 9×4","ciclo_dias":43,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":128402,"i_sai":100268,"tipoSAI":"NE","entrada":"2026-02-24T16:40:45.526Z","Liberacao":"2026-03-16 11:25:33.5133","Descarte":null,"data_liberacao":"2026-03-16","nomeVersao":"10.6A-03","gravidade":"Normal","situacao":"Liberado","resumo":"Está duplicando incorretamente o valor do desconto do Dependente na coluna eSocial do Extrator da DIRF quando há Férias em mais de uma compe…","status":"liberada","ramo":"ne","qtd_ssc":55,"qtd_clientes_ssc":52,"ssc_por_situacao":"10×55","ciclo_dias":20,"ciclo_rotulo":"até liberação"},{"i_psai":128445,"i_sai":100165,"tipoSAI":"NE","entrada":"2026-02-25T12:15:43.706Z","Liberacao":"2026-02-26 18:21:46.3133","Descarte":null,"data_liberacao":"2026-02-26","nomeVersao":"10.6A-03","gravidade":"Grave","situacao":"Liberado","resumo":"Em algumas situações está ocorrendo Erro de banco de dados 'Primary key for table 'FOESOCIAL_ARQUIVO_RETORNO_S_5002' is not unique: Primary …","status":"liberada","ramo":"ne","qtd_ssc":127,"qtd_clientes_ssc":125,"ssc_por_situacao":"10×127","ciclo_dias":1,"ciclo_rotulo":"até liberação"},{"i_psai":128529,"i_sai":100158,"tipoSAI":"NE","entrada":"2026-02-25T19:01:11.836Z","Liberacao":"2026-03-02 17:30:38.7933","Descarte":null,"data_liberacao":"2026-03-02","nomeVersao":"10.6A-03","gravidade":"Normal","situacao":"Liberado","resumo":"Realizar testes no Módulo Folha pois em alguns casos está sendo gerado incorretamente o valor na linha 'Rendimento Não Tributável ou Isento …","status":"liberada","ramo":"ne","qtd_ssc":2,"qtd_clientes_ssc":2,"ssc_por_situacao":"10×2","ciclo_dias":5,"ciclo_rotulo":"até liberação"},{"i_psai":128572,"i_sai":100324,"tipoSAI":"NE","entrada":"2026-02-26T17:57:27.693Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":"10.6A-04","gravidade":"Normal","situacao":"Em Desenvolvimento","resumo":"Em algumas situações está demonstrando indevidamente valores repetidos em mais de um campo na coluna Valor Sistema do tópico Rendimentos Não…","status":"pendente","ramo":"ne","qtd_ssc":31,"qtd_clientes_ssc":29,"ssc_por_situacao":"9×2; 16×25; 3×4","ciclo_dias":40,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":128573,"i_sai":100267,"tipoSAI":"NE","entrada":"2026-02-26T18:30:30.836Z","Liberacao":"2026-03-31 09:22:31.0200","Descarte":"2026-03-31 09:22:31.0200","data_liberacao":"2026-03-31","nomeVersao":null,"gravidade":"Normal","situacao":"Liberado em vers�es anteriores","resumo":"Não está demonstrando o desconto do Dependente na coluna do Sistema do Extrator da DIRF quando utilizada a Dedução Simplificada para o cálcu…","status":"descartada","ramo":"ne","qtd_ssc":17,"qtd_clientes_ssc":16,"ssc_por_situacao":"37×17","ciclo_dias":33,"ciclo_rotulo":"até descarte"},{"i_psai":128625,"i_sai":100322,"tipoSAI":"NE","entrada":"2026-02-27T16:38:36.840Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":"10.6A-04","gravidade":"Normal","situacao":"Em Teste","resumo":"Está demonstrando incorretamente os campos Previdência Oficial, Plano Privado Coletivo de Assistência à Saúde e Pensão alimentícia da coluna…","status":"pendente","ramo":"ne","qtd_ssc":58,"qtd_clientes_ssc":52,"ssc_por_situacao":"16×42; 3×12; 9×4","ciclo_dias":39,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":128698,"i_sai":100384,"tipoSAI":"NE","entrada":"2026-03-02T17:10:29.146Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"A Estimar Tempo","resumo":"Não está demonstrando a dedução do Dependente do 13º integral no Extrator da DIRF quando há cálculo de diferença de IRRF 13º na folha mensal…","status":"pendente","ramo":"ne","qtd_ssc":29,"qtd_clientes_ssc":28,"ssc_por_situacao":"9×15; 14×1; 12×5; 3×8","ciclo_dias":36,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":105827,"i_sai":100547,"tipoSAI":"SAM","entrada":"2026-03-03T12:00:00.000Z","Liberacao":"2026-03-30 11:50:18.7233","Descarte":null,"data_liberacao":"2026-03-30","nomeVersao":"10.6A-04","gravidade":"Normal","situacao":"Em Teste","resumo":"Alterar o comportamento do sistema nos relatórios 'Demonstrativo de IRRF...' e 'Extrator da DIRF' para que seja considerado o mesmo valor de…","status":"liberada","ramo":"sa","entrada_sgd_original":"2024-01-26T19:54:44.010Z","entrada_ajuste_manual":"Data corrigida em 03/03/2026 no processo; CadastroPSAI no banco ainda apontava registro antigo — exibição ajustada manualmente.","qtd_ssc":177,"qtd_clientes_ssc":162,"ssc_por_situacao":"10×177","ciclo_dias":27,"ciclo_rotulo":"até liberação"},{"i_psai":128724,"i_sai":0,"tipoSAI":"SAM","entrada":"2026-03-03T14:18:35.936Z","Liberacao":null,"Descarte":"2026-03-27 10:25:32.6200","data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Reprovada","resumo":"Alterar o relatório Extrator da DIRF para que não seja considerado valores negativos.","status":"descartada","ramo":"sa","qtd_ssc":0,"qtd_clientes_ssc":0,"ssc_por_situacao":"","ciclo_dias":24,"ciclo_rotulo":"até descarte"},{"i_psai":128740,"i_sai":0,"tipoSAI":"NE","entrada":"2026-03-03T18:34:34.326Z","Liberacao":null,"Descarte":"2026-03-12 13:42:49.2533","data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Reprovada","resumo":"Está gerando diferença indevida no Extrator da DIRF no campo Rendimentos Tributáveis quando o empregado é professor aulista, com desconto de…","status":"descartada","ramo":"ne","qtd_ssc":0,"qtd_clientes_ssc":0,"ssc_por_situacao":"","ciclo_dias":9,"ciclo_rotulo":"até descarte"},{"i_psai":128770,"i_sai":100512,"tipoSAI":"NE","entrada":"2026-03-04T14:55:26.960Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":"10.6A-04","gravidade":"Normal","situacao":"Em Desenvolvimento","resumo":"Não está gerando o Comprovante de Rendimentos, está demonstrando base negativa na coluna Valor Sistema do Extrator da DIRF e base zerada na …","status":"pendente","ramo":"ne","qtd_ssc":5,"qtd_clientes_ssc":5,"ssc_por_situacao":"16×3; 3×2","ciclo_dias":34,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":128834,"i_sai":100358,"tipoSAI":"NE","entrada":"2026-03-05T14:41:27.346Z","Liberacao":"2026-03-10 09:21:47.0433","Descarte":null,"data_liberacao":"2026-03-10","nomeVersao":"10.6A-03","gravidade":"Normal","situacao":"Liberado","resumo":"Está demonstrando na tela de RPA o valor incorreto no campo 'Base IRRF', quando configurado 'Dedução Favorável ao Colaborador' e se trata de…","status":"liberada","ramo":"ne","qtd_ssc":78,"qtd_clientes_ssc":70,"ssc_por_situacao":"10×78","ciclo_dias":5,"ciclo_rotulo":"até liberação"},{"i_psai":128909,"i_sai":100471,"tipoSAI":"NE","entrada":"2026-03-09T15:02:17.123Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":"10.6A-03.05","gravidade":"Normal","situacao":"Em Teste","resumo":"Está considerando indevidamente os valores das rubricas com classificação igual a 'Serviços Frete' no relatório do 'Extrator da DIRF' e soma…","status":"pendente","ramo":"ne","qtd_ssc":83,"qtd_clientes_ssc":74,"ssc_por_situacao":"9×2; 16×81","ciclo_dias":29,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":129083,"i_sai":100657,"tipoSAI":"NE","entrada":"2026-03-12T18:54:17.670Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"A Estimar Tempo","resumo":"Está demonstrando incorretamente a Previdência oficial no relatório Extrator da DIRF quando há cálculo de diferença de INSS descontado à mai…","status":"pendente","ramo":"ne","qtd_ssc":21,"qtd_clientes_ssc":20,"ssc_por_situacao":"12×10; 3×3; 9×8","ciclo_dias":26,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":129188,"i_sai":0,"tipoSAI":"NE","entrada":"2026-03-17T14:19:33.260Z","Liberacao":null,"Descarte":"2026-03-20 11:03:35.5766","data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Reprovada","resumo":"O sistema está emitindo o relatório do extrator da DIRF de uma empresa diferente da empresa ativa.","status":"descartada","ramo":"ne","qtd_ssc":0,"qtd_clientes_ssc":0,"ssc_por_situacao":"","ciclo_dias":3,"ciclo_rotulo":"até descarte"},{"i_psai":129309,"i_sai":100750,"tipoSAI":"NE","entrada":"2026-03-19T19:03:25.613Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"A Estimar Tempo","resumo":"Está duplicando o valor do Plano Saúde na coluna Valor Sistema do relatório Extrator da DIRF, quando há mais de uma folha sendo paga na mesm…","status":"pendente","ramo":"ne","qtd_ssc":9,"qtd_clientes_ssc":9,"ssc_por_situacao":"12×3; 3×4; 2×1; 9×1","ciclo_dias":19,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":129414,"i_sai":0,"tipoSAI":"NE","entrada":"2026-03-23T16:05:33.430Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Respondida pelo Coordenador","resumo":"REANÁLISE - Não está demonstrando o valor de Ajuda de Custo na coluna Valor Sistema do Extrator da DIRF quando o colaborador é do tipo Autôn…","status":"pendente","ramo":"ne","qtd_ssc":2,"qtd_clientes_ssc":2,"ssc_por_situacao":"3×1; 9×1","ciclo_dias":15,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":129532,"i_sai":0,"tipoSAI":"NE","entrada":"2026-03-25T17:43:50.596Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Em Definicao","resumo":"REANÁLISE - Está gerando incorretamente o valor no extrator quando possui pensão alimentícia no PLR.","status":"pendente","ramo":"ne","qtd_ssc":2,"qtd_clientes_ssc":2,"ssc_por_situacao":"9×2","ciclo_dias":13,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":129550,"i_sai":100897,"tipoSAI":"NE","entrada":"2026-03-26T12:38:12.886Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":"10.6A-03.05","gravidade":"Grave","situacao":"Em Teste","resumo":"Está duplicando o valor Sistema do Salário Família do Campo Outros no Extrator da DIRF quando possui mais de um cálculo na mesma competência…","status":"pendente","ramo":"ne","qtd_ssc":97,"qtd_clientes_ssc":83,"ssc_por_situacao":"16×96; 9×1","ciclo_dias":12,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":129551,"i_sai":100923,"tipoSAI":"NE","entrada":"2026-03-26T12:41:15.443Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":"10.6A-03.05","gravidade":"Grave","situacao":"Em Teste","resumo":"Está demonstrando indevidamente em duas competências o valor das rubricas configuradas para o campo 'Outros' no Extrator da DIRF, quando emi…","status":"pendente","ramo":"ne","qtd_ssc":89,"qtd_clientes_ssc":81,"ssc_por_situacao":"16×86; 3×3","ciclo_dias":12,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":129558,"i_sai":0,"tipoSAI":"NE","entrada":"2026-03-26T14:19:52.586Z","Liberacao":null,"Descarte":"2026-04-01 09:49:27.0666","data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Reprovada","resumo":"REANÁLISE - Está gerando incorretamente o valor de plano de saúde no extrator coluna sistema quando possui mesmo código empregado, calculo d…","status":"descartada","ramo":"ne","qtd_ssc":0,"qtd_clientes_ssc":0,"ssc_por_situacao":"","ciclo_dias":6,"ciclo_rotulo":"até descarte"},{"i_psai":129579,"i_sai":100929,"tipoSAI":"NE","entrada":"2026-03-26T19:38:21.910Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":"10.6A-03.05","gravidade":"Grave","situacao":"Em Teste","resumo":"Está duplicando o valor no campo 'Outros' da coluna 'Valor Sistema' do relatório Extrator da DIRF quando possui mais de um tipo de cálculo p…","status":"pendente","ramo":"ne","qtd_ssc":79,"qtd_clientes_ssc":66,"ssc_por_situacao":"16×74; 3×3; 2×1; 14×1","ciclo_dias":12,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":129580,"i_sai":0,"tipoSAI":"NE","entrada":"2026-03-26T20:11:11.106Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Em Definicao","resumo":"REANÁLISE - Restruturação do Extrator da DIRF.","status":"pendente","ramo":"ne","qtd_ssc":15,"qtd_clientes_ssc":10,"ssc_por_situacao":"9×11; 3×4","ciclo_dias":12,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":129582,"i_sai":0,"tipoSAI":"NE","entrada":"2026-03-26T20:20:09.666Z","Liberacao":null,"Descarte":"2026-03-31 17:35:25.1333","data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Reprovada","resumo":"REANÁLISE - Não está demonstrando o valor no campo Previdência Oficial, na coluna Valor esocial, quando o contribuinte possui rubrica sem ba…","status":"descartada","ramo":"ne","qtd_ssc":0,"qtd_clientes_ssc":0,"ssc_por_situacao":"","ciclo_dias":5,"ciclo_rotulo":"até descarte"},{"i_psai":129645,"i_sai":0,"tipoSAI":"NE","entrada":"2026-03-30T12:58:17.916Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Em Definicao","resumo":"Está considerando indevidamente o valor de \"Dependente\" da tag \"perAnt\" enviado como retificação no evento S-1210 em 01/2026, para os relató…","status":"pendente","ramo":"ne","qtd_ssc":6,"qtd_clientes_ssc":6,"ssc_por_situacao":"9×2; 3×4","ciclo_dias":8,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":129678,"i_sai":0,"tipoSAI":"SAM","entrada":"2026-03-30T18:38:25.976Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Em Definicao","resumo":"Refatoração do relatório 'Extrator da DIRF'","status":"pendente","ramo":"sa","qtd_ssc":5,"qtd_clientes_ssc":5,"ssc_por_situacao":"9×2; 3×3","ciclo_dias":8,"ciclo_rotulo":"em aberto (até hoje)"},{"i_psai":129864,"i_sai":0,"tipoSAI":"NE","entrada":"2026-04-06T19:30:33.570Z","Liberacao":null,"Descarte":null,"data_liberacao":null,"nomeVersao":null,"gravidade":"Normal","situacao":"Em Definicao","resumo":"Está demonstrando o erro 'Ocorreram erros durante a consulta, por favor tente novamente mais tarde' ao gerar extrator da DIRF.","status":"pendente","ramo":"ne","qtd_ssc":9,"qtd_clientes_ssc":9,"ssc_por_situacao":"9×5; 3×2; 2×2","ciclo_dias":1,"ciclo_rotulo":"em aberto (até hoje)"}],"jornada":{"cronologiaDesde":"2024-01-01","intensificacaoDesde":"2025-10-01"},"sgsai":{"ok":false,"aviso":"SGSAI não habilitado em config/conexao.json — módulo, trâmites e feedback não foram enriquecidos.","topModulos":[],"total_feedback_eventos":0,"topFeedbackSai":[]},"validacao":{"titulo_checklist":"Solicitações Extrator DIRF (NE + pendentes) — checklist oficial","psais_esperados":32,"psais_com_registro":32,"psais_sem_registro":[],"pares_esperados":32,"pares_faltantes":[],"definicoes_psai":[],"resumo_definicao":"Definição do PSAI (descricao): só no SGSAI — habilite \"sgsai\" em config/conexao.json. O PBCVS não traz esse texto.","definicoes_contagens":{"ambos":0,"so_dirf":0,"so_extrator":0,"nenhum":0},"definicao_fonte":"indisponivel","definicao_aviso":null},"pesquisaMercado":{"ok":true,"origem":"config/pesquisa-mercado.json","arquivos":["pesquisa-dirf-extrator-dores-esocial-2026-04-06.md"],"formato":"estruturado","meta":{"tema":"DIRF, extrator RFB, eSocial e dores operacionais (folha/contador)","data_execucao":"2026-04-06","fontes_consultadas":"28","confianca_geral":"Moderada","nota_metodologia":"Busca web em 06/04/2026; fontes oficiais gov.br com falha de fetch (403) em alguns endpoints — URLs mantidas como referência pública. Reclame Aqui: busca restrita não retornou threads específicos 'DIRF extrator'."},"contexto_curto":"A transmissão mensal de retenções e rendimentos via eSocial e EFD-Reinf, com consolidação na DCTF Web, reduz a “janela anual” de correção que a DIRF permitia. A Instrução Normativa RFB nº 2.181/2024 prorrogou aspectos da transição (extinção gradual da DIRF conforme cronograma normativo). Isso aumenta o custo de cada inconsistência: o que antes podia ser “arrumado na DIRF” passa a exigir retificação de eventos e alinhamento entre DP, fiscal e folha. Fontes: [Senior — resumo IN RFB…","topicos":[{"titulo":"Tópico 1 — Extrator DIRF × folha × eSocial: divergência de valores","sintese":"A dor central é descobrir IRRF ou bases diferentes entre o sistema de folha, os eventos eSocial (S-1200/S-1210) e o que “fecha” no totalizador (ex.: S-5002) ou no extrator. Fabricantes descrevem fluxo de pré-fechamento e relatórios de…","bullets":["Status ou alertas de divergência de IRRF entre folha calculada e eSocial após envio de eventos.","Dificuldade em isolar se o erro está na Tabela 21 / incidência da rubrica ou no vínculo competência × pagamento (S-1200 vs S-1210).","Extrator como espelho não confiável gera retrabalho de explicação ao cliente e medo de malha.","Necessidade de relatórios paralelos (IRRF folha vs IRRF eSocial) para cruzar CPF a CPF."],"links":[{"texto":"Alterdata — eSocial: status Divergência IRRF e conferência","url":"https://ajuda.alterdata.com.br/dpbase/esocial-o-que-e-o-status-divergencia-irrf-e-como-realizar-a-conferencia-de-valores-216208590.html"},{"texto":"Alterdata — FP3176 verificar diferenças IRRF folha e eSocial","url":"https://ajuda.alterdata.com.br/pages/viewpage.action?pageId=224462019"}]},{"titulo":"Tópico 2 — Conferência DIRF com holerite e eSocial: inconsistências para o contador","sintese":"A conferência virou cadeia de três pernas: holerite (o que o trabalhador entende como pago), eventos eSocial (o que foi declarado) e demonstrativos RFB (extrator/informe). Inconsistências em datas de pagamento, rubricas com natureza errada…","bullets":["Holerite “bonito” mas evento com classificação que não conversa com o informe.","Trabalhador usa extrato do app/IRPF e contador não consegue reproduzir linha a linha no extrator (totalizadores).","Multiplicidade de vínculos (CLT + pró-labore) confunde o painel de beneficiários.","Dependências entre fiscal e DP quando o erro é de cadastro (operadora de saúde, dependentes, RRA)."],"links":[{"texto":"Âncora — ajustar eSocial/Reinf para inconsistências IRRF e informe","url":"https://ancoracontabilidade.com.br/2026-sem-dirf-como-ajustar-esocial-e-efd-reinf-para-evitar-inconsistencias-no-irrf-e-no-informe-de-rendimentos/"},{"texto":"Contábeis — como conferir a DIRF corretamente","url":"https://www.contabeis.com.br/noticias/75242/como-conferir-a-sua-dirf-corretamente/"}]},{"titulo":"Tópico 3 — DIRF: rendimentos isentos / não tributáveis, extrato da folha e erro","sintese":"Rendimentos isentos e não tributáveis devem constar na obrigação quando atingem limites ou categorias previstas em norma; o problema é operacional: descrição truncada, rubrica sem mapeamento para o campo correto ou limite de 60 caracteres…","bullets":["Erro ao gerar DIRF por texto de descrição acima do permitido.","Valores de isento no sistema mas ausentes no extrator ou no demonstrativo.","Dúvida se o problema é folha ou consolidação RFB.","Risco de trabalhador subdeclarar ou declarar errado no IRPF por informe incompleto."],"links":[{"texto":"Fortes — DIRF e rendimentos isentos e não tributáveis","url":"https://blog.fortestecnologia.com.br/post/dirf-e-os-rendimentos-isentos-e-nao-tributaveis"},{"texto":"Fórum Contábeis — rendimentos não aparecem no extrator da DIRF","url":"https://www.contabeis.com.br/forum/departamento-pessoal-e-rh/412809/rendimentos-nao-aparecem-no-extrator-da-dirf/"}]},{"titulo":"Tópico 4 — Múltiplas folhas na mesma competência: DIRF/IRRF e “duplicidade” de valores","sintese":"Quando há mais de um processamento no mesmo mês (folha + férias, complementos, PLR, rescisão parcial etc.), cada evento pode recalcular IRRF com dedução de dependentes ou bases próprias. Na DIRF isso pode parecer “duplicado” para quem…","bullets":["“Duplicidade” de dedução de dependentes após férias no mesmo mês da folha.","13º complementar, diferença de férias e PLR como disparadores citados em base de conhecimento.","Confusão entre soma de bases (mesma fonte pagadora) e múltiplos recibos.","Necessidade de memória de cálculo por processamento para provar o correto ao cliente."],"links":[{"texto":"Alterdata — DIRF valores duplicados de dependente","url":"https://ajuda.alterdata.com.br/dpbase/dirf-valores-duplicados-de-dependente-na-dirf-63580019.html"},{"texto":"Contábeis — notícia duplicidade dedução dependentes DIRF","url":"https://www.contabeis.com.br/noticias/36703/dirf-duplicidade-no-valor-de-deducao-dos-dependentes/"}]},{"titulo":"Tópico 5 — Plano de saúde na DIRF: coluna valor, sistema e “duplicado” / múltiplos cálculos","sintese":"As dores mais citadas em KB são lado oposto do “duplicado”: valores de titular ou dependente não levados para DIRF/informe por vigência fora do ano-base, parametrização da operadora ou origem dos valores (cadastro eSocial vs módulo DIRF).…","bullets":["Plano de saúde calculado na folha mas zerado na DIRF/quadro do informe.","Dependente com desconto na folha mas não refletido no demonstrativo.","Dúvida entre puxar valores de Funcionário > Plano saúde vs Obrigações acessórias > DIRF.","Conferência com registro ANS / CNPJ operadora exigida no eSocial para crédito no IRPF do trabalhador."],"links":[{"texto":"Alterdata — DIRF não leva valores de plano de saúde","url":"https://ajuda.alterdata.com.br/dpbase/dirf-ao-gerar-a-dirf-o-sistema-nao-esta-levando-os-valores-de-plano-de-saude-63569965.html"},{"texto":"Alterdata — informe quadro 7 plano de saúde","url":"https://ajuda.alterdata.com.br/dpbase/informe-de-rendimentos-como-levar-os-valores-de-plano-de-saude-para-o-quadro-7-do-informe-de-rendimentos-63576785.html"}]},{"titulo":"Tópico 6 — Previdência oficial: extrator DIRF, coluna valor, rubrica eSocial “sem base IRRF”","sintese":"A classificação da rubrica na Tabela 21 e a incidência de IRRF determinam se o valor entra como base, dedução ou “fora da base”. Documentação de ERP cita ajuste de incidência (ex.: tratar verba como não base quando aplicável) seguido de…","bullets":["INSS descontado na folha mas não exibido como esperado em demonstrativos consolidados.","Rubrica com incidência errada gerando base de IRRF artificialmente alta ou baixa.","Retrabalho de retificação em cadeia após corrigir S-1010.","Extrator mostrando totalizadores que não batem com o recibo individual do trabalhador."],"links":[{"texto":"eSocial — documentação técnica / leiautes v1.3","url":"https://www.gov.br/esocial/pt-br/documentacao-tecnica/leiautes-esocial-v-1-3/index.html"},{"texto":"Calima Ajuda — ajuste rubrica e impacto extrator DIRF (exemplo)","url":"https://ajuda.calimaerp.com/pt/article/como-configurar-uma-empresa-para-gerar-a-folha-video-sqooy4/"}]},{"titulo":"Tópico 7 — Pensão alimentícia, PLR e IR / DIRF","sintese":"No IRPF, pensão judicial/extrajudicial válida entra como despesa dedutível para o pagador e tratamento específico para quem recebe (perguntas frequentes RFB). Na folha, pensão costuma ser rubrica com parametrização própria e impacto no…","bullets":["Divergência entre valor descontado em folha e valor aceito na declaração do pagador.","PLR em mês com múltiplos processamentos confundindo bases.","Informe de rendimentos com campos de deduções que o trabalhador não entende.","Risco de dupla interpretação entre jurídico (acordo) e DP (rubrica)."],"links":[{"texto":"Receita Federal — FAQ pensão alimentícia (IRPF)","url":"https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/perguntas-frequentes/imposto-de-renda/dirpf/pensao-alimenticia"},{"texto":"Receita Federal — como declarar pensão alimentícia (deduções)","url":"https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/perguntas-frequentes/imposto-de-renda/dirpf/deducoes/como-declarar-a-pensao-alimenticia"}]},{"titulo":"Tópico 8 — Categoria 902, médico residente, bolsa/auxílio, REINF e eSocial","sintese":"Discussões em fórum mostram ambiguidade sobre residente como bolsista (902) vs vínculo com contribuições, e sobre onde tributar IRPF/INSS conforme caso concreto. Para REINF vs eSocial, orientação de fabricante: IRRF de trabalho segue…","bullets":["Dúvida se bolsa é isenta ou gera contribuição/previdência conforme estrutura do programa.","Erro de cadastro de categoria gerando evento errado (S-2300 vs folha).","Cruzamento R-4000 vs eSocial mal entendido pela equipe fiscal.","Residente com múltiplos vínculos (hospital + universidade) complicando apuração."],"links":[{"texto":"Fórum Contábeis — bolsa médico residente","url":"https://www.contabeis.com.br/forum/departamento-pessoal-e-rh/389231/bolsa-medico-residente/"},{"texto":"Alterdata — REINF ou eSocial onde enviar (IRRF)","url":"https://ajuda.alterdata.com.br/fiscalbase/reinf-onde-enviar-as-informacoes-no-reinf-ou-no-esocial-198904758.html"}]},{"titulo":"Tópico 9 — RPA, mesma data de pagamento, previdência, pensão, plano saúde e DIRF","sintese":"Autônomos/RPA no eSocial exigem coerência entre pagamento, retenções e classificação para informe. Quando várias rubricas (previdência, pensão, saúde) caem na mesma data de pagamento, o sistema pode consolidar linhas de forma que o…","bullets":["Uma única data mascarando várias naturezas de dedução.","Retenção de IRRF de autônomo não batendo com cálculo manual do escritório.","Plano de saúde de titular autônomo com exigência de documentação no eSocial.","Necessidade de comprovante alinhado ao que foi enviado (não só PDF interno)."],"links":[{"texto":"e-contab — emissão extrator DIRF portal RFB (passo a passo)","url":"https://autoatendimento.e-contab.com.br/books/fp/page/emissao-do-extrator-da-dirf-no-portal-de-servicos-da-receita-federal-do-brasil-rfb"},{"texto":"Techware — fim da DIRF e envio mensal eSocial/Reinf","url":"https://www.techware.com.br/fim-da-dirf-2025/"}]},{"titulo":"Tópico 10 — Dedução simplificada, dependentes, IRRF e múltiplas folhas na mesma competência","sintese":"Com a Lei 15.270/2025 e regras de cálculo progressivo, o sistema deve comparar deduções legais vs desconto simplificado por evento de pagamento. Múltiplas folhas no mês implicam nova comparação em cada pagamento (adiantamento, férias,…","bullets":["Trabalhador acha erro quando férias mudam método de dedução vs folha normal.","Dependentes impactam só o método “deduções legais”; simplificado ignora dependentes na lógica de desconto fixo.","Rescisão com múltiplas verbas no mesmo mês como cenário crítico de teste.","Conferência exige memória de cálculo por recibo, não só total mensal."],"links":[{"texto":"DAPE — IRRF desconto simplificado (didático)","url":"https://www.dape.com.br/lernoticia.aspx?id=10595"},{"texto":"Ovale — novo cálculo IRRF 2026 Lei 15.270/25","url":"https://onvale.com.br/blog/geral/obrigacoes/novo-calculo-do-irrf-2026/"}]},{"titulo":"Tópico 11 — Indenização, rescisão, PDV, extrator DIRF e duplicidade na mesma data","sintese":"Rescisões concentram várias naturezas (verbas rescisórias, multas, acertos) em poucos eventos. Em fórum histórico, há debate sobre dupla contagem de dependente quando coexistem folha normal e rescisão com múltiplas parcelas. KB de…","bullets":["Indenização isenta vs tributável mal classificada gera informe errado.","Mesma data de pagamento para saldo de salário e multa gerando confusão no extrator totalizador.","Dependentes e pensão na rescisão como pontos de stress.","Cliente pede “PDF da DIRF” mas o mundo passou a ser evento + informe."],"links":[{"texto":"Alterdata — conferir valores de rescisão na DIRF","url":"https://ajuda.alterdata.com.br/dpbase/dirf-como-conferir-os-valores-de-rescisao-na-dirf-63584568.html"},{"texto":"Fórum Contábeis — remuneração + rescisão dependentes IRR","url":"https://www.contabeis.com.br/forum/tributos-federais/204003/dirf-remuneracao-rescisao-no-caso-de-dependentes-para-irr/"}]},{"titulo":"Tópico 12 — Comprovante de rendimentos, base negativa, extrator sem rendimento tributável","sintese":"Relatos descrevem IRRF aparecendo sem tributável correspondente no extrator, ou beneficiários com classificação estranha. Em vários threads a conclusão prática é: validar S-1200/S-1210; se estiver correto, tratar divergência do extrator…","bullets":["Comprovante interno do ERP não bate com painel gov.","Trabalhador sem rendimento tributável mas com IRRF visível → pânico na auditoria interna.","Dificuldade de explicar totalizador que não detalha por CPF na visualização citada em guias.","Necessidade de guardar XML/eventos como prova melhor que screenshot do extrator."],"links":[{"texto":"Fórum Contábeis — rendimentos não aparecem no extrator","url":"https://www.contabeis.com.br/forum/departamento-pessoal-e-rh/412809/rendimentos-nao-aparecem-no-extrator-da-dirf/"},{"texto":"Tron — emitir e analisar extrator DIRF (metodologia)","url":"https://atendimento.tron.com.br/kb/pt-br/article/575700/informe-de-rendimentos"}]},{"titulo":"Tópico 13 (Bloco C) — IN / manual RFB e orientações oficiais (DIRF e rendimentos)","sintese":"A RFB mantém Perguntas e Respostas anuais da DIRF, leiautes técnicos e páginas de central de conteúdo. O serviço “Consultar rendimentos pagos e retenções na fonte” no catálogo gov.br é o gateway público para o demonstrativo usado na rotina…","bullets":["Uso do Q&A DIRF para casos limítrofes de rendimento isento.","Leiaute como fonte para TI integrar validações (campos, precisão decimal).","MOS para evitar erro de grupo IR complementar e dependentes."],"links":[{"texto":"Receita Federal — central Perguntas e Respostas DIRF","url":"https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/publicacoes/perguntas-e-respostas/dirf"},{"texto":"Gov.br — serviço Consultar rendimentos pagos e retenções na fonte","url":"https://www.gov.br/pt-br/servicos/consultar-rendimentos-pagos-e-retencoes-na-fonte"}]},{"titulo":"Tópico 14 (Bloco C) — Fóruns e VoC (Reclame Aqui, Contábeis, Clube)","sintese":"A busca com operador `site:reclameaqui.com.br` para “DIRF extrator folha” não retornou reclamações diretamente alinhadas ao tema (ruído com outras siglas “DIR” e produtos financeiros). Já o Fórum Contábeis concentra threads recentes sobre…","bullets":["VoC técnico forte em Contábeis para falhas do extrator e não só do software de folha.","Reclame Aqui pode servir para marca específica de folha/ERP, não para o extrator genérico.","Threads sugerem comportamento: documentar evidências e não retificar à toa."],"links":[{"texto":"Fórum Contábeis — valores erro no extrator DIRF","url":"https://www.contabeis.com.br/forum/tecnologia-contabil/413328/valores-erro-no-extrator-da-dirf/"},{"texto":"Fórum Contábeis — discussão DIRF 2026 / ano-calendário 2025","url":"https://www.contabeis.com.br/forum/Departamento%20Pessoal%20e%20RH/412856/dirf-2026-ano-calendario-2025/"}]}],"conexao_jornada":"Leitura cruzada com esta página: 50 registro(s) na cronologia (39 NE, 11 SA), 17 liberada(s), 22 pendente(s). Pico de cadastro PSAI: Mar/2026 (20 itens). Os tópicos abaixo sintetizam o que o mercado discute (eSocial, extrator, múltiplas folhas, etc.) — contexto para a narrativa, não substituto do SGD.","trechos":[],"nota":null},"historia":["Em acompanhamento: 22 de 50 SAIs permanecem pendentes (44%). 17 já liberadas, 11 descartadas. Composição: 39 NE e 11 SA. Pico de cadastro PSAI: mar/2026 (20 SAIs).","Âncora narrativa: SAI 100547, PSAI 105827 em 03/03/2026. Data exibida corrigida manualmente (SGD refletia registro antigo).","Checklist: 32 pares SAI+PSAI da lista oficial conferem."]};
+(function(){
+  var E=function(t){return t==null?'':String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
+  var EA=function(t){return t==null?'':String(t).replace(/&/g,'&amp;').replace(/"/g,'&quot;')};
+  var BR=function(iso){if(!iso)return'—';var s=String(iso).slice(0,10),p=s.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s};
+  var GR=function(it){if(it.ramo!=='ne'||!it.gravidade)return'';var g=String(it.gravidade).toLowerCase();if(g.indexOf('crit')>=0)return' <span class="badge gc">Crítica</span>';if(g.indexOf('grav')>=0)return' <span class="badge gg">Grave</span>';return''};
+  var CIC=function(it){return it.ciclo_dias==null?'—':it.ciclo_dias+'d · '+E(it.ciclo_rotulo||'')};
+
+  var f=DATA.filtro||{},tot=DATA.totais||{},a=DATA.ancora||{};
+
+  /* ── AVISOS ── */
+  var ab=document.getElementById('avisoBox');
+  if(f.aviso){var d=document.createElement('div');d.className='aviso';d.textContent=f.aviso;ab.appendChild(d)}
+  var vW=DATA.validacao||{};
+  if(vW.psais_sem_registro&&vW.psais_sem_registro.length){var d2=document.createElement('div');d2.className='aviso';d2.textContent='PSAI sem linha em SAI_PSAI: '+vW.psais_sem_registro.join(', ');ab.appendChild(d2)}
+  if(vW.pares_faltantes&&vW.pares_faltantes.length){var d3=document.createElement('div');d3.className='aviso';d3.textContent=vW.pares_faltantes.length+' par(es) da lista oficial sem correspondência.';ab.appendChild(d3)}
+
+  /* ── HERO ── */
+  var libPct=tot.itens?Math.round(tot.liberadas/tot.itens*100):0;
+  var pendPct=tot.itens?Math.round(tot.pendentes/tot.itens*100):0;
+  var descPct=100-libPct-pendPct;
+  var heroCol=pendPct>50?'var(--pend)':(pendPct>30?'var(--pend)':'var(--lib)');
+  var ancDt=BR((a.entrada||'').slice(0,10));
+  var ancAj=a.entrada_ajuste_manual?' <span class="badge aj" title="'+EA(a.entrada_ajuste_manual)+'">ajuste</span>':'';
+
+  document.getElementById('heroBar').innerHTML=
+    '<div class="hero-big"><b style="color:'+heroCol+'">'+tot.pendentes+'</b><span>pendentes de '+tot.itens+'</span></div>'+
+    '<div class="hero-progress">'+
+      '<div class="prog-track">'+
+        '<div class="prog-lib" style="width:'+libPct+'%"></div>'+
+        '<div class="prog-pend" style="width:'+pendPct+'%"></div>'+
+        '<div class="prog-desc" style="width:'+descPct+'%"></div>'+
+      '</div>'+
+      '<div class="prog-legend">'+
+        '<span><b style="color:var(--lib)">'+tot.liberadas+'</b> lib.</span>'+
+        '<span><b style="color:var(--pend)">'+tot.pendentes+'</b> pend.</span>'+
+        '<span><b style="color:var(--desc)">'+tot.descartadas+'</b> desc.</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="hero-meta">'+
+      'Âncora: <b>SAI '+(a.i_sai!=null?a.i_sai:'—')+' · PSAI '+(a.i_psai!=null?a.i_psai:'—')+'</b> · '+ancDt+ancAj+
+    '</div>';
+
+  /* ── NARRATIVA ── */
+  var hEl=document.getElementById('historia');
+  var hist=DATA.historia||[];
+  if(hist.length){hist.forEach(function(p){var el=document.createElement('p');el.textContent=p;hEl.appendChild(el)})}
+  else{hEl.innerHTML='<p style="color:var(--m)">Execute o gerador para preencher.</p>'}
+
+  /* ── DEFINIÇÕES ── */
+  (function(){
+    var v=DATA.validacao,det=document.getElementById('detValidacaoDef'),box=document.getElementById('tblValidacaoDef');
+    if(!v||!det||!box)return;
+    if(v.definicoes_psai&&v.definicoes_psai.length){det.style.display='block';var h='<table><thead><tr><th>PSAI</th><th>Cat.</th><th>Amostra</th></tr></thead><tbody>';v.definicoes_psai.forEach(function(r){h+='<tr><td>'+r.i_psai+'</td><td>'+E(r.categoria)+'</td><td>'+E(r.trecho)+'</td></tr>'});h+='</tbody></table>';box.innerHTML=h;return}
+    if(v.resumo_definicao){det.style.display='block';box.innerHTML='<p style="color:var(--m);font-size:.82rem">'+E(v.resumo_definicao)+'</p>'}
+  })();
+
+  /* ── PESQUISA ── */
+  (function(){
+    var box=document.getElementById('pesquisaMercadoBox'),pm=DATA.pesquisaMercado||{};
+    if(!pm.ok){box.innerHTML='<p>'+E(pm.nota||'Configure pesquisa de mercado.')+'</p>';return}
+    if(pm.formato==='estruturado'&&pm.topicos&&pm.topicos.length){
+      var meta=pm.meta||{},mL=[];
+      if(meta.tema)mL.push(E(meta.tema));if(meta.data_execucao)mL.push('Exec: '+E(meta.data_execucao));
+      var h='';if(mL.length)h+='<p class="pm-meta">'+mL.join(' · ')+'</p>';
+      if(pm.conexao_jornada)h+='<div class="pm-leitura"><strong>Leitura cruzada</strong><br>'+E(pm.conexao_jornada)+'</div>';
+      if(pm.contexto_curto)h+='<p class="pm-ctx"><strong>Contexto</strong><br>'+E(pm.contexto_curto)+'</p>';
+      pm.topicos.slice(0,8).forEach(function(tp){
+        h+='<div class="pm-topic"><h4>'+E(tp.titulo)+'</h4>';
+        if(tp.sintese)h+='<p class="pm-sintese">'+E(tp.sintese)+'</p>';
+        if(tp.bullets&&tp.bullets.length){h+='<ul class="pm-bul">';tp.bullets.forEach(function(b){h+='<li>'+E(b)+'</li>'});h+='</ul>'}
+        if(tp.links&&tp.links.length){h+='<div class="pm-links">';tp.links.forEach(function(L){h+='<a href="'+E(L.url)+'" target="_blank" rel="noopener">'+E(L.texto)+'</a> · '});h=h.replace(/ · $/,'');h+='</div>'}
+        h+='</div>';
+      });
+      h+='<p class="pm-src">'+E(pm.origem||'')+'</p>';box.innerHTML=h;return;
+    }
+    var h2='';(pm.trechos||[]).forEach(function(t){h2+='<p>'+E(t)+'</p>'});box.innerHTML=h2;
+  })();
+
+  /* ── FEEDBACK ── */
+  (function(){
+    var wrap=document.getElementById('feedbackVoz'),s=DATA.sgsai||{};
+    if(!s.ok){wrap.innerHTML='<p style="color:var(--m);font-size:.82rem">'+E(s.aviso||'SGSAI não configurado.')+'</p>';return}
+    var rows=s.topFeedbackSai||[];
+    if(!rows.length){wrap.innerHTML='<p style="color:var(--m);font-size:.82rem">Nenhum evento de feedback no intervalo.</p>';return}
+    var h='<table><thead><tr><th>SAI</th><th>Tipo</th><th>Eventos</th><th>Resumo</th></tr></thead><tbody>';
+    rows.forEach(function(r){h+='<tr><td>'+r.i_sai+'</td><td>'+E(r.tipoSAI)+'</td><td style="font-weight:600">'+r.qtd+'</td><td>'+E(r.resumo)+'</td></tr>'});
+    h+='</tbody></table>';wrap.innerHTML=h;
+  })();
+
+  /* ── DATA PREP ── */
+  var items=(DATA.itens||[]).filter(function(x){return x.entrada});
+  var svgEl=document.getElementById('stripSvg');
+  if(!items.length){svgEl.parentElement.innerHTML='<p class="empty">Nenhum PSAI no recorte.</p>';return}
+
+  var porMes={};
+  items.forEach(function(it){
+    var ym=it.entrada.slice(0,7);
+    if(!porMes[ym])porMes[ym]={lib:0,pend:0,desc:0,items:[]};
+    porMes[ym].items.push(it);
+    if(it.status==='liberada')porMes[ym].lib++;else if(it.status==='pendente')porMes[ym].pend++;else porMes[ym].desc++;
+  });
+  var ordemMes=Object.keys(porMes).sort();
+  var mN=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  function ymL(ym){var p=ym.split('-');return mN[parseInt(p[1],10)-1]+' '+p[0].slice(2)}
+
+  /* ── DOT STRIP — colunas mensais iguais ── */
+  (function(){
+    var ns='http://www.w3.org/2000/svg';
+    var nMes=ordemMes.length;
+    if(!nMes)return;
+
+    var colW=Math.max(80,Math.min(140,700/nMes));
+    var padL=30,padR=12,labelH=18;
+    var dotR=5,dotD=dotR*2+2;
+
+    var maxNe=0,maxSa=0;
+    ordemMes.forEach(function(ym){
+      var ne=0,sa=0;porMes[ym].items.forEach(function(it){if(it.ramo==='ne')ne++;else sa++});
+      if(ne>maxNe)maxNe=ne;if(sa>maxSa)maxSa=sa;
+    });
+    var dotCols=Math.max(1,Math.floor((colW-8)/(dotD)));
+    var neRows=Math.ceil(maxNe/dotCols),saRows=Math.ceil(maxSa/dotCols);
+    var neH=Math.max(20,neRows*dotD+4);
+    var saH=Math.max(20,saRows*dotD+4);
+    var verH=22,gap=10;
+    var midY=verH+neH+gap;
+    var H=verH+neH+gap*2+saH+labelH+4;
+    var W=padL+nMes*colW+padR;
+
+    svgEl.setAttribute('viewBox','0 0 '+W+' '+H);
+    svgEl.setAttribute('width','100%');
+    svgEl.style.height=H+'px';
+
+    ordemMes.forEach(function(ym,ci){
+      var x0=padL+ci*colW;
+      if(ci>0){var gl=document.createElementNS(ns,'line');gl.setAttribute('x1',x0);gl.setAttribute('y1',verH-4);gl.setAttribute('x2',x0);gl.setAttribute('y2',H-labelH);gl.setAttribute('stroke','#edeff5');gl.setAttribute('stroke-width','1');svgEl.appendChild(gl)}
+      var bg2=document.createElementNS(ns,'rect');bg2.setAttribute('x',x0);bg2.setAttribute('y',verH);bg2.setAttribute('width',colW);bg2.setAttribute('height',H-verH-labelH);bg2.setAttribute('fill',ci%2===0?'transparent':'rgba(0,0,0,.015)');svgEl.appendChild(bg2);
+      var lab=document.createElementNS(ns,'text');lab.setAttribute('x',x0+colW/2);lab.setAttribute('y',H-4);lab.setAttribute('fill','#6b7280');lab.setAttribute('font-size','10');lab.setAttribute('text-anchor','middle');lab.setAttribute('font-family','Segoe UI,sans-serif');lab.textContent=ymL(ym);svgEl.appendChild(lab);
+
+      var neItems=[],saItems=[];
+      porMes[ym].items.forEach(function(it){if(it.ramo==='ne')neItems.push(it);else saItems.push(it)});
+
+      function placeDots(arr,baseY,goUp){
+        arr.forEach(function(it,idx){
+          var col2=idx%dotCols,row2=Math.floor(idx/dotCols);
+          var cx=x0+6+(col2*(dotD))+dotR;
+          var cy=goUp?baseY-4-row2*dotD-dotR:baseY+4+row2*dotD+dotR;
+          var fill=it.status==='liberada'?'#16a34a':(it.status==='pendente'?'#d97706':'#bbb');
+          var stroke2=it.ramo==='ne'?'#93c5fd':'#fdba74';
+          var c=document.createElementNS(ns,'circle');c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',dotR);
+          c.setAttribute('fill',fill);c.setAttribute('stroke',stroke2);c.setAttribute('stroke-width','1.5');c.style.cursor='default';
+          var ti=document.createElementNS(ns,'title');
+          ti.textContent='SAI '+it.i_sai+' · PSAI '+it.i_psai+' ('+it.status+')'+(it.nomeVersao?' · v'+it.nomeVersao:'');
+          c.appendChild(ti);svgEl.appendChild(c);
+        });
+      }
+      placeDots(neItems,midY,true);
+      placeDots(saItems,midY+gap,false);
+    });
+
+    var spine=document.createElementNS(ns,'line');
+    spine.setAttribute('x1',padL-4);spine.setAttribute('y1',midY+gap/2);spine.setAttribute('x2',W-padR+4);spine.setAttribute('y2',midY+gap/2);
+    spine.setAttribute('stroke','#dadada');spine.setAttribute('stroke-width','1.5');spine.setAttribute('stroke-dasharray','6 3');svgEl.appendChild(spine);
+
+    var neL=document.createElementNS(ns,'text');neL.setAttribute('x',4);neL.setAttribute('y',midY-6);neL.setAttribute('fill','#2563eb');neL.setAttribute('font-size','9');neL.setAttribute('font-weight','600');neL.setAttribute('font-family','Segoe UI,sans-serif');neL.textContent='NE';svgEl.appendChild(neL);
+    var saL2=document.createElementNS(ns,'text');saL2.setAttribute('x',4);saL2.setAttribute('y',midY+gap+14);saL2.setAttribute('fill','#ea580c');saL2.setAttribute('font-size','9');saL2.setAttribute('font-weight','600');saL2.setAttribute('font-family','Segoe UI,sans-serif');saL2.textContent='SA';svgEl.appendChild(saL2);
+
+    var porV={};
+    items.forEach(function(it){var v=it.nomeVersao&&String(it.nomeVersao).trim();if(!v)return;var mi=ordemMes.indexOf(it.entrada.slice(0,7));if(mi<0)return;var ex=porV[v];if(!ex||mi<ex.mi)porV[v]={versao:v,mi:mi}});
+    var marcos=Object.keys(porV).map(function(k){return porV[k]}).sort(function(a,b){return a.mi-b.mi});
+    var placed=[];
+    marcos.forEach(function(m){
+      var x=padL+m.mi*colW+colW/2;
+      var row=0;for(;;){var cl=false;for(var i=0;i<placed.length;i++){if(placed[i].r===row&&Math.abs(x-placed[i].x)<55){cl=true;break}}if(!cl)break;row++}placed.push({x:x,r:row});
+      var lab=m.versao.length>14?m.versao.slice(0,13)+'\u2026':m.versao;
+      var ty=verH-4-row*11;if(ty<8)ty=8;
+      var t=document.createElementNS(ns,'text');t.setAttribute('x',x);t.setAttribute('y',ty);
+      t.setAttribute('fill','#5b21b6');t.setAttribute('font-size','8.5');t.setAttribute('text-anchor','middle');t.setAttribute('font-weight','600');
+      t.setAttribute('font-family','Segoe UI,sans-serif');t.textContent=lab;svgEl.appendChild(t);
+    });
+  })();
+
+  /* ── HORIZONTAL BAR CHART ── */
+  var maxM=0;ordemMes.forEach(function(ym){var g=porMes[ym];var t=g.lib+g.pend+g.desc;if(t>maxM)maxM=t});
+  if(maxM<1)maxM=1;
+  var bc=document.getElementById('barChart');
+  ordemMes.forEach(function(ym){
+    var g=porMes[ym],total=g.lib+g.pend+g.desc;
+    var row=document.createElement('div');row.className='bar-item';
+    row.innerHTML=
+      '<span class="bar-label">'+ymL(ym)+'</span>'+
+      '<div class="bar-track">'+
+        '<div class="bar-seg lib" style="width:'+Math.round(g.lib/maxM*100)+'%"></div>'+
+        '<div class="bar-seg pend" style="width:'+Math.round(g.pend/maxM*100)+'%"></div>'+
+        '<div class="bar-seg desc" style="width:'+Math.round(g.desc/maxM*100)+'%"></div>'+
+      '</div>'+
+      '<span class="bar-total">'+total+'</span>';
+    bc.appendChild(row);
+  });
+
+  /* ── TIMELINE ── */
+  var tl=document.getElementById('timeline');
+  ordemMes.forEach(function(ym){
+    var g=porMes[ym],block=document.createElement('div');block.className='month-block';
+    var h=document.createElement('div');h.className='month-h';
+    h.innerHTML='<span>'+E(mN[parseInt(ym.split('-')[1],10)-1]+' '+ym.split('-')[0])+'</span><small>'+g.items.length+'</small>';
+    block.appendChild(h);
+    g.items.forEach(function(it){
+      var row=document.createElement('div');row.className='evt '+it.ramo;
+      var dot=document.createElement('div');dot.className='evt-dot';
+      var card=document.createElement('div');card.className='evt-card '+it.ramo+' '+it.status;
+      var stl=it.status==='liberada'?'lib':(it.status==='pendente'?'pend':'desc');
+      var bg=GR(it);
+      var dtX=it.entrada_ajuste_manual?' <span class="badge aj" title="'+EA(it.entrada_ajuste_manual)+'">ajuste</span>':'';
+      card.innerHTML=
+        '<div class="evt-head">'+
+        '<span class="badge '+(it.ramo==='ne'?'neb':'sab')+'">'+E(it.tipoSAI)+'</span>'+bg+
+        '<span class="badge '+stl+'">'+E(it.status)+'</span>'+
+        '<span class="evt-ids">SAI '+it.i_sai+' · PSAI '+it.i_psai+'</span>'+
+        '<span class="evt-date">'+BR(it.entrada.slice(0,10))+dtX+'</span></div>'+
+        '<div class="evt-resumo">'+E(it.resumo)+'</div>'+
+        '<div class="evt-detail">'+(it.nomeVersao||'—')+(it.nome_modulo?' · '+E(it.nome_modulo):'')+' · Lib: '+BR(it.data_liberacao||'')+' · '+CIC(it)+'</div>';
+      row.appendChild(dot);row.appendChild(card);block.appendChild(row);
+    });
+    tl.appendChild(block);
+  });
+
+  /* ── TABLE ── */
+  var tb=document.getElementById('tb');
+  items.forEach(function(it){
+    var tr=document.createElement('tr');
+    var stl=it.status==='liberada'?'lib':(it.status==='pendente'?'pend':'desc');
+    tr.innerHTML=
+      '<td>'+BR(it.entrada.slice(0,10))+'</td><td>'+E(it.tipoSAI)+'</td>'+
+      '<td>'+(it.ramo==='ne'?E(it.gravidade||'—'):'—')+'</td>'+
+      '<td>'+it.i_sai+'</td><td>'+it.i_psai+'</td>'+
+      '<td><span class="badge '+stl+'">'+it.status+'</span></td>'+
+      '<td>'+BR(it.data_liberacao||'')+'</td><td>'+CIC(it)+'</td>'+
+      '<td>'+E(it.nomeVersao||'—')+'</td><td>'+E(it.resumo)+'</td>';
+    tb.appendChild(tr);
+  });
+})();
+</script>
+</body>
+</html>

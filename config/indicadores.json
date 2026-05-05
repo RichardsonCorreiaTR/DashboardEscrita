@@ -1,0 +1,147 @@
+{
+  "_comentario": "Registro central de indicadores ativos. Espelha o que esta implementado em src/indicadores/.",
+  "_ultima-atualizacao": "2026-02-18",
+  "indicadores": [
+    {
+      "id": "saldo-ne",
+      "nome": "Saldo NE",
+      "categoria": "produto",
+      "codigo-sgd": 143633,
+      "arquivo": "src/indicadores/produto/saldo-ne.js",
+      "diretriz": "docs/diretrizes/1-produto/1.4-controladas-coordenacao/1.4.1-saldo-ne.md",
+      "cache-ttl-ms": 1800000,
+      "status": "ativo"
+    },
+    {
+      "id": "ne-95-dias",
+      "nome": "NE > 95 dias",
+      "categoria": "produto",
+      "codigo-sgd": 143631,
+      "arquivo": "src/indicadores/produto/ne-95-dias.js",
+      "diretriz": "docs/diretrizes/1-produto/1.4-controladas-coordenacao/1.4.2-ne-95-dias.md",
+      "cache-ttl-ms": 1800000,
+      "status": "ativo"
+    },
+    {
+      "id": "criticas-graves-5d",
+      "nome": "Criticas/Graves em 5 dias",
+      "categoria": "produto",
+      "codigo-sgd": 143635,
+      "arquivo": "src/indicadores/produto/criticas-graves-5d.js",
+      "diretriz": "docs/diretrizes/1-produto/1.4-controladas-coordenacao/1.4.3-criticas-graves-5-dias.md",
+      "cache-ttl-ms": 1800000,
+      "status": "ativo"
+    },
+    {
+      "id": "tempo-correcao-ne",
+      "nome": "Tempo Correcao NE",
+      "categoria": "produto",
+      "codigo-sgd": 143636,
+      "arquivo": "src/indicadores/produto/tempo-correcao-ne.js",
+      "diretriz": "docs/diretrizes/1-produto/1.4-controladas-coordenacao/1.4.4-tempo-correcao-ne.md",
+      "cache-ttl-ms": 1800000,
+      "status": "ativo"
+    },
+    {
+      "id": "entrada-ne",
+      "nome": "Entrada NE",
+      "categoria": "produto",
+      "codigo-sgd": null,
+      "arquivo": "src/indicadores/produto/entrada-ne.js",
+      "diretriz": null,
+      "cache-ttl-ms": 1800000,
+      "status": "ativo",
+      "_nota": "Indicador de acompanhamento, sem meta formal. Impacta saldo."
+    },
+    {
+      "id": "tempo-trabalho-analise",
+      "nome": "Tempo Trabalhado Analise",
+      "categoria": "equipe",
+      "arquivo": "src/indicadores/equipe/metas-anual.js",
+      "diretriz": "docs/diretrizes/2-equipe/2.1-individuais/metas-individuais.md",
+      "status": "ativo",
+      "_nota": "Meta individual por analista (Jr/Pleno). Fonte: registro de atividades."
+    },
+    {
+      "id": "tempo-trabalho-geracao",
+      "nome": "Tempo Trabalhado Geracao",
+      "categoria": "equipe",
+      "arquivo": "src/indicadores/equipe/metas-anual.js",
+      "diretriz": "docs/diretrizes/2-equipe/2.1-individuais/metas-individuais.md",
+      "status": "ativo",
+      "_nota": "Meta individual especialista. Fonte: registro de atividades."
+    },
+    {
+      "id": "pontos-definicao",
+      "nome": "Pontos Definicao",
+      "categoria": "equipe",
+      "arquivo": "src/indicadores/equipe/metas-anual.js",
+      "diretriz": "docs/diretrizes/2-equipe/2.1-individuais/metas-individuais.md",
+      "status": "ativo",
+      "_nota": "Meta individual Jr/Pleno. Fonte: SAI/PSAI pontuacao."
+    },
+    {
+      "id": "indice-revisoes-sal",
+      "nome": "Controle Revisoes SAL",
+      "categoria": "equipe",
+      "arquivo": "src/indicadores/equipe/metas-anual.js",
+      "diretriz": "docs/diretrizes/2-equipe/2.1-individuais/metas-individuais.md",
+      "status": "ativo",
+      "_nota": "Meta <= 0.50. Analistas por psai.i_responsaveis, especialistas por sai.i_usuarios."
+    },
+    {
+      "id": "indice-revisoes-ne",
+      "nome": "Controle Revisoes NE",
+      "categoria": "equipe",
+      "arquivo": "src/indicadores/equipe/metas-anual.js",
+      "diretriz": "docs/diretrizes/2-equipe/2.1-individuais/metas-individuais.md",
+      "status": "ativo",
+      "_nota": "Meta <= 0.50."
+    },
+    {
+      "id": "indice-revisoes-sail",
+      "nome": "Controle Revisoes SAIL",
+      "categoria": "equipe",
+      "arquivo": "src/indicadores/equipe/metas-anual.js",
+      "diretriz": "docs/diretrizes/2-equipe/2.1-individuais/metas-individuais.md",
+      "status": "ativo",
+      "_nota": "Meta <= 0.50."
+    },
+    {
+      "id": "indice-revisoes-sam-imp",
+      "nome": "Controle Revisoes SAM Importacao",
+      "categoria": "equipe",
+      "arquivo": "src/indicadores/equipe/metas-anual.js",
+      "diretriz": "docs/diretrizes/2-equipe/2.1-individuais/metas-individuais.md",
+      "status": "ativo",
+      "_nota": "Meta <= 0.80. SAM com area != Escrita."
+    },
+    {
+      "id": "indice-revisoes-sam-esc",
+      "nome": "Controle Revisoes SAM Escrita",
+      "categoria": "equipe",
+      "arquivo": "src/indicadores/equipe/metas-anual.js",
+      "diretriz": "docs/diretrizes/2-equipe/2.1-individuais/metas-individuais.md",
+      "status": "ativo",
+      "_nota": "Meta <= 0.50."
+    },
+    {
+      "id": "respostas-ss-3d",
+      "nome": "Respostas SS 3 dias",
+      "categoria": "equipe",
+      "arquivo": "src/indicadores/equipe/metas-anual.js",
+      "diretriz": "docs/diretrizes/2-equipe/2.1-individuais/metas-individuais.md",
+      "status": "ativo",
+      "_nota": "Meta individual especialista. Fonte: ss_tramites."
+    },
+    {
+      "id": "gerar-sai-ne-sal-3d",
+      "nome": "Gerar SAI NE/SAL 3 dias",
+      "categoria": "equipe",
+      "arquivo": "src/indicadores/equipe/metas-anual.js",
+      "diretriz": "docs/diretrizes/2-equipe/2.1-individuais/metas-individuais.md",
+      "status": "ativo",
+      "_nota": "Meta especialista + Ana Ligia (override). Fonte: sai.NumeroDiasLiberar."
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+---
+description: Padrao arquitetural, camadas e fluxo de dados
+globs: src/**/*
+alwaysApply: false
+---
+
+# Arquitetura
+
+## Principios obrigatorios
+1. **Nenhum arquivo acima de 200 linhas** - se passar, dividir
+2. **Cada arquivo tem UMA responsabilidade**
+3. **Cada indicador e UM arquivo** em `src/indicadores/{categoria}/`
+4. **Funcional > OO** - preferir funcoes puras e modulos
+5. **Funcoes pequenas** - maximo 30 linhas por funcao
+6. **NUNCA gerar relatorio com dados zerados** sem banner de erro
+
+## Camadas (de baixo para cima)
+```
+[Banco Sybase ASA 9.0]
+       |
+  core/conexao.js          ← Conexao ODBC
+       |
+  core/query-executor.js   ← Execucao com retry, log, tratamento de erro
+       |
+  core/cache.js            ← Cache de performance + persistencia
+       |
+  indicadores/*/           ← Calculo de cada indicador (1 arquivo = 1 indicador)
+       |
+  estudos/*/               ← Analises agregadas (semanal, historica, liberacoes SA)
+       |
+  historico/               ← Registro append-only (JSONL)
+       |
+  relatorios/              ← Geracao de HTML (templates + dados) [Fase 3 - futuro]
+       |
+  servidor/                ← Express (porta 4000, rotas + arquivos estaticos)
+```
+
+## Regra de dependencia
+- Camadas superiores dependem das inferiores, NUNCA o contrario
+- Nenhuma camada pode pular outra (ex: rota NAO acessa banco diretamente)
+- Logica de calculo NUNCA dentro de rotas ou templates
+
+## Fluxo de dados
+```
+Banco → query-executor → cache → indicador.calcular() → validacao → historico → gerador → output
+                              └→ estudos/*.js → analises agregadas → API /api/estudos/*
+```
+
+## Interface padrao de indicador
+Todo indicador em `src/indicadores/` DEVE exportar:
+- `id` (string, kebab-case)
+- `nome` (string)
+- `categoria` (string: 'produto' | 'equipe' | 'individual')
+- `cacheTTL` (number, ms)
+- `calcular(executor, opcoes)` → retorna `{ valor, meta, pct, status, detalhes, validacao }`
+
+## Retorno obrigatorio de calcular()
+```javascript
+{
+  valor: Number | null,
+  meta: Number | null,
+  pct: Number | null,
+  status: 'verde' | 'amarelo' | 'vermelho' | 'erro',
+  detalhes: { ... },  // dados especificos do indicador
+  validacao: {
+    ok: Boolean,
+    registros_lidos: Number,
+    registros_usados: Number,
+    problemas: [],     // se ok=false
+    avisos: []         // se ok=true mas com ressalvas
+  }
+}
+```
+
+## Reestruturacao v2
+
+- **ADR:** `docs/adr-reestruturacao-v2.md`
+- **Servidor:** `src/servidor/app-v2.js` → porta **5000** (env `PORT_V2`)
+- **Frontend:** `src/servidor/public-v2/` — design tokens, nav a11y, padroes UX
+- **npm script:** `npm run start:v2`
+- **Atual (v1)** permanece intacto: `app.js` porta 4000, `public/` inalterado
+
+## Documentacao de UX (dashboards e relatorios)
+
+- **Referencia externa auditada + checklist:** `docs/referencia-ux-product-engineering.md`
+- **Gap Escrita Fiscal vs referencia (backlog):** `docs/gap-ux-dashboard-diretrizes-vs-pe.md`
+- **Regra Cursor:** `.cursor/rules/ux-dashboard.mdc`
+- **Skill Cursor (revisao UX):** `.cursor/skills/dashboard-diretrizes-ux/SKILL.md`

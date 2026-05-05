@@ -1,0 +1,164 @@
+{
+  "_comentario": "Metas Legado 2026 por cargo - area Escrita Fiscal. Somente NE. My Time ignorado por enquanto.",
+  "_ultima-atualizacao": "2026-02-18",
+  "metas": [
+    {
+      "id": "diretrizes-95",
+      "descricao": "Atingir 95% das diretrizes da area Escrita",
+      "tipo": "resumo",
+      "valor-esperado": 95,
+      "unidade": "%",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31"
+    },
+    {
+      "id": "tempo-trabalho-analise",
+      "descricao": "Atingir 80% do tempo trabalhado para analise e definicao de SA/NE",
+      "detalhes": "Analises, retornos, revisoes, esclarecimento de duvida, teste e desenvolvimento, apresentacoes de SAIs e respostas de SS",
+      "valor-esperado": 80,
+      "unidade": "%",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "registro-atividades"
+    },
+    {
+      "id": "tempo-trabalho-geracao",
+      "descricao": "Atingir 80% do tempo trabalhado para geracao de SAIs",
+      "detalhes": "Analise, retornos, revisoes, esclarecimento de duvida dos analistas, teste e desenvolvimento, apresentacoes e estudos",
+      "valor-esperado": 80,
+      "unidade": "%",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "registro-atividades"
+    },
+    {
+      "id": "pontos-definicao",
+      "descricao": "Atingir 80 pontos de definicao por mes",
+      "detalhes": "Por senioridade, por tipo de SAI e complexidade de SAI",
+      "valor-esperado": 80,
+      "unidade": "pontos",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "sai-psai"
+    },
+    {
+      "id": "indice-revisoes-sal",
+      "descricao": "Manter indice de revisoes abaixo de 0,50 em SAL",
+      "detalhes": "Somente revisoes de Alteracao na definicao (1,4) e Complemento na definicao (2,5)",
+      "valor-esperado": 0.50,
+      "unidade": "indice",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "sai-revisoes"
+    },
+    {
+      "id": "indice-revisoes-ne",
+      "descricao": "Manter indice de revisoes abaixo de 0,50 em NE",
+      "detalhes": "Somente revisoes de Alteracao na definicao (1,4) e Complemento na definicao (2,5)",
+      "valor-esperado": 0.50,
+      "unidade": "indice",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "sai-revisoes"
+    },
+    {
+      "id": "indice-revisoes-sail",
+      "descricao": "Manter indice de revisoes abaixo de 0,50 em SAIL",
+      "detalhes": "Somente revisoes de Alteracao na definicao (1,4) e Complemento na definicao (2,5)",
+      "valor-esperado": 0.50,
+      "unidade": "indice",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "sai-revisoes"
+    },
+    {
+      "id": "indice-revisoes-sam-imp",
+      "descricao": "Manter indice de revisoes abaixo de 0,80 em SAM Importacao",
+      "detalhes": "Somente revisoes de Alteracao na definicao (1,4) e Complemento na definicao (2,5)",
+      "valor-esperado": 0.80,
+      "unidade": "indice",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "sai-revisoes"
+    },
+    {
+      "id": "indice-revisoes-sam-esc",
+      "descricao": "Manter indice de revisoes abaixo de 0,50 em SAM Escrita",
+      "detalhes": "Somente revisoes de Alteracao na definicao (1,4) e Complemento na definicao (2,5)",
+      "valor-esperado": 0.50,
+      "unidade": "indice",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "sai-revisoes"
+    },
+    {
+      "id": "respostas-ss-3d",
+      "descricao": "Garantir 100% das respostas de SSs em ate 3 dias uteis",
+      "valor-esperado": 100,
+      "unidade": "%",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "ss-tramites"
+    },
+    {
+      "id": "gerar-sai-ne-sal-3d",
+      "descricao": "NE - Gerar SAIs de NE ou retornar ao analista em no maximo 3 dias uteis",
+      "detalhes": "Mede o tempo em dias uteis entre envio pelo analista (sit=2 Analisada) e primeira resposta do coordenador (sit 4, 11 ou 12) em psai_tramites. Exclui sabados e domingos. Cada ciclo de ida-e-volta eh contado individualmente.",
+      "valor-esperado": 3,
+      "unidade": "dias-uteis",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "psai-tramites"
+    }
+  ],
+  "templates": {
+    "junior": [
+      "diretrizes-95",
+      "tempo-trabalho-analise",
+      "pontos-definicao",
+      "indice-revisoes-sal",
+      "indice-revisoes-ne",
+      "indice-revisoes-sail",
+      "indice-revisoes-sam-imp",
+      "indice-revisoes-sam-esc"
+    ],
+    "pleno": [
+      "diretrizes-95",
+      "tempo-trabalho-analise",
+      "pontos-definicao",
+      "indice-revisoes-sal",
+      "indice-revisoes-ne",
+      "indice-revisoes-sail",
+      "indice-revisoes-sam-imp",
+      "indice-revisoes-sam-esc"
+    ],
+    "senior": [
+      "diretrizes-95",
+      "tempo-trabalho-analise",
+      "pontos-definicao",
+      "indice-revisoes-sal",
+      "indice-revisoes-ne",
+      "indice-revisoes-sail",
+      "indice-revisoes-sam-imp",
+      "indice-revisoes-sam-esc"
+    ],
+    "especialista": [
+      "diretrizes-95",
+      "tempo-trabalho-geracao",
+      "indice-revisoes-sal",
+      "indice-revisoes-ne",
+      "indice-revisoes-sail",
+      "indice-revisoes-sam-imp",
+      "indice-revisoes-sam-esc",
+      "respostas-ss-3d",
+      "gerar-sai-ne-sal-3d"
+    ]
+  },
+  "overrides": {}
+}

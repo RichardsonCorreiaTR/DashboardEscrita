@@ -1,0 +1,559 @@
+==========================================================================================
+  ANALISE DE CONFLITOS E RETRABALHO - ESCRITA FISCAL vs TIME SA (Sabrina)
+  Data da analise: 18/03/2026 | Periodo analisado: 04/03 a 18/03/2026
+  Versao corrente: 10.6A-03 (23/02 a 23/03/2026)
+==========================================================================================
+
+------------------------------------------------------------------------------------------
+  1. RESUMO EXECUTIVO
+------------------------------------------------------------------------------------------
+  NEs pendentes Escrita Fiscal (saldo atual):           322
+  PSAIs com tramite do time SA (2 semanas):       52
+    - Tipo NE:   3
+    - Tipo SAM:  41
+    - Tipo SAL:  5
+    - Tipo SAIL: 3
+  PSAIs em COMUM (SA trabalhou + e NE pendente):  2
+
+------------------------------------------------------------------------------------------
+  2. ATIVIDADES DO TIME SA - ULTIMAS 2 SEMANAS
+------------------------------------------------------------------------------------------
+
+  Ana Paula: 93.7h em 12 dias
+    >>> Tempo em atividades NE: 4.0h <<<
+    - SAI-Revisão em SAI de SAM: 16.0h
+    - SAI-Gerando SAI de SAM: 14.9h
+    - Esclarecimento de Dúvidas da Gerência de Produto SAM: 10.5h
+    - Consulta Médica: 6.5h
+    - Reunião de definição de SAM: 5.8h
+
+  Jerusa: 93.0h em 12 dias
+    >>> Tempo em atividades NE: 12.9h <<<
+    - SAM-Analisando SAM: 31.6h
+    - SAI-Revisão em SAI de SAM: 16.3h
+    - NE-Definindo NE: 6.3h
+    - Reunião de Dúvida da GP - SAs: 6.2h
+    - Manutenção de máquinas e software periféricos: 6.0h
+
+  Elisangela: 83.0h em 11 dias
+    - SAL-Analisando SAL: 21.9h
+    - SAM-Analisando SAM: 20.4h
+    - Outros ** Evite Usar: 12.5h
+    - SAM-Definindo SAM: 11.1h
+    - Reunião de Dúvida da GP - SAs: 5.5h
+
+  Taiane: 82.3h em 11 dias
+    - SAM-Definindo SAM: 63.4h
+    - SAI-Revisão em SAI de SAM: 7.6h
+    - Reunião definição de novos produtos/projetos: 3.4h
+    - Daily Meeting - Reunião Diária: 2.6h
+    - Desenvolvimento/Alteração de Manual: 1.9h
+
+  Helen: 81.9h em 10 dias
+    >>> Tempo em atividades NE: 1.2h <<<
+    - Respondendo SS: 51.0h
+    - Pessoal: 8.7h
+    - SAM-Analisando SAM: 7.0h
+    - Daily Meeting - Reunião Diária: 3.5h
+    - Lanche: 3.2h
+
+  Talita: 80.6h em 10 dias
+    >>> Tempo em atividades NE: 10.9h <<<
+    - SAI - Testes: 13.9h
+    - SAIL-Analisando SAIL: 13.4h
+    - SAL-Analisando SAL: 12.7h
+    - Respondendo SS: 8.3h
+    - NE-Definindo NE: 7.0h
+
+  Douglas: 68.2h em 9 dias
+    - SAI-Gerando SAI de SAM: 15.1h
+    - SAI-Revisão em SAI de SAM: 10.4h
+    - SAM-Analisando SAM: 8.6h
+    - Reunião de Dúvida da GP - SAs: 6.3h
+    - Respondendo SS: 3.5h
+
+  Vivian: 24.1h em 3 dias
+    - Férias: 24.1h
+
+------------------------------------------------------------------------------------------
+  3. PSAIs TRABALHADAS PELO TIME SA (com tramite nas ultimas 2 semanas)
+------------------------------------------------------------------------------------------
+
+  PSAI 53203 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Douglas
+    Tramites: Em analise do Especialista
+
+  PSAI 80178 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Douglas
+    Tramites: Em analise do Especialista, Respondido Especialista
+
+  PSAI 86339 [SAIL] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Ana Paula, Helen
+    Tramites: Respondido Especialista, Em analise, Em Definicao, Definida
+
+  PSAI 105827 [SAM] SAI: 100547 | Versao: 10.6A-03 | Sit SAI: 14
+    Analistas SA: Ana Paula
+    Tramites: Em analise do Especialista, A Desenvolver
+
+  PSAI 117170 [SAIL] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Vivian
+    Tramites: Reprovada
+
+  PSAI 117550 [SAM] SAI: 100470 | Versao: - | Sit SAI: 24
+    Analistas SA: Ana Paula
+    Tramites: A Desenvolver
+
+  PSAI 118343 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Douglas
+    Tramites: Em analise do Especialista, Respondido Especialista
+
+  PSAI 119743 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Douglas
+    Tramites: Em analise do Especialista, Respondido Especialista
+
+  PSAI 120551 [SAM] SAI: 100469 | Versao: - | Sit SAI: 24
+    Analistas SA: Ana Paula
+    Tramites: A Desenvolver
+
+  PSAI 120992 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Ana Paula
+    Tramites: Em analise
+
+  PSAI 122984 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Ana Paula
+    Tramites: Aprovada, A definir, Em Definicao
+
+  PSAI 123462 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Douglas, Talita
+    Tramites: Em analise do Especialista, Respondido Especialista, Em analise, Em Definicao
+
+  PSAI 123677 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Ana Paula, Helen
+    Tramites: Em analise do Especialista, Respondido Especialista, Em analise, Em Definicao
+
+  PSAI 125491 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Ana Paula
+    Tramites: Respondido Especialista
+
+  PSAI 125993 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Douglas
+    Tramites: Em analise do Especialista, Respondido Especialista
+
+  PSAI 126813 [SAL] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Douglas
+    Tramites: Reprovada
+
+  PSAI 127201 [SAL] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Elisangela
+    Tramites: Reprovada
+
+  PSAI 127289 [SAM] SAI: 100310 | Versao: - | Sit SAI: 24
+    Analistas SA: Ana Paula
+    Tramites: A Desenvolver
+    Responsaveis NE nesta PSAI: Ana Ligia Vanella Passarelli
+
+  PSAI 127963 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Taiane, Ana Paula
+    Tramites: Definida, Em analise do Especialista, Respondido Especialista, Em analise, Em Definicao
+
+  PSAI 127976 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Elisangela
+    Tramites: Aprovada, A definir, Em Definicao, Definida
+
+  PSAI 128033 [SAL] SAI: 100312 | Versao: - | Sit SAI: 24
+    Analistas SA: Vivian, Ana Paula
+    Tramites: Em Definicao, Analisada, Em Analise do Coordenador, A Desenvolver
+
+  PSAI 128195 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: A aprovar
+
+  PSAI 128284 [SAM] SAI: 100441 | Versao: - | Sit SAI: 24
+    Analistas SA: Talita, Douglas
+    Tramites: Definida, Em analise do Especialista, Respondido Especialista, Em analise, Em Definicao, A Desenvolver
+
+  PSAI 128652 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: A aprovar
+
+  PSAI 128653 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: A aprovar
+
+  PSAI 128750 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: Em analise, A aprovar
+
+  PSAI 128754 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: Em analise, A aprovar
+
+  PSAI 128798 [SAM] SAI: 100333 | Versao: - | Sit SAI: 24
+    Analistas SA: Ana Paula
+    Tramites: Em analise, A aprovar, Aprovada, A definir, Em Definicao, Definida, Em analise do Especialista, A Desenvolver
+
+  PSAI 128807 [SAM] SAI: 100396 | Versao: 10.6A-03 | Sit SAI: 14
+    Analistas SA: Vivian, Ana Paula
+    Tramites: Em analise, A aprovar, Aprovada, A definir, Em Definicao, Definida, Em analise do Especialista, A Desenvolver
+
+  PSAI 128822 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: Em analise, A aprovar
+
+  PSAI 128823 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: Em analise, A aprovar
+
+  PSAI 128834 [NE] SAI: 100358 | Versao: 10.6A-03 | Sit SAI: 14
+    Analistas SA: Ana Paula
+    Tramites: A Desenvolver
+
+  PSAI 128877 [SAL] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Vivian
+    Tramites: Em Definicao, Reprovada
+
+  PSAI 128909 [NE] SAI: 100471 | Versao: 10.6A-03 | Sit SAI: 10 *** NE PENDENTE ***
+    Analistas SA: Ana Paula
+    Tramites: Em Analise do Coordenador, A Desenvolver
+
+  PSAI 128913 [NE] SAI: 0 | Versao: - | Sit SAI: 0 *** NE PENDENTE ***
+    Analistas SA: Vivian, Talita
+    Tramites: Em Definicao, Analisada
+    Responsaveis NE nesta PSAI: Ana Ligia Vanella Passarelli
+
+  PSAI 128950 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: Em analise, A aprovar
+
+  PSAI 128959 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: Em analise, A aprovar
+
+  PSAI 128973 [SAL] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Vivian
+    Tramites: Em Definicao
+
+  PSAI 128987 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Ana Paula, Douglas
+    Tramites: Em analise, A aprovar, Aprovada, A definir, Em Definicao, Aguardando resposta do Especiali, Em analise do Especialista, Aguardando Resposta do Desenvolv
+
+  PSAI 128994 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: Em analise, A aprovar
+
+  PSAI 128998 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: Em analise, A aprovar
+
+  PSAI 129004 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Douglas
+    Tramites: Em analise, A aprovar, Aprovada, A definir, Em Definicao, Definida, Em analise do Especialista, Aguardando Resposta do Desenvolv, Respondido Especialista, Reprovada
+
+  PSAI 129051 [SAIL] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Taiane
+    Tramites: Em analise
+
+  PSAI 129052 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: Em analise, A aprovar
+
+  PSAI 129055 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Talita
+    Tramites: Em analise, A aprovar
+
+  PSAI 129064 [SAM] SAI: 100548 | Versao: - | Sit SAI: 24
+    Analistas SA: Vivian, Ana Paula
+    Tramites: Em analise, A aprovar, Aprovada, A definir, Em Definicao, Definida, Em analise do Especialista, A Desenvolver
+
+  PSAI 129075 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Taiane
+    Tramites: Em analise, A aprovar, Aprovada, A definir, Em Definicao
+
+  PSAI 129084 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Ana Paula
+    Tramites: Em analise, A aprovar, Aprovada, A definir, Em Definicao
+
+  PSAI 129086 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Vivian
+    Tramites: Em analise
+
+  PSAI 129160 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Ana Paula
+    Tramites: Em analise, A aprovar, Aprovada, A definir, Em Definicao, Definida, Em analise do Especialista, Aguardando Resposta do Desenvolv
+
+  PSAI 129180 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Ana Paula
+    Tramites: Em analise, A aprovar, Aprovada, A definir, Em Definicao
+
+  PSAI 129210 [SAM] SAI: 0 | Versao: - | Sit SAI: 0
+    Analistas SA: Helen, Ana Paula
+    Tramites: Em analise, A aprovar, Aprovada, A definir, Em Definicao, Aguardando resposta do Especiali, Em analise do Especialista, Aguardando Resposta do Desenvolv
+
+------------------------------------------------------------------------------------------
+  4. CONFLITOS DIRETOS - PSAIs que sao NEs pendentes E o time SA trabalhou
+------------------------------------------------------------------------------------------
+
+  [RISCO ALTO] PSAI 128909 / SAI 100471
+    Gravidade: Normal | Sit SAI: 10 | Versao: 10.6A-03
+    Cadastro PSAI: 09/03/2026
+    Analistas SA que tramitaram: Ana Paula
+    Responsaveis PSAI (todos): Ana Paula Duarte Huf, Jerusa Valentim de Souza
+      Tramite: Ana Paula em 10/03/2026 -> Em Analise do Coordenador
+      Tramite: Ana Paula em 11/03/2026 -> A Desenvolver
+
+  [RISCO BAIXO] PSAI 128913 / SAI 0
+    Gravidade: Normal | Sit SAI: 0 | Versao: -
+    Cadastro PSAI: 09/03/2026
+    Analistas SA que tramitaram: Vivian, Talita
+    Responsaveis PSAI (todos): Ana Ligia Vanella Passarelli, Talita Ferreira Pereira
+    >>> RESPONSAVEIS DO TIME NE: Ana Ligia Vanella Passarelli <<<
+      Tramite: Vivian em 09/03/2026 -> Em Definicao
+      Tramite: Talita em 13/03/2026 -> Analisada
+      Tramite: Talita em 16/03/2026 -> Em Definicao
+
+------------------------------------------------------------------------------------------
+  5. NEs PENDENTES COM ENVOLVIMENTO DE AMBOS OS TIMES (via responsaveis)
+------------------------------------------------------------------------------------------
+
+  NEs com responsaveis de AMBOS os times (152):
+    PSAI 92078 / SAI 78248 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 95065 / SAI 80322 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 97310 / SAI 85290 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 103469 / SAI 86924 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 104359 / SAI 83822 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 106830 / SAI 87111 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 107010 / SAI 85197 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 114583 / SAI 91523 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 114598 / SAI 92045 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 114626 / SAI 90495 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 114654 / SAI 90779 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 115204 / SAI 94260 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Thalita Castilho da Silva
+    PSAI 115725 / SAI 93223 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 116078 / SAI 91697 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 116419 / SAI 92584 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 116520 / SAI 92735 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 116837 / SAI 93425 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Caroline Topanote
+    PSAI 116937 / SAI 93073 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Helen Gomes
+    PSAI 117075 / SAI 92874 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 117791 / SAI 93282 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 117960 / SAI 93306 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Caroline Topanote
+    PSAI 117974 / SAI 93240 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 118092 / SAI 93307 | Grav: Normal | Resp: Douglas Vicente Ribeiro, Ana Ligia Vanella Passarelli
+    PSAI 118123 / SAI 93357 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 118231 / SAI 93443 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Caroline Topanote
+    PSAI 118352 / SAI 93758 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Caroline Topanote
+    PSAI 118465 / SAI 93618 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 118706 / SAI 96962 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 118788 / SAI 93920 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 119012 / SAI 94316 | Grav: Normal | Resp: Luana Valnier
+    PSAI 119018 / SAI 94339 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Henrique Correa de Araujo
+    PSAI 119453 / SAI 95069 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 119474 / SAI 95068 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 119514 / SAI 94803 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 119535 / SAI 96420 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 119702 / SAI 96147 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 119813 / SAI 97663 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 120037 / SAI 96562 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 120128 / SAI 95194 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 120156 / SAI 96330 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 120163 / SAI 95178 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 120192 / SAI 95065 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 120213 / SAI 95518 | Grav: Normal | Resp: Luana Valnier
+    PSAI 120948 / SAI 96423 | Grav: Normal | Resp: Luana Valnier
+    PSAI 120968 / SAI 95889 | Grav: Normal | Resp: Luana Valnier
+    PSAI 121584 / SAI 98184 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 121830 / SAI 97659 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 122005 / SAI 97780 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 122006 / SAI 98926 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 122491 / SAI 96740 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 122511 / SAI 96835 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 122684 / SAI 97553 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 122894 / SAI 97247 | Grav: Normal | Resp: Luana Valnier
+    PSAI 122909 / SAI 97376 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 122912 / SAI 98186 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 123050 / SAI 98078 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 123155 / SAI 97940 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 123237 / SAI - | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 123304 / SAI 99978 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 123351 / SAI 97449 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 123503 / SAI 97470 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 123528 / SAI 97512 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 123558 / SAI 97628 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 123759 / SAI 100009 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 123761 / SAI 98094 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 123824 / SAI 97941 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 123965 / SAI 97903 | Grav: Normal | Resp: Luana Valnier
+    PSAI 123990 / SAI 97938 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 124129 / SAI 98505 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 124168 / SAI 98206 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 124324 / SAI 98133 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 124325 / SAI 99352 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 124415 / SAI 98369 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 124417 / SAI 98170 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 124534 / SAI 100118 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 124562 / SAI 98260 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 124639 / SAI 99587 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 124663 / SAI 98450 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 124728 / SAI 99745 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 124759 / SAI 98371 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 124771 / SAI 98449 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 125049 / SAI - | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 125310 / SAI 98661 | Grav: Normal | Resp: Luana Valnier
+    PSAI 125342 / SAI 98722 | Grav: Normal | Resp: Luana Valnier
+    PSAI 125366 / SAI 98942 | Grav: Normal | Resp: Luana Valnier
+    PSAI 125609 / SAI 98674 | Grav: Normal | Resp: Luana Valnier
+    PSAI 125615 / SAI 98720 | Grav: Normal | Resp: Luana Valnier
+    PSAI 125629 / SAI 99668 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 125728 / SAI 98844 | Grav: Normal | Resp: Luana Valnier
+    PSAI 125761 / SAI 99029 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 125768 / SAI 99575 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 125835 / SAI - | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 125953 / SAI 98932 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 125970 / SAI 99202 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 126012 / SAI 99571 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 126375 / SAI 99220 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 126376 / SAI 99240 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 126435 / SAI 99237 | Grav: Normal | Resp: Luana Valnier
+    PSAI 126473 / SAI 99262 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 126493 / SAI 99376 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 126495 / SAI 99368 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli, Bruna Nogueira Lima
+    PSAI 126496 / SAI 99428 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 126546 / SAI 99423 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 126589 / SAI 99345 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 126601 / SAI 99960 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 126721 / SAI 99379 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 126767 / SAI 99576 | Grav: Normal | Resp: Luana Valnier
+    PSAI 126779 / SAI 100014 | Grav: Normal | Resp: Luana Valnier
+    PSAI 126846 / SAI 99677 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 126927 / SAI 100234 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 126939 / SAI 99721 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 127009 / SAI 99669 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Jerusa Valentim de Souza
+    PSAI 127073 / SAI 100054 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 127115 / SAI 99975 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 127202 / SAI 99752 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 127204 / SAI 100252 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 127259 / SAI 99734 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 127495 / SAI 99738 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 127574 / SAI 99907 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 127680 / SAI 99943 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 127800 / SAI 100420 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 127804 / SAI 100043 | Grav: Normal | Resp: Laiz Velho de Almeida, Luana Valnier
+    PSAI 127910 / SAI 99898 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 127988 / SAI 99922 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 128118 / SAI - | Grav: Normal | Resp: Ana Ligia Vanella Passarelli
+    PSAI 128214 / SAI 100391 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 128226 / SAI 100206 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 128281 / SAI 100083 | Grav: Normal | Resp: Luana Valnier
+    PSAI 128315 / SAI 100111 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 128325 / SAI 100126 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 128530 / SAI 100375 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 128550 / SAI 100353 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 128551 / SAI 100285 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 128565 / SAI 100487 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 128571 / SAI 100419 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 128572 / SAI 100324 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Ana Paula Duarte Huf, Camila da Cruz Guimaraes
+    PSAI 128573 / SAI 100267 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 128604 / SAI 100372 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 128625 / SAI 100322 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 128697 / SAI 100415 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 128698 / SAI 100384 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 128706 / SAI 100579 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 128770 / SAI 100512 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 128910 / SAI 100473 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Jerusa Valentim de Souza
+    PSAI 128913 / SAI - | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Talita Ferreira Pereira
+    PSAI 128926 / SAI 100515 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 128961 / SAI - | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 128975 / SAI 100528 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, J�ssica Vieira Maximiano
+    PSAI 129071 / SAI 100614 | Grav: Normal | Resp: Ana Ligia Vanella Passarelli, Camila da Cruz Guimaraes
+    PSAI 129090 / SAI 100581 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 129135 / SAI - | Grav: Normal | Resp: Luana Valnier
+    PSAI 129162 / SAI 100605 | Grav: Normal | Resp: Luana Valnier, Ana Ligia Vanella Passarelli
+
+  NEs pendentes com responsavel do time SA (mas sem NE) (17):
+    PSAI 88553 / SAI 74208 | Grav: Normal | Resp: Poliana Warmling
+    PSAI 88597 / SAI 74405 | Grav: Normal | Resp: Poliana Warmling
+    PSAI 91730 / SAI 76002 | Grav: Normal | Resp: Ana Paula Duarte Huf, Renan Maiato
+    PSAI 107296 / SAI 85483 | Grav: Normal | Resp: Vivian Cassol Matheus, Ana Carolina Gon�alves
+    PSAI 107540 / SAI 87276 | Grav: Normal | Resp: Tatiana Monsolelli
+    PSAI 108578 / SAI 87035 | Grav: Normal | Resp: Tatiana Monsolelli
+    PSAI 108686 / SAI 87357 | Grav: Normal | Resp: Tatiana Monsolelli
+    PSAI 109273 / SAI 86812 | Grav: Normal | Resp: Tatiana Monsolelli
+    PSAI 110046 / SAI 87161 | Grav: Normal | Resp: Tatiana Monsolelli
+    PSAI 110296 / SAI 87145 | Grav: Normal | Resp: Tatiana Monsolelli
+    PSAI 110413 / SAI 87151 | Grav: Normal | Resp: Tatiana Monsolelli
+    PSAI 115825 / SAI 92120 | Grav: Normal | Resp: Helen Gomes
+    PSAI 115976 / SAI 92251 | Grav: Normal | Resp: Helen Gomes
+    PSAI 117163 / SAI 92540 | Grav: Normal | Resp: Douglas Vicente Ribeiro
+    PSAI 117805 / SAI 93248 | Grav: Normal | Resp: Helen Gomes
+    PSAI 118049 / SAI 93562 | Grav: Normal | Resp: Douglas Vicente Ribeiro
+    PSAI 128909 / SAI 100471 | Grav: Normal | Resp: Ana Paula Duarte Huf, Jerusa Valentim de Souza
+
+------------------------------------------------------------------------------------------
+  6. NEs PENDENTES NA VERSAO 10.6A-03 (maior risco de impacto)
+------------------------------------------------------------------------------------------
+
+  Total NEs commitadas/alocadas na 10.6A-03: 17
+    PSAI 104238 / SAI 87937 | SAI Aprovada (sit 25) | Grav: Normal
+    PSAI 118092 / SAI 93307 | SAI Aprovada (sit 25) | Grav: Normal
+      Responsaveis NE: Ana Ligia Vanella Passarelli
+    PSAI 119702 / SAI 96147 | SAI Aprovada (sit 25) | Grav: Normal
+      Responsaveis NE: Ana Ligia Vanella Passarelli
+    PSAI 121830 / SAI 97659 | SAI Aprovada (sit 25) | Grav: Normal
+      Responsaveis NE: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 122293 / SAI 98178 | Em Teste (sit 14) | Grav: Normal
+      Responsaveis NE: Camila da Cruz Guimaraes
+    PSAI 122894 / SAI 97247 | Em Teste (sit 14) | Grav: Normal
+      Responsaveis NE: Luana Valnier
+    PSAI 124562 / SAI 98260 | SAI Aprovada (sit 25) | Grav: Normal
+      Responsaveis NE: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 125573 / SAI 98773 | Em Desenvolvimento (sit 10) | Grav: Normal
+    PSAI 126435 / SAI 99237 | Em Desenvolvimento (sit 10) | Grav: Normal
+      Responsaveis NE: Luana Valnier
+    PSAI 126473 / SAI 99262 | SAI Aprovada (sit 25) | Grav: Normal
+      Responsaveis NE: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 126766 / SAI 99535 | Em Teste (sit 14) | Grav: Normal
+      Responsaveis NE: Camila da Cruz Guimaraes
+    PSAI 126846 / SAI 99677 | SAI Aprovada (sit 25) | Grav: Normal
+      Responsaveis NE: Ana Ligia Vanella Passarelli
+    PSAI 126939 / SAI 99721 | Em Teste (sit 14) | Grav: Normal
+      Responsaveis NE: Ana Ligia Vanella Passarelli
+    PSAI 127495 / SAI 99738 | SAI Aprovada (sit 25) | Grav: Normal
+      Responsaveis NE: Ana Ligia Vanella Passarelli
+    PSAI 128226 / SAI 100206 | Desconhecida (sit 23) | Grav: Normal
+      Responsaveis NE: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 128325 / SAI 100126 | SAI Aprovada (sit 25) | Grav: Normal
+      Responsaveis NE: Luana Valnier, Ana Ligia Vanella Passarelli
+    PSAI 128909 / SAI 100471 | Em Desenvolvimento (sit 10) | Grav: Normal *** CONFLITO ***
+
+------------------------------------------------------------------------------------------
+  7. ANALISE DE RISCO E RECOMENDACOES
+------------------------------------------------------------------------------------------
+
+  [ATENCAO] Analistas SA com tempo registrado em atividades NE:
+    Jerusa: 12.9h em atividades NE
+    Talita: 10.9h em atividades NE
+    Ana Paula: 4.0h em atividades NE
+    Helen: 1.2h em atividades NE
+    -> Verificar se essas NEs nao conflitam com o backlog do time NE
+
+  [CRITICO] 2 PSAI(s) sendo trabalhada(s) por ambos os times:
+    PSAI 128909: SA(Ana Paula) + NE(-)
+      -> ALINHAR IMEDIATAMENTE para evitar retrabalho
+    PSAI 128913: SA(Vivian, Talita) + NE(Ana Ligia Vanella Passarelli)
+      -> ALINHAR IMEDIATAMENTE para evitar retrabalho
+
+  RECOMENDACOES GERAIS:
+  1. Alinhar com o time SA (Sabrina) as PSAIs em comum listadas na secao 4
+  2. Analistas SA que registraram tempo em NE (secao 7) podem estar
+     duplicando esforco - verificar quais NEs especificas
+  3. Estabelecer ritual semanal de 15min entre coordenadores para
+     sincronizar PSAIs em andamento
+  4. NEs na versao 10.6A-03 (secao 6) sao as de maior risco de
+     impacto - monitorar qualquer mudanca de situacao
+
+  5. 152 NE(s) pendente(s) tem responsaveis de ambos os times
+     (secao 5) - alto risco de sobreposicao de trabalho
+
+==========================================================================================
+  FIM DO RELATORIO
+==========================================================================================

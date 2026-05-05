@@ -1,0 +1,90 @@
+---
+description: SQL padrao, situacoes SAI/PSAI e tabelas do banco
+globs: src/indicadores/**/*,src/estudos/**/*,src/core/**/*
+alwaysApply: false
+---
+
+# SQL, Situacoes e Tabelas
+
+> Parte 3 de negocio. Ver tambem: negocio.mdc (regras criticas), negocio-versoes.mdc (versoes/PIAZZA)
+
+## SQL padrao: Saldo NE (logica oficial SGD)
+
+```sql
+SELECT COUNT(*) as saldo
+FROM UP.SAI_PSAI sai_psai
+JOIN bethadba.psai psai ON sai_psai.i_psai = psai.i_psai
+WHERE sai_psai.nomeArea = 'Escrita'
+  AND sai_psai.tipoSAI = 'NE'
+  AND sai_psai.CadastroPSAI <= PIAZZA.FG_GET_DATA_FIM_VERSAO('10.6A-01', 1)
+  AND (COALESCE(sai_psai.Liberacao, '3000-12-01') > PIAZZA.FG_GET_DATA_FIM_VERSAO('10.6A-01', 1))
+  AND (COALESCE(sai_psai.Descarte, '3000-12-01') > PIAZZA.FG_GET_DATA_FIM_VERSAO('10.6A-01', 1))
+  AND COALESCE(psai.i_produto_grupo, 1) = 1
+```
+
+## SQL padrao: Entradas + Descartes na versao
+
+```sql
+-- Usa bethadba.sai (nao psai) com EXISTS + i_sai = 0
+WHERE (EXISTS (SELECT 1 FROM bethadba.sai sai
+    WHERE sai_psai.i_sai = sai.i_sai
+    AND (sai.i_produto_grupo IS NULL OR sai.i_produto_grupo = 1))
+  OR sai_psai.i_sai = 0)
+```
+
+## Situacoes SAI (bethadba.sai_situacoes, linha area Escrita)
+
+| ID | Situacao | Versao? | Fase |
+|----|----------|---------|------|
+| 0 | (PSAI sem SAI) | - | - |
+| 1 | Inicial | - | Triagem |
+| 2 | A Analisar | - | Triagem |
+| 3 | A Desenvolver | - | Pre-versao |
+| 7 | Definicao de Desenvolvimento | sim | Versao |
+| 10 | Em Desenvolvimento | sim | Versao (i_versoes, sem nomeVersao) |
+| 11 | Desenvolvimento Concluido | sim | Versao (nomeVersao preenchido) |
+| 14 | Em Teste | sim | Versao |
+| 15 | Teste Concluido | sim | Versao |
+| 24 | A Estimar Tempo | - | Pre-versao |
+| 25 | SAI Aprovada | sim | Versao |
+| 16 | Liberado | sim | FIM |
+| 26 | Liberado em versoes anteriores | - | FIM (limpeza backlog) |
+| 4 | Descartado | - | FIM |
+
+- **Chave composta**: `i_sai_situacoes` + `i_sai_linhas`. Para NE: `i_sai_linhas = 1` (sem isso, duplica!)
+- Bypass necessario no query-executor para ler `descricao` (validador bloqueia por nome)
+
+## Situacoes PSAI (bethadba.psai_situacoes)
+
+Quando `i_sai_situacoes = 0`, a situacao esta em `i_psai_situacoes` do SAI_PSAI.
+Fallback nas queries: `COALESCE(sit_sai.descricao, sit_psai.descricao)`
+
+| ID | Situacao | Finaliza? |
+|----|----------|-----------|
+| 5 | Concluido sem Desenvolvimento | sim |
+| 6 | Reprovada | sim |
+| 12 | A Desenvolver | sim |
+| 23 | **Prescrita** (automatica, usuario 105) | sim |
+| 24 | Liberado em versoes anteriores | sim |
+| 33 | Sistema Descontinuado | sim |
+| 34 | Liberado antecipadamente | sim |
+
+## Colunas potencialmente pesadas (AVISO)
+DESCRICAO, ANTECIPACOES, CORRECOES, situacao_descricao, comportamento, definicao,
+descricao_destaque, motivo_descricao, NOME_ATIVIDADE (GAATIVIDADES)
+- Query-executor emite AVISO (warn), nao bloqueia
+
+## Tabelas inacessiveis via ODBC
+- `bethadba.GAVERSOES` e `bethadba.versoes` - falham (provavel BLOB na estrutura)
+
+## Tabela sai_roteiro_desenvolvimento (tempo de dev por SAI)
+
+674.000 registros. Campos: i_sai (FK), tempo_previsto (min), **tempo_realizado** (min, CAMPO DO INDICADOR),
+data_exclusao (filtrar IS NULL), i_responsaveis, i_versoes, i_sistemas (1=produto Folha no catalogo), data_conclusao.
+
+```sql
+SELECT SUM(rd.tempo_realizado) as tempo_total
+FROM bethadba.sai_roteiro_desenvolvimento rd
+WHERE rd.data_exclusao IS NULL
+  AND rd.i_sai IN (SELECT DISTINCT sp.i_sai FROM UP.SAI_PSAI sp ...)
+```

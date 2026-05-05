@@ -1,0 +1,72 @@
+---
+description: Registro de indicadores implementados e suas formulas
+globs: src/indicadores/**/*
+alwaysApply: false
+---
+
+# Indicadores Implementados (5) - Refatorados v2
+
+> Todos usam periodo de VERSAO (via PIAZZA) e filtro produto_grupo.
+> Modulo de versoes: src/core/versao.js
+
+### saldo-ne
+- **Arquivo**: src/indicadores/produto/saldo-ne.js
+- **Codigo SGD**: 143633
+- **Formula**: NEs criadas ate FIM_VERSAO, nao liberadas/descartadas ate FIM_VERSAO
+- **Fonte**: UP.SAI_PSAI JOIN bethadba.psai (i_produto_grupo = 1)
+- **SQL**: COALESCE(Liberacao, '3000-12-01') > FIM_VERSAO (logica oficial SGD)
+- **Semaforo**: Verde=<=meta, Amarelo=ate +10%, Vermelho=>+10%
+- **Meta 2026**: 222 (progressao: 301->222)
+- **Resultado v2 (10.6A-02)**: 318 (amarelo), anterior: 298, variacao: +20
+
+### ne-95-dias
+- **Arquivo**: src/indicadores/produto/ne-95-dias.js
+- **Codigo SGD**: 143631
+- **Formula**: Dentre NEs no SALDO da versao, DATEDIFF(CadastroPSAI, hoje) > 95
+- **Fonte**: UP.SAI_PSAI JOIN bethadba.psai (i_produto_grupo = 1)
+- **Semaforo**: Verde=<=meta, Amarelo=ate +15%, Vermelho=>+15%
+- **Meta 2026**: 0 aspir. / progressao: 220->100
+- **Resultado v2 (10.6A-02)**: 206 (verde)
+
+### criticas-graves-5d
+- **Arquivo**: src/indicadores/produto/criticas-graves-5d.js
+- **Codigo SGD**: 143635
+- **Formula**: % Criticas+Graves com nomeVersao preenchido, liberadas em <=5d uteis
+- **Fonte**: UP.SAI_PSAI JOIN bethadba.psai (i_produto_grupo = 1)
+- **Regra chave**: (nomeVersao = 'X' OR nomeVersao LIKE 'anterior.%') AND Liberacao IS NOT NULL
+- **Inclui arquivo**: Sim (antecipacoes da versao anterior contam como liberadas)
+- **Semaforo**: Verde=>=90% (ou 0 total sem abertas), Amarelo=70-89% OU 0 total COM abertas, Vermelho=<70%
+- **Abertas no saldo**: queryAbertas traz Criticas/Graves pendentes (total_abertas no retorno)
+- **Meta 2026**: 90% constante
+- **Resultado v3 (10.6A-02)**: 50% (vermelho, 1 de 2)
+
+### tempo-correcao-ne
+- **Arquivo**: src/indicadores/produto/tempo-correcao-ne.js
+- **Queries**: tempo-correcao-queries.js (liberadas + paralelo)
+- **Codigo SGD**: 143636
+- **Formula v7**: Tempo NE / (Tempo Liberadas + Tempo Paralelo) * 100
+- **Fontes de tempo** (3 componentes, NAO usa gaGerenciadorAtividades):
+  - `sai_roteiro_desenvolvimento.tempo_realizado` (desenvolvimento)
+  - `sai_roteiro_testes.tempo_teste_realizado` (teste)
+  - `sai_roteiro_testes.tempo_preparacao_realizado` (preparacao)
+- **Regra chave**: SAIs da area Escrita liberadas na versao OU em arquivo de versao
+  - Versao: `nomeVersao = 'X' AND Liberacao IS NOT NULL`
+  - Arquivo: `nomeVersao LIKE '{anterior}.%' AND Liberacao IS NOT NULL`
+- **SAIs em Paralelo**: versoes especiais (nomeVersao nao-numerico: PacotesIA, ImportacaoEsoci, etc.)
+  - Tempo filtrado por `data_conclusao` dentro do periodo da versao (PIAZZA)
+  - Nao tem Liberacao; sao projetos paralelos de longa duracao
+- **Inclui**: TODOS os tipos de SAI (NE, SAM, SAL, SAIL) no denominador + paralelo
+- **Exclui**: roteiros com data_exclusao IS NOT NULL
+- **Detalhe**: `sais[]` (liberadas) + `sais_paralelo[]` com dev/teste/prep por SAI
+- **Semaforo**: Verde=<=meta, Amarelo=ate +5pp, Vermelho=>+5pp (menor=melhor)
+- **Meta 2026**: 36.4% em dezembro (progressao mensal)
+- **Validacao 10.6A-01**: 30.1% (ref Marianna: 30.8%, diff 0.7pp) - 37 lib + 2 paralelo
+- **Resultado v7 (10.6A-02)**: 40.8% (16 lib + 3 paralelo)
+
+### entrada-ne
+- **Arquivo**: src/indicadores/produto/entrada-ne.js
+- **Tipo**: Acompanhamento (sem meta formal, impacta saldo)
+- **Formula**: Entradas e descartes no PERIODO DA VERSAO
+- **Fonte**: UP.SAI_PSAI + EXISTS bethadba.sai (produto_grupo)
+- **Regra chave**: NE_PREVENCAO nao e filtro, e detalhamento (interna/externa)
+- **Resultado v3 (10.6A-02)**: 55 ent (50 ext+5 int), 28 desc, 7 lib, var=+20 (bate com saldo)

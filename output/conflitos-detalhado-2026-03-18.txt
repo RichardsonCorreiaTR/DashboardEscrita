@@ -1,0 +1,297 @@
+==========================================================================================
+  ANALISE DE CONFLITOS E RETRABALHO - DETALHAMENTO COMPLETO
+  Escrita Fiscal (Vitor) vs Time SA (Sabrina)
+  Data: 18/03/2026 | Periodo: 04/03 a 18/03/2026 | Versao: 10.6A-03
+==========================================================================================
+
+
+------------------------------------------------------------------------------------------
+  RESUMO EXECUTIVO
+------------------------------------------------------------------------------------------
+
+  Foram identificados 3 PONTOS DE CONFLITO entre os times, organizados por grau de risco.
+  
+  Alem disso, 4 analistas SA registraram tempo em atividades NE (total 29h em 2 semanas),
+  e 152 NEs pendentes possuem responsaveis de ambos os times.
+
+  CONFLITO 1 [CRITICO]  PSAI 128909 + 128910 + 105827 - Cluster IRRF/RPA Transportador
+  CONFLITO 2 [ALTO]     PSAI 128913 - Ajuste INSS ferias com zerar verbas rescisao
+  CONFLITO 3 [MEDIO]    PSAI 128834 - Base IRRF Transportador (ja liberada, risco residual)
+
+
+==========================================================================================
+  CONFLITO 1 - CLUSTER IRRF / RPA / TRANSPORTADOR AUTONOMO
+  RISCO: CRITICO
+==========================================================================================
+
+  PSAI PRINCIPAL: 128909 / SAI 100471
+  VERSAO: 10.6A-03 | SITUACAO: Em Desenvolvimento (sit 10)
+  GRAVIDADE: Normal | CADASTRO: 09/03/2026
+  PONTUACAO: 8 | NIVEL ALTERACAO: 3 | SSCs: 2 | SANEs: 9
+
+  O QUE E ESTA NE:
+  ----------------
+  Erro no calculo e relatorios de contribuinte Transportador Autonomo (categorias SEFIP 
+  15, 16, 18, 23 e 25). O sistema esta:
+  
+  1. Considerando indevidamente os valores das rubricas com classificacao "Servicos Frete" 
+     no relatorio "Extrator da DIRF"
+  2. Somando indevidamente o desconto do INSS na coluna "Base de Calculo" do grupo "Sistema" 
+     no relatorio "Demonstrativo de IRRF"
+  
+  IMPACTO: Afeta Rubricas, Calculo Mensal, Relatorios, RPA/Contribuintes, RAIS/DIRF, 
+  INSS, IRRF, eSocial. Requer atualizacao de banco de dados e reenvio de eventos S-1200.
+
+  QUEM TRABALHA NELA (SA):
+  -------------------------
+  - Ana Paula Duarte Huf (SA):
+    * 10/03 -> Em Analise do Coordenador
+    * 11/03 -> A Desenvolver (enviou para desenvolvimento)
+  - Jerusa Valentim de Souza: responsavel PSAI (banco de dados de teste e dela)
+
+  QUEM TRABALHA NELA (NE):
+  -------------------------
+  - Responsaveis PSAI: Ana Paula Duarte Huf, Jerusa Valentim de Souza
+  - NOTA: Ana Paula aparece como responsavel PSAI E como analista SA que tramitou
+
+  PSAIS RELACIONADAS (MESMO TEMA):
+  ---------------------------------
+  a) PSAI 128910 - E a "irma" da 128909. A propria definicao da 128909 menciona:
+     "a Base IRRF foi alterada indevidamente (...) esta situacao sera ajustada na Pre-SAI 128910"
+     -> Se um time corrigir sem alinhar, a outra PSAI pode ficar inconsistente.
+
+  b) PSAI 105827 - Diferenca da coluna deducao entre grupo "Sistema" e "eSocial".
+     A definicao da 128909 menciona: "a diferenca da coluna deducao, entre o grupo 'Sistema'
+     e 'eSocial', sera ajustada na Pre-SAI 105827"
+     -> CONFLITO DIRETO: A Jerusa (SA) retomou a PSAI 105827 em 17/03 via SAM 441819!
+        Log da Jerusa: "Recebi a SAM 441819 sobre a divergencia da coluna deducao do 
+        demonstrativo de IRRF entre o grupo sistema e eSocial"
+        Ela fez varredura completa, analise de codigo e gerou analise consolidada 
+        com SWOT, mapa de riscos e 15 cenarios de teste.
+
+  PORQUE E CRITICO:
+  ------------------
+  1. A PSAI 128909 esta em DESENVOLVIMENTO ATIVO na versao 10.6A-03
+  2. A Jerusa (SA) esta simultaneamente trabalhando na PSAI 105827 que e 
+     DEPENDENCIA DIRETA da 128909 (mencionada na definicao)
+  3. A Ana Paula e responsavel PSAI da 128909 E tramitou como SA
+  4. Qualquer alteracao em uma das 3 PSAIs (128909, 128910, 105827) impacta as outras
+  5. O desenvolvedor pode implementar uma das correcoes sem saber da outra
+
+  ACAO RECOMENDADA:
+  ------------------
+  [URGENTE] Reuniao entre Vitor, Sabrina, Ana Paula e Jerusa para:
+  1. Mapear qual time lidera qual PSAI do cluster
+  2. Garantir que o desenvolvedor tenha visao das 3 PSAIs juntas
+  3. Definir ordem de implementacao (128834 ja saiu, 128909 em dev, 105827 em analise)
+
+
+==========================================================================================
+  CONFLITO 2 - AJUSTE INSS FERIAS COM ZERAR VERBAS RESCISAO
+  RISCO: ALTO
+==========================================================================================
+
+  PSAI: 128913 / SAI: ainda nao gerada (PSAI sem SAI)
+  VERSAO: nenhuma (ainda em definicao)
+  SITUACAO PSAI: Em Definicao | CADASTRO: 09/03/2026
+  SSCs: 1 | SANEs: 2
+
+  O QUE E ESTA NE:
+  ----------------
+  O sistema NAO esta realizando o ajuste de INSS segurado quando o empregado possui
+  ferias na competencia E rescisao com a opcao "Zerar verbas rescisorias devido a 
+  reclamatoria trabalhista".
+  
+  Ou seja: quando o empregado tem ferias + rescisao com zeragem de verbas, o calculo
+  de INSS fica incorreto porque a funcao of_calc_inss_dif_fer() nao verifica a flag
+  ibZerarVerbasRescisorias.
+  
+  MODULOS: Rescisao, INSS, Ferias, Calculo
+
+  QUEM TRABALHA NELA (SA):
+  -------------------------
+  - Vivian Cassol Matheus (SA): 09/03 -> Em Definicao (iniciou a definicao)
+  - Talita Ferreira Pereira (SA): 
+    * 13/03 -> Analisada
+    * 16/03 -> Em Definicao (retomou)
+    * Log 10/03: Gerou a definicao completa da PSAI-128913 com a ferramenta IA
+      - 5 cenarios de teste detalhados
+      - Analise de codigo: 4 pontos afetados, 7 pontos de atencao
+      - Identificou que ela propria e autora da SAI 98887 que CAUSOU o efeito colateral
+      - Artefato: PSAI-128913-ajuste-inss-ferias-zerar-verbas.md
+
+  QUEM TRABALHA NELA (NE):
+  -------------------------
+  - Ana Ligia Vanella Passarelli: responsavel PSAI (time NE)
+  - Talita Ferreira Pereira: responsavel PSAI (time SA)
+
+  DETALHES DO CONFLITO:
+  ----------------------
+  a) A Talita (SA) ja FEZ a definicao completa com IA em 10/03 - cenarios, codigo, tudo
+  b) A Ana Ligia (NE) esta como responsavel PSAI e pode estar trabalhando na mesma definicao
+  c) A Talita identificou que a PSAI 128950 (opcao para nao demonstrar 821/836 quando INSS 
+     no teto) esta em andamento e PODE CONFLITAR com a 128913
+  d) Tem referencia cruzada com uo_srv_complementar.sru e uo_rateio_ferias.sru
+
+  PORQUE E ALTO:
+  ---------------
+  1. Dois times trabalhando na MESMA definicao sem comunicacao clara
+  2. A Talita ja investiu tempo significativo gerando a definicao
+  3. Se a Ana Ligia fizer outra definicao independente, sera retrabalho puro
+  4. A PSAI 128950 (outro analista) pode conflitar
+
+  ACAO RECOMENDADA:
+  ------------------
+  [ESTA SEMANA] Verificar com Ana Ligia:
+  1. Ela ja comecou a definicao da 128913? Se sim, alinhar com a versao da Talita
+  2. Se nao, usar a definicao da Talita como base (ja tem cenarios e analise de codigo)
+  3. Verificar se a PSAI 128950 precisa ser tratada em conjunto
+
+
+==========================================================================================
+  CONFLITO 3 - BASE IRRF TRANSPORTADOR (LIBERADA - RISCO RESIDUAL)
+  RISCO: MEDIO
+==========================================================================================
+
+  PSAI: 128834 / SAI 100358
+  VERSAO: 10.6A-03 | SITUACAO: Liberada em 10/03/2026
+  GRAVIDADE: Normal | CADASTRO: 05/03/2026
+  PONTUACAO: 8 | TEMPO REALIZADO: 924 min (15.4h) | SSCs: 4 | SANEs: 78
+
+  O QUE ERA ESTA NE:
+  -------------------
+  O sistema estava enviando incorretamente o valor da rubrica '9454 - BASE IRRF 
+  TRANSPORTADOR' no XML do evento S-1200, independente do tipo de deducao configurada,
+  quando se tratava de contribuinte Transportador Autonomo.
+  
+  ESTA NE JA FOI LIBERADA em 10/03/2026.
+
+  POR QUE AINDA E RELEVANTE:
+  ---------------------------
+  1. Faz parte do MESMO CLUSTER da PSAI 128909 (tema Transportador Autonomo / IRRF)
+  2. A Ana Paula (SA) tramitou como "A Desenvolver" para esta PSAI
+  3. A correcao da 128834 pode ter resolvido PARTE do problema que a 128909 ainda trata
+  4. Se o desenvolvedor da 128909 nao souber que a 128834 ja foi liberada, pode 
+     reimplementar logica que ja existe
+  5. A SAI 128909 menciona na definicao situacoes que a 128834 ja corrigiu
+
+  ACAO RECOMENDADA:
+  ------------------
+  Garantir que o desenvolvedor da PSAI 128909 saiba que a 128834 ja foi liberada
+  e leve em consideracao as alteracoes ja feitas antes de implementar.
+
+
+==========================================================================================
+  CONTEXTO ADICIONAL: ATIVIDADES NE DO TIME SA
+==========================================================================================
+
+  Analistas SA que registraram tempo em atividades NE (ultimas 2 semanas):
+
+  JERUSA (12.9h em NE):
+  ----------------------
+  - 6.3h em "NE-Definindo NE"  
+  - 6.6h em outras atividades NE
+  - Log 17/03: Retomou PSAI 105827 (Demonstrativo IRRF deducoes) via SAM 441819
+    * Fez varredura em 6 modulos de indices
+    * Analisou codigo-fonte 
+    * Gerou analise consolidada com SWOT, mapa de riscos e 15 cenarios
+    * ESTA PSAI E DEPENDENCIA DA 128909 (conflito 1)
+
+  TALITA (10.9h em NE):
+  ----------------------
+  - 7.0h em "NE-Definindo NE"
+  - 3.9h em outras atividades NE
+  - Log 10/03: Gerou definicao completa da PSAI 128913 (conflito 2)
+  - Log 17/03: Trabalhou na PSAI 128724 (Extrator DIRF valores negativos)
+    * Gerou SAI completa com 9 cenarios, 33 campos mapeados
+    * Identificou que PSAI 128770 (base negativa Comprovante Rendimentos) e tema irmao
+    * NOTA: 128724 tambem e do modulo RAIS/DIRF - verificar se impacta o cluster do conflito 1
+
+  ANA PAULA (4.0h em NE):
+  -------------------------
+  - Registrou 4h em atividades NE
+  - Tramitou PSAIs 128909 e 128834 (conflitos 1 e 3)
+  - E responsavel PSAI em ambas
+
+  HELEN (1.2h em NE):
+  --------------------
+  - Tempo baixo, risco menor
+
+
+==========================================================================================
+  CRUZAMENTO: NEs PENDENTES COM RESPONSAVEIS DE AMBOS OS TIMES
+==========================================================================================
+
+  152 NEs pendentes possuem responsaveis tanto do time NE quanto do time SA.
+  Isso nao significa que todas sao conflitos ativos, mas indica que ha historico 
+  de envolvimento cruzado que pode gerar confusao sobre quem lidera a resolucao.
+
+  EXEMPLOS DE MAIOR RISCO (versao 10.6A-03 + responsaveis de ambos os times):
+
+  PSAI 128909 / SAI 100471 - Em Desenvolvimento
+    NE: Ana Paula, Jerusa | SA: Ana Paula (CONFLITO 1)
+
+  PSAI 128913 / SAI 0 - Em Definicao
+    NE: Ana Ligia | SA: Vivian, Talita (CONFLITO 2)
+
+  PSAI 127009 / SAI 99669
+    NE: Ana Ligia | SA: Jerusa Valentim de Souza
+    -> Verificar se ha sobreposicao
+
+  PSAI 128572 / SAI 100324
+    NE: Ana Ligia, Camila | SA: Ana Paula Duarte Huf
+    -> Verificar se ha sobreposicao
+
+  PSAI 128910 / SAI 100473
+    NE: Ana Ligia | SA: Jerusa Valentim de Souza
+    -> PSAI irma da 128909 (conflito 1) - VERIFICAR
+
+
+==========================================================================================
+  RECOMENDACOES CONSOLIDADAS
+==========================================================================================
+
+  URGENTE (esta semana):
+  ----------------------
+  1. Reuniao Vitor + Sabrina + Ana Paula + Jerusa sobre o CLUSTER IRRF/Transportador:
+     - PSAIs 128909, 128910, 128834 (liberada), 105827
+     - Definir quem lidera, garantir que Dev tenha visao do conjunto
+  
+  2. Alinhar com Ana Ligia sobre PSAI 128913:
+     - Verificar se ja comecou definicao propria
+     - Usar definicao da Talita como base se ainda nao comecou
+     - Verificar PSAI 128950 (potencial conflito)
+
+  PREVENTIVO (esta quinzena):
+  ----------------------------
+  3. Verificar as 152 NEs com responsaveis de ambos os times
+     - Priorizar as que estao na versao 10.6A-03
+     - Definir "dono" claro para cada uma
+
+  4. Verificar se PSAI 128724 (Talita - Extrator DIRF negativos) impacta o cluster
+
+  ESTRUTURAL (implementar como processo):
+  ----------------------------------------
+  5. Ritual semanal de 15min entre Vitor e Sabrina para sincronizar PSAIs
+  6. Ao tramitar PSAI de area NE, verificar se ha outra PSAI do mesmo tema pendente
+  7. Compartilhar definicoes geradas com IA entre os times (evitar retrabalho)
+
+
+==========================================================================================
+  LEGENDA DE SITUACOES
+==========================================================================================
+
+  SAI:
+    0  = PSAI sem SAI          10 = Em Desenvolvimento     14 = Em Teste
+    3  = A Desenvolver          11 = Dev Concluido          15 = Teste Concluido
+    7  = Def. Desenvolvimento   25 = SAI Aprovada           16 = Liberado
+    24 = A Estimar Tempo        26 = Liberado vers. ant.     4 = Descartado
+
+  PSAI:
+    1  = Em Definicao           5 = Concl. sem Dev          12 = A Desenvolver
+    2  = Analisada              6 = Reprovada               23 = Prescrita
+    9  = Em Analise            11 = Em Analise Coordenador
+
+==========================================================================================
+  FIM DO RELATORIO DETALHADO
+==========================================================================================

@@ -1,0 +1,427 @@
+============================================================================================
+  ANALISE COMPLETA DE CONFLITOS E RETRABALHO - ESCRITA FISCAL vs TIME SA
+  Data: 18/03/2026 | Periodo: 04/03 a 18/03/2026 | Versao: 10.6A-03 (23/02-23/03)
+============================================================================================
+
+
+============================================================================================
+  CONFLITO 1 - CLUSTER IRRF / TRANSPORTADOR AUTONOMO / DIRF
+  RISCO: CRITICO | 5 PSAIs interligadas | 2 times atuando simultaneamente
+============================================================================================
+
+  Este cluster envolve 5 PSAIs que mexem nos MESMOS relatorios e nas MESMAS funcoes do
+  codigo-fonte. Qualquer alteracao em uma afeta diretamente as outras.
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  128834 (LIBERADA 10/03) ──► 128909 (EM DEV) ──► 128910 (PENDENTE)    │
+  │          │                        │                                    │
+  │          └────────────────────────┼──► 105827 (EM TESTE 10.6A-03)      │
+  │                                   │                                    │
+  │                                   └──► 128770 (PENDENTE) ◄── 128724   │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  --------------------------------------------------------------------------
+  1A. PSAI 128909 / SAI 100471 - A NE CENTRAL DO CLUSTER
+  --------------------------------------------------------------------------
+  Status: Em Desenvolvimento | Versao: 10.6A-03 | Pontos: 8 | Nivel: 3
+  SSCs: 2 | SANEs: 9 | Tempo previsto: 1762 min (29.4h)
+
+  PROBLEMA REAL DO CLIENTE:
+  Divergencia no Demonstrativo de IRRF: na base de calculo do grupo "Sistema" esta
+  descontando INSS indevidamente. E no Extrator da DIRF esta considerando indevidamente 
+  o total da rubrica 9452 na linha "Outros".
+
+  O QUE ESTA ERRADO (TECNICO):
+  1. Rubricas com classificacao "Servicos Frete" (ex: 9452) tinham incidencia IRRF "79 - 
+     Outras isencoes". O correto e "9 - Outras verbas nao consideradas para base".
+  2. Ao editar uma RPA de Transportador Autonomo, o sistema ALTERA a Base IRRF 
+     deduzindo INSS indevidamente (de 3.600 para 3.468).
+  3. Demonstrativo de IRRF grupo "Sistema" deduz INSS da base quando nao deveria.
+  4. Extrator DIRF considera rubrica 9452 na linha "Outros" quando nao deveria.
+
+  DEFINICAO (RESUMO DAS ALTERACOES):
+  - ARQUIVO RUBRICAS: Alterar incidencia IRRF de "79" para "9" em rubricas com 
+    classificacao "Servicos Frete". Incluir botao "Solucoes" com link para suporte.
+    Atualizar historico eSocial automaticamente. Gerar XML de alteracao se ja enviado.
+  - DEMONSTRATIVO IRRF: Para Transportador Autonomo (SEFIP 15,16,18,23,25) no grupo
+    "Sistema", coluna "Base de calculo", NAO deduzir INSS nem deducao simplificada.
+    Buscar base pelo rendimento bruto x percentual do tipo servico (Cargas=10%, 
+    Passageiros=60%, Nao especificado=100%).
+  - EXTRATOR DIRF: Complementar SAI 98201. Linha "Rendimentos tributaveis" da coluna
+    "Valor Sistema" segue mesma logica acima. Linha "Outros" nao considerar a diferenca.
+    Coluna "Valor eSocial" nao considerar rubricas com incidencia IRRF "9".
+  - FORMULARIO DIRF: Valores NAO serao alterados (mesmo comportamento atual).
+
+  CATEGORIAS SEFIP AFETADAS: 15, 16, 18, 23, 25
+  CENARIOS DE TESTE: Com todos os tipos de deducao, multiplas RPAs (mesma e diferentes
+  competencias), com pensao alimenticia, plano de saude, dependentes, rateio por servico.
+
+  REFERENCIA EXPLICITA A OUTRAS PSAIs NA DEFINICAO:
+  - "Esta situacao sera ajustada na Pre-SAI 128910" (sobre Base IRRF na tela RPA)
+  - "A diferenca da coluna deducao sera ajustada na Pre-SAI 105827"
+
+  QUEM TRABALHA:
+  - Ana Paula Duarte Huf (SA): Tramitou 10/03 e 11/03 (Em Analise Coordenador -> A Desenvolver)
+  - Jerusa Valentim de Souza: Responsavel PSAI, dona do banco de teste (Empresa 190, Emp 4)
+  - BANCO: Jerusa Valentim de Souza | Empresa: 190 | Empregado: 4
+
+  --------------------------------------------------------------------------
+  1B. PSAI 128910 / SAI 100473 - IRMA DA 128909 (Base IRRF ao editar RPA)
+  --------------------------------------------------------------------------
+  Status: A Estimar Tempo (sit 24) | Sem versao | Pontos: 2 | Nivel: 1
+  SSCs: 1 | SANEs: 1
+
+  PROBLEMA REAL DO CLIENTE:
+  Altera a Base IRRF ao editar o RPA.
+
+  O QUE ESTA ERRADO (TECNICO):
+  Ao cadastrar RPA de Transportador Autonomo com Deducao Favoravel (mais benefica = 
+  Simplificada), o campo Base IRRF mostra 3.600,00 corretamente. Porem, ao SALVAR e 
+  REABRIR para edicao, o campo Base IRRF e alterado automaticamente para 3.468,00 
+  (deduzindo INSS indevidamente). O correto e manter 3.600,00.
+
+  Formula: 6.000,00 * 60% (Passageiros) = 3.600,00 (sem deduzir INSS)
+  Errado:  6.000,00 * 60% - INSS (132,00) = 3.468,00
+
+  Mesmas categorias SEFIP: 15, 16, 18, 23, 25. Mesmos tipos de servico.
+  
+  NOTA IMPORTANTE: "Quando no cadastro esta como Deducoes Legais, o campo Base IRRF 
+  na grid mostra 3.600,00, mas dentro da tela do RPA mostra 3.468,00 corretamente. 
+  Esta divergencia NAO sera tratada nesta NE."
+
+  DEFINICAO: Nao definida ainda (pendente)
+  BANCO: Jerusa Valentim de Souza | Empresa: 190 | Empregado: 4 (MESMO da 128909!)
+
+  QUEM TRABALHA:
+  - Responsaveis: Ana Ligia (NE) + Jerusa (SA) -- AMBOS OS TIMES
+
+  RISCO DE CONFLITO:
+  - Usa o MESMO banco de teste da 128909
+  - A definicao da 128909 explicitamente diz que o problema de edicao do RPA sera
+    tratado na 128910 -- se a 128910 for definida sem conhecer a 128909, pode conflitar
+  - Ana Ligia (NE) e responsavel mas Jerusa (SA) tambem -- quem lidera?
+
+  --------------------------------------------------------------------------
+  1C. PSAI 105827 / SAI 100547 - DEMONSTRATIVO IRRF DEDUCOES (SAM EM TESTE!)
+  --------------------------------------------------------------------------
+  Status: Em Teste | Versao: 10.6A-03 | Pontos: 40 | Nivel: N/A
+  SSCs: 23 | SANEs: 2545 | Tempo previsto: 1393 min (23.2h)
+
+  ***** ATENCAO: ESTA SAI ESTA EM TESTE NA VERSAO CORRENTE! *****
+
+  PROBLEMA QUE RESOLVE:
+  Divergencia na coluna "Dependente" entre grupo "Sistema" e "eSocial" no Demonstrativo
+  de IRRF e no Extrator da DIRF.
+
+  DEFINICAO COMPLETA (resumo tecnico):
+  
+  REGRA 1 - Demonstrativo IRRF, grupo "Sistema", coluna "Dependente":
+    Se colaborador NAO tem IRRF retido (nao ha IR a pagar) -> exibir Dependente = 0,00
+    (Atualmente mostra valor de dependente incorretamente no grupo Sistema)
+    Alteracao APENAS no grupo "Sistema" (eSocial ja esta correto)
+
+  REGRA 2 - Demonstrativo IRRF, grupo "eSocial", coluna "Dependente":
+    Se colaborador TEM IRRF retido E calculo final usou "Deducao Simplificada" 
+    -> exibir Dependente = 0,00 no grupo eSocial
+    Excecao: Se ultimo calculo com IR usou Deducao Legal -> manter valor conforme mercado
+    Aplica mesmo se tem valores na tag vlrDedDep do S-5002
+    Alteracao APENAS no grupo "eSocial" (Sistema ja esta correto)
+
+  REGRA 3 - Extrator DIRF, coluna "Valor Sistema", linha "Dependentes":
+    Se colaborador NAO tem IRRF retido -> exibir Dependentes = 0,00
+    Complementa SAIs 98201 e 99805.
+
+  CENARIOS TESTADOS (7 exemplos na definicao):
+  1. Deducao Favoravel SEM IRRF retido (mais vantajoso = Legal)
+  2. Deducao Legal SEM IRRF retido
+  3. Deducao Simplificada COM IRRF retido
+  4. Deducao Favoravel COM IRRF retido (mais vantajoso = Simplificada)
+  5. Folha Semanal COM IRRF retido - nota: SAI-100267 tratara bug do Extrator neste cenario
+  6. Folha Mensal + Complementar com mudanca automatica de Simplificada para Legal
+  7. Rescisao + Rescisao Complementar com mudanca automatica
+
+  QUEM TRABALHA:
+  - Ana Paula (SA): Tramitou "A Desenvolver" em marco
+  - Jerusa (SA): RETOMOU em 17/03 via SAM 441819. Fez:
+    * Varredura em 6 modulos de indices (IRRF, eSocial, RAIS/DIRF, Relatorios, INSS, Ferias)
+    * Analise de codigo-fonte: uo_rel_linhas_demonstrativo_irrf_folha_esocial.sru, 
+      dw_rel_linhas_demonstrativo_irrf_folha_esocial.srd, uo_rel_linhas_extrator_dirf.sru
+    * Identificou 6 suspeitas no codigo (2 criticas):
+      - Codigo TRIPLICADO (of_prepara_dados, of_prepara_dados_13, of_prepara_dados_plr) 
+        -> risco de correcao parcial
+      - Importacao de retorno S-5002 COMENTADA no 13o salario (of_prepara_dados_13, linha 542)
+      - Filtro "apenas divergencias" IGNORA colunas Deducao e Dependente
+      - Codigo morto no Extrator DIRF (condicao sempre falsa na linha 701)
+      - Deducao Favoravel→Legal nao tratada corretamente (usa ELSE generico)
+    * Gerou analise consolidada com SWOT, mapa de riscos e 15 cenarios de teste
+    * Artefato: PSAI-105827-analise-consolidada.md
+
+  CONEXAO COM 128909 (PORQUE E CRITICO):
+  A definicao da 128909 diz: "a diferenca da coluna deducao, entre o grupo 'Sistema' e 
+  'eSocial', sera ajustada na Pre-SAI 105827". Ou seja, a 105827 trata um SUBPROBLEMA 
+  que a 128909 reconhece e nao resolve. Se o teste da 105827 nao considerar o cenario 
+  de Transportador Autonomo (que a 128909 corrige), o teste pode passar mas o bug final
+  nao ser coberto. E vice-versa: se a 128909 for para dev sem saber que a 105827 ja 
+  alterou o codigo do Demonstrativo, pode haver conflito de merge.
+
+  --------------------------------------------------------------------------
+  1D. PSAI 128834 / SAI 100358 - JA LIBERADA (RISCO RESIDUAL)
+  --------------------------------------------------------------------------
+  Status: Liberada em 10/03/2026 | Versao: 10.6A-03
+  Tempo realizado: 924 min (15.4h) | SSCs: 4 | SANEs: 78
+
+  PROBLEMA QUE RESOLVEU:
+  Envio incorreto do valor da rubrica '9454 - BASE IRRF TRANSPORTADOR' no XML do 
+  evento S-1200, independente do tipo de deducao, para Transportador Autonomo.
+
+  PORQUE AINDA IMPORTA:
+  - E do MESMO TEMA que 128909 (Transportador Autonomo / IRRF / eSocial)
+  - Ana Paula (SA) tramitou esta PSAI como "A Desenvolver"
+  - Se o desenvolvedor da 128909 nao souber que a 128834 ja foi liberada, pode 
+    reimplementar logica que ja existe no S-1200
+  - A definicao da 128909 cobre cenarios que podem ja estar parcialmente corrigidos
+
+  --------------------------------------------------------------------------
+  1E. PSAI 128724 / SAI (sem SAI) - EXTRATOR DIRF VALORES NEGATIVOS (SAM)
+  --------------------------------------------------------------------------
+  Status: Em Definicao (PSAI sit 1) | Sem versao | Tipo: SAM (melhoria)
+
+  DESCRICAO: "Alterar o relatorio Extrator da DIRF para que nao seja considerado 
+  valores negativos."
+
+  QUEM TRABALHA: Talita (SA) - Gerou SAI completa em 17/03 com:
+  - 9 cenarios, 33 campos mapeados, 4 pontos de tratamento no codigo
+  - Codigo analisado: uo_rel_linhas_extrator_dirf.sru (MESMO da 105827!)
+  - Descoberta: codigo NAO tem nenhum tratamento de negativos (soma com +=)
+  - Descoberta: query SQL inverte sinal para previdencia oficial e indenizacao rescisao
+  - Identificou PSAI 128770 como "tema irmao"
+
+  CONEXAO COM O CLUSTER:
+  - Mexe no MESMO relatorio (Extrator DIRF) que 128909 e 105827
+  - Mexe no MESMO arquivo de codigo (uo_rel_linhas_extrator_dirf.sru) que Jerusa analisou
+  - Se for implementada antes ou junto com 128909/105827, pode haver conflito de codigo
+
+  --------------------------------------------------------------------------
+  1F. PSAI 128770 / SAI 100512 - COMPROVANTE RENDIMENTOS BASE NEGATIVA
+  --------------------------------------------------------------------------
+  Status: A Estimar Tempo (sit 24) | Sem versao | Pontos: 16 | Nivel: 3
+  SSCs: 1 | SANEs: 2 | BANCO: Camila Guimaraes | Empresa 212 | Contrib 1
+
+  DESCRICAO: "Nao esta gerando o Comprovante de Rendimentos, esta demonstrando base 
+  negativa na coluna Valor Sistema do Extrator da DIRF e base zerada na coluna Valor 
+  eSocial quando o colaborador possui rubrica de provento sem incidencia de IRRF e 
+  rubrica de desconto com incidencia de IRRF com mesmo valor."
+
+  3 ERROS:
+  1. Comprovante de Rendimentos diz "Sem dados para emitir" quando deveria emitir
+  2. Extrator DIRF coluna Valor Sistema mostra -2.000,00 (negativo) em Rendimentos 
+     Tributaveis (deveria ser 0,00)
+  3. Extrator DIRF coluna Valor eSocial mostra Diarias zerado (deveria mostrar 2.000,00)
+
+  CONEXAO COM O CLUSTER:
+  - Erro 2 e exatamente o que a PSAI 128724 (Talita) trata (valores negativos no Extrator)
+  - Erro 3 referencia SAI 98201 (mesma SAI que 105827 complementa)
+  - Mencao na definicao: "esta situacao esta sendo tratada na SAI 100324" (outro item)
+  - Responsavel: Camila Guimaraes (NE) + Ana Ligia (NE)
+
+  --------------------------------------------------------------------------
+  RESUMO DO CLUSTER - QUEM FAZ O QUE
+  --------------------------------------------------------------------------
+
+  │ PSAI    │ Status          │ Time SA          │ Time NE                │
+  │─────────│─────────────────│──────────────────│────────────────────────│
+  │ 128909  │ Em Dev 10.6A-03 │ Ana Paula, Jerusa│ (mesmos)               │
+  │ 128910  │ A Estimar       │ Jerusa           │ Ana Ligia              │
+  │ 105827  │ Em Teste 10.6A  │ Ana Paula, Jerusa│ -                      │
+  │ 128834  │ LIBERADA        │ Ana Paula        │ -                      │
+  │ 128724  │ Em Definicao    │ Talita           │ -                      │
+  │ 128770  │ A Estimar       │ -                │ Ana Ligia, Camila      │
+
+  RISCOS TECNICOS DO CLUSTER:
+  1. uo_rel_linhas_extrator_dirf.sru - 3 PSAIs mexem neste arquivo (105827, 128724, 128909)
+  2. uo_rel_linhas_demonstrativo_irrf_folha_esocial.sru - 2 PSAIs (105827, 128909)
+  3. Codigo triplicado na 105827 (of_prepara_dados x3) - risco de correcao parcial
+  4. Mesmo banco de testes (Jerusa, Emp 190/Emp 4) para 128909 e 128910
+  5. SAI 98201 e referenciada por 128909, 105827 e 128770 como base
+
+
+============================================================================================
+  CONFLITO 2 - AJUSTE INSS FERIAS COM ZERAR VERBAS RESCISAO
+  RISCO: ALTO | 2 PSAIs interligadas | 2 times definindo simultaneamente
+============================================================================================
+
+  --------------------------------------------------------------------------
+  2A. PSAI 128913 / SAI 0 (SEM SAI AINDA) - NE EM DEFINICAO
+  --------------------------------------------------------------------------
+  Status: Em Definicao (PSAI sit 1) | Sem versao | Nivel: 2
+  SSCs: 1 | SANEs: 2
+
+  PROBLEMA REAL DO CLIENTE:
+  Nao esta realizando ajuste de INSS segurado quando empregado possui ferias na 
+  competencia e rescisao com a opcao "Zerar verbas rescisorias devido a reclamatoria 
+  trabalhista".
+
+  O QUE ESTA ERRADO (TECNICO - da analise de codigo da Talita):
+  A funcao of_calc_inss_dif_fer() em uo_calculo_inss.sru NAO possui nenhuma verificacao
+  da flag ibZerarVerbasRescisorias. Quando o empregado tem ferias + rescisao com zeragem
+  de verbas, o INSS diferenca de ferias (rubricas 821 e 836) e calculado sobre bases 
+  incorretas porque:
+  - A acumulacao de bases via of_soma_valor (linha 12985) distorce os valores quando 
+    zerar verbas esta ativo
+  - Nao ha tratamento especifico para o cenario ferias + rescisao + zeragem
+
+  CAUSA RAIZ: SAI 98887 (autora: Talita) - efeito colateral nao previsto
+
+  CENARIOS DE TESTE (gerados pela Talita):
+  1. Rubrica 821 - ferias 26/01 a 10/02 e 16/02 a 22/02, salario R$ 4.200, 
+     desligamento 23/02
+  2. Rubrica 836 - ferias 01/02 a 20/02 e 21/02 a 25/02, salario R$ 54.500 
+     (acima do teto), desligamento 26/02
+  (+ 3 cenarios adicionais)
+
+  CODIGO AFETADO (4 pontos):
+  - uo_calculo_inss.sru: of_calc_inss_dif_fer() (gap principal)
+  - uo_calculo.sru: of_soma_valor (linha 12985)
+  - uo_srv_rescisao.sru: tratamento do ibZerarVerbasRescisorias
+  - uo_calculo_ferias.sru: calculo de bases para comparacao
+
+  PONTOS DE ATENCAO (7):
+  - uo_srv_complementar.sru tambem referencia 821/836
+  - uo_rateio_ferias.sru tambem referencia 821/836
+  - Impacto potencial em calculo complementar
+
+  QUEM TRABALHA:
+  │ Pessoa        │ Time │ O que fez                                          │
+  │───────────────│──────│────────────────────────────────────────────────────│
+  │ Vivian        │ SA   │ 09/03: Iniciou definicao (Em Definicao)            │
+  │ Talita        │ SA   │ 10/03: Gerou definicao COMPLETA com IA             │
+  │               │      │   - 5 cenarios, analise de codigo, 4 pontos,       │
+  │               │      │   - 7 atencoes, artefato .md gerado                │
+  │               │      │ 13/03: Analisada                                   │
+  │               │      │ 16/03: Retomou (Em Definicao)                      │
+  │ Ana Ligia     │ NE   │ Responsavel PSAI - PODE estar fazendo definicao    │
+  │               │      │ propria sem saber que Talita ja fez                │
+
+  RISCO DE RETRABALHO:
+  A Talita ja investiu ~3h gerando definicao completa com analise de codigo. Se a Ana 
+  Ligia fizer outra definicao independente, serao ~3h+ de retrabalho duplicado. A 
+  definicao da Talita ja tem cenarios, codigo e pontos de atencao - e uma base solida.
+
+  --------------------------------------------------------------------------
+  2B. PSAI 128950 - OPCAO PARA NAO DEMONSTRAR 821/836 (SAM - CONFLITO POTENCIAL)
+  --------------------------------------------------------------------------
+  Status: Em Teste (PSAI sit 14) | Sem versao | Tipo: SAM
+
+  DESCRICAO: "Implementar uma opcao para que o sistema nao demonstre as rubricas de 
+  INSS Diferenca de Ferias (821 e 836) quando no calculo das ferias o INSS ja for 
+  calculado pelo teto."
+
+  CONEXAO COM 128913:
+  - Mexe nas MESMAS RUBRICAS (821 e 836) que a 128913
+  - A propria Talita identificou esse conflito potencial no log de 10/03:
+    "PSAI 128950 (opcao para nao demonstrar 821/836 quando INSS no teto) esta em 
+    andamento e pode conflitar"
+  - Se a 128950 for implementada primeiro e adicionar uma opcao de supressao das 
+    rubricas 821/836, a 128913 precisa considerar essa opcao na correcao do 
+    of_calc_inss_dif_fer()
+
+
+============================================================================================
+  CONFLITO 3 - TRABALHO DA ANA LIGIA (NE) - CRUZAMENTOS COM O TIME SA
+============================================================================================
+
+  Nos logs da Ana Ligia (06/03 a 17/03), ela trabalhou nas seguintes PSAIs/NEs:
+
+  │ Data  │ PSAI/NE         │ Tema                                    │ Conexao SA? │
+  │───────│─────────────────│─────────────────────────────────────────│─────────────│
+  │ 06/03 │ PSAI 128214     │ Faltas DSR no Encargos/Empresa          │ Nao         │
+  │ 06/03 │ PSAI 128698     │ Campo Dependente Extrator DIRF          │ SIM *       │
+  │ 06/03 │ NE 441454       │ INSS complementar rubrica 8125          │ Nao         │
+  │ 09/03 │ PSAIs diversas  │ Varias analises (nao detalhado)         │ Verificar   │
+  │ 10/03 │ Varias          │ Analises do dia (nao detalhado)         │ Verificar   │
+  │ 16/03 │ NE 441958       │ Hora extra em folha complementar        │ Nao         │
+  │ 16/03 │ PSAI 128118     │ Analitico GPS com aviso previo indeni.  │ Nao         │
+  │ 16/03 │ PSAI 125838     │ Ferias coletivas + Lic. Maternidade     │ Nao         │
+  │ 17/03 │ PSAI 125049     │ Garantia minima afastamento comissionado│ Nao         │
+
+  * PSAI 128698 - Campo Dependente do Extrator da DIRF: 
+    Ana Ligia disse: "recebemos uma NE na PSAI 128698 sobre o campo Dependente do 
+    Extrator da DIRF. Considerando que o Extrator da DIRF foi implementado usando como 
+    base do relatorio Demonstrativo de IRRF entendemos que primeiro precisamos arrumar 
+    a definicao da SAI 83256."
+    
+    CONEXAO COM CLUSTER 1: O campo "Dependente" do Demonstrativo de IRRF e EXATAMENTE 
+    o que a PSAI 105827 trata! A Ana Ligia esta investigando pelo lado da NE 128698 
+    o mesmo problema que a Jerusa esta analisando pelo lado da SAM 105827.
+    -> PONTO CRITICO DE ALINHAMENTO
+
+
+============================================================================================
+  MAPA COMPLETO DE RISCOS
+============================================================================================
+
+  RISCO 1 [CRITICO] - Cluster IRRF/Transportador/DIRF
+  Impacto: 5 PSAIs, 3 arquivos de codigo compartilhados, 2 times
+  Probabilidade: ALTA - desenvolvimento ativo na 10.6A-03
+  Pessoas: Ana Paula (SA), Jerusa (SA), Talita (SA), Ana Ligia (NE), Camila (NE)
+  
+  RISCO 2 [ALTO] - Definicao duplicada PSAI 128913
+  Impacto: ~6h de retrabalho se nao alinhado
+  Probabilidade: MEDIA - Ana Ligia pode ja ter comecado
+  Pessoas: Talita (SA), Vivian (SA), Ana Ligia (NE)
+
+  RISCO 3 [ALTO] - PSAI 128698 (Ana Ligia) vs 105827 (Jerusa) - campo Dependente
+  Impacto: Trabalho duplicado de investigacao e definicao no mesmo tema
+  Probabilidade: ALTA - ambas estao investigando ativamente
+  Pessoas: Ana Ligia (NE), Jerusa (SA)
+
+  RISCO 4 [MEDIO] - PSAI 128950 vs 128913 - rubricas 821/836
+  Impacto: Conflito de logica se implementadas sem alinhamento
+  Probabilidade: MEDIA - 128950 em andamento
+  Pessoas: Talita (SA), time de desenvolvimento
+
+  RISCO 5 [MEDIO] - 128724 (Talita) mexe no mesmo codigo que 105827 (Jerusa)
+  Impacto: Conflito de merge no uo_rel_linhas_extrator_dirf.sru
+  Probabilidade: BAIXA a MEDIO - 128724 ainda em definicao
+  Pessoas: Talita (SA), Jerusa (SA)
+
+
+============================================================================================
+  ACOES RECOMENDADAS - POR PRIORIDADE
+============================================================================================
+
+  [1] URGENTE - ESTA SEMANA
+  ─────────────────────────
+  a) Reuniao Vitor + Sabrina + Ana Paula + Jerusa:
+     - Mapear ownership do cluster IRRF/Transportador (128909/128910/105827/128834)
+     - Garantir que o DEV da 128909 saiba que 128834 ja foi liberada
+     - Garantir que o TESTE da 105827 inclua cenarios de Transportador Autonomo
+     - Decidir: quem lidera a 128910? Ana Ligia ou Jerusa?
+
+  b) Alinhar Ana Ligia + Jerusa sobre campo Dependente:
+     - Ana Ligia esta investigando via PSAI 128698 + SAI 83256
+     - Jerusa ja analisou via PSAI 105827 com analise de codigo completa
+     - Combinar para nao duplicar o trabalho de investigacao
+
+  c) Alinhar Ana Ligia + Talita sobre PSAI 128913:
+     - Talita ja tem definicao pronta (PSAI-128913-ajuste-inss-ferias-zerar-verbas.md)
+     - Ana Ligia e responsavel PSAI - verificar se comecou definicao propria
+     - Se nao, usar a da Talita como base
+
+  [2] ESTA QUINZENA
+  ──────────────────
+  d) Verificar PSAI 128950 (rubricas 821/836) - pode conflitar com 128913
+  e) Verificar se PSAI 128724 (Extrator DIRF negativos) precisa ser sincronizada 
+     com 128909 e 105827 (mesmo arquivo de codigo)
+  f) Mapear as 152 NEs com responsaveis de ambos os times e definir "dono" para cada
+
+  [3] ESTRUTURAL
+  ──────────────
+  g) Ritual semanal 15min entre Vitor e Sabrina para sincronizar PSAIs
+  h) Antes de tramitar PSAI de NE, verificar se ha outra PSAI do mesmo tema/codigo
+  i) Compartilhar artefatos gerados com IA entre os times
+
+
+============================================================================================
+  FIM DO RELATORIO
+============================================================================================

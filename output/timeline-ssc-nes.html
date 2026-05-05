@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timeline SSC por NE - DIRF</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1"></script>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface-2: #1c2333;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --accent-1: #58a6ff;
+  --accent-2: #f78166;
+  --accent-3: #7ee787;
+  --accent-4: #d2a8ff;
+  --accent-5: #ffd33d;
+  --red: #ff7b72;
+  --green: #3fb950;
+  --cyan: #79c0ff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  min-height: 100vh;
+  padding: 2rem;
+  overflow-x: hidden;
+}
+
+.header { margin-bottom: 2.5rem; position: relative; }
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -12px; left: 0;
+  width: 120px; height: 3px;
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-4));
+  border-radius: 2px;
+}
+
+h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem; font-weight: 400; letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--text) 0%, var(--accent-1) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 0.4rem;
+}
+
+.subtitle { color: var(--text-muted); font-size: 0.85rem; font-weight: 300; }
+
+.cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1rem 1.2rem;
+  cursor: pointer; transition: all 0.25s ease;
+  position: relative; overflow: hidden;
+}
+
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; opacity: 0.7; transition: opacity 0.25s;
+}
+
+.card:nth-child(1)::before { background: var(--accent-1); }
+.card:nth-child(2)::before { background: var(--accent-2); }
+.card:nth-child(3)::before { background: var(--accent-3); }
+.card:nth-child(4)::before { background: var(--accent-4); }
+.card:nth-child(5)::before { background: var(--accent-5); }
+
+.card:hover, .card.active {
+  border-color: var(--accent-1); transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(88, 166, 255, 0.12);
+}
+.card.active::before { opacity: 1; height: 4px; }
+
+.card-sai { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin-bottom: 0.1rem; }
+.card-psai { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 300; }
+
+.card-row {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.card-metric { text-align: center; }
+.card-metric-value { font-size: 1.5rem; font-weight: 700; line-height: 1; }
+.card-metric-label { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.15rem; }
+
+.card-footer {
+  display: flex; gap: 0.6rem; padding-top: 0.45rem;
+  border-top: 1px solid var(--border); font-size: 0.68rem; color: var(--text-muted);
+}
+
+.card-footer-item { display: flex; flex-direction: column; }
+.card-footer-val { font-weight: 600; color: var(--text); font-size: 0.78rem; }
+
+.chart-section {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;
+}
+.chart-title { font-family: 'DM Serif Display', serif; font-size: 1.15rem; margin-bottom: 0.3rem; }
+.chart-desc { font-size: 0.78rem; color: var(--text-muted); font-weight: 300; margin-bottom: 1rem; }
+.chart-container { position: relative; height: 380px; }
+
+.controls { display: flex; gap: 0.6rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+
+.btn {
+  background: var(--surface-2); border: 1px solid var(--border);
+  color: var(--text); padding: 0.45rem 1rem; border-radius: 6px;
+  font-size: 0.78rem; font-family: 'IBM Plex Sans', sans-serif;
+  cursor: pointer; transition: all 0.2s; font-weight: 500;
+}
+.btn:hover { border-color: var(--accent-1); background: var(--surface); }
+.btn.active { background: var(--accent-1); color: var(--bg); border-color: var(--accent-1); }
+
+.table-section {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.5rem; overflow-x: auto;
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+
+th {
+  text-align: left; padding: 0.6rem 0.8rem;
+  border-bottom: 2px solid var(--border);
+  color: var(--text-muted); font-weight: 600;
+  text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.06em;
+}
+td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--border); }
+tr:hover td { background: rgba(88, 166, 255, 0.04); }
+
+.badge {
+  display: inline-block; padding: 0.15rem 0.5rem;
+  border-radius: 4px; font-size: 0.7rem; font-weight: 600;
+}
+.badge-high { background: rgba(255, 123, 114, 0.15); color: var(--red); }
+.badge-ok { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+.badge-info { background: rgba(88, 166, 255, 0.15); color: var(--accent-1); }
+.badge-warn { background: rgba(255, 211, 61, 0.18); color: var(--accent-5); }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card, .chart-section, .table-section { animation: fadeInUp 0.5s ease both; }
+.card:nth-child(2) { animation-delay: 0.05s; }
+.card:nth-child(3) { animation-delay: 0.1s; }
+.card:nth-child(4) { animation-delay: 0.15s; }
+.card:nth-child(5) { animation-delay: 0.2s; }
+.chart-section { animation-delay: 0.25s; }
+.table-section { animation-delay: 0.4s; }
+
+@media (max-width: 1100px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 700px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Crescimento de SSCs por NE (DIRF)</h1>
+  <div class="subtitle">Linha do tempo diaria &mdash; dados ao vivo do banco PBCVS &mdash; 02/04/2026</div>
+</div>
+
+<div class="cards" id="cards"></div>
+
+<div class="controls">
+  <button class="btn active" data-mode="acumulado">SSCs acumuladas</button>
+  <button class="btn" data-mode="clientes">Clientes acumulados</button>
+  <button class="btn" data-mode="novas">Novas por dia</button>
+  <button class="btn" data-mode="dual">SSCs + Clientes</button>
+</div>
+
+<div class="chart-section">
+  <div class="chart-title" id="chartTitle">Todas as NEs &mdash; SSCs acumuladas</div>
+  <div class="chart-desc" id="chartDesc">Clique em um card acima para isolar uma NE. Linha vertical tracejada = data de geracao da SAI.</div>
+  <div class="chart-container">
+    <canvas id="mainChart"></canvas>
+  </div>
+</div>
+
+<div class="chart-section" style="animation-delay: 0.35s;">
+  <div class="chart-title">Novas SSCs por dia (barras empilhadas)</div>
+  <div class="chart-desc">Volume diario de novas SSCs de cada NE</div>
+  <div class="chart-container" style="height: 260px;">
+    <canvas id="barChart"></canvas>
+  </div>
+</div>
+
+<div class="table-section">
+  <div class="chart-title" style="margin-bottom: 1rem;">Resumo por NE</div>
+  <table id="summaryTable">
+    <thead>
+      <tr>
+        <th>SAI</th>
+        <th>PSAI</th>
+        <th>Cadastro SAI</th>
+        <th>SSCs na geracao</th>
+        <th>Total SSCs</th>
+        <th>Clientes</th>
+        <th>Media/dia</th>
+        <th>Pico dia</th>
+        <th>Crescimento pos-SAI</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+const DATA = [
+  {
+    i_sai: 100471, i_psai: 128909, cadastroPSAI: "2026-03-09",
+    gravidade: "Normal", total_ssc: 73, total_clientes: 67, ssc_na_geracao_sai: 1,
+    primeiro_ssc: "2026-03-09", ultimo_ssc: "2026-04-02",
+    timeline: [{"dia":"2026-03-09","novas":1,"acumulado":1,"clientes_novos":1,"clientes_acum":1},{"dia":"2026-03-10","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-03-11","novas":6,"acumulado":7,"clientes_novos":6,"clientes_acum":7},{"dia":"2026-03-12","novas":3,"acumulado":10,"clientes_novos":3,"clientes_acum":10},{"dia":"2026-03-13","novas":5,"acumulado":15,"clientes_novos":5,"clientes_acum":15},{"dia":"2026-03-14","novas":0,"acumulado":15,"clientes_novos":0,"clientes_acum":15},{"dia":"2026-03-15","novas":0,"acumulado":15,"clientes_novos":0,"clientes_acum":15},{"dia":"2026-03-16","novas":5,"acumulado":20,"clientes_novos":5,"clientes_acum":19},{"dia":"2026-03-17","novas":4,"acumulado":24,"clientes_novos":4,"clientes_acum":23},{"dia":"2026-03-18","novas":6,"acumulado":30,"clientes_novos":6,"clientes_acum":28},{"dia":"2026-03-19","novas":10,"acumulado":40,"clientes_novos":9,"clientes_acum":37},{"dia":"2026-03-20","novas":6,"acumulado":46,"clientes_novos":6,"clientes_acum":43},{"dia":"2026-03-21","novas":0,"acumulado":46,"clientes_novos":0,"clientes_acum":43},{"dia":"2026-03-22","novas":0,"acumulado":46,"clientes_novos":0,"clientes_acum":43},{"dia":"2026-03-23","novas":5,"acumulado":51,"clientes_novos":5,"clientes_acum":48},{"dia":"2026-03-24","novas":4,"acumulado":55,"clientes_novos":4,"clientes_acum":52},{"dia":"2026-03-25","novas":5,"acumulado":60,"clientes_novos":5,"clientes_acum":57},{"dia":"2026-03-26","novas":5,"acumulado":65,"clientes_novos":5,"clientes_acum":62},{"dia":"2026-03-27","novas":5,"acumulado":70,"clientes_novos":5,"clientes_acum":65},{"dia":"2026-03-28","novas":0,"acumulado":70,"clientes_novos":0,"clientes_acum":65},{"dia":"2026-03-29","novas":0,"acumulado":70,"clientes_novos":0,"clientes_acum":65},{"dia":"2026-03-30","novas":1,"acumulado":71,"clientes_novos":1,"clientes_acum":66},{"dia":"2026-03-31","novas":0,"acumulado":71,"clientes_novos":0,"clientes_acum":66},{"dia":"2026-04-01","novas":1,"acumulado":72,"clientes_novos":1,"clientes_acum":67},{"dia":"2026-04-02","novas":1,"acumulado":73,"clientes_novos":1,"clientes_acum":67}]
+  },
+  {
+    i_sai: 100322, i_psai: 128625, cadastroPSAI: "2026-02-27",
+    gravidade: "Normal", total_ssc: 55, total_clientes: 49, ssc_na_geracao_sai: 7,
+    primeiro_ssc: "2026-02-11", ultimo_ssc: "2026-04-01",
+    timeline: [{"dia":"2026-02-11","novas":1,"acumulado":1,"clientes_novos":1,"clientes_acum":1},{"dia":"2026-02-12","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-13","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-14","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-15","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-16","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-17","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-18","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-19","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-20","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-21","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-22","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-23","novas":1,"acumulado":2,"clientes_novos":1,"clientes_acum":2},{"dia":"2026-02-24","novas":2,"acumulado":4,"clientes_novos":2,"clientes_acum":4},{"dia":"2026-02-25","novas":1,"acumulado":5,"clientes_novos":1,"clientes_acum":5},{"dia":"2026-02-26","novas":0,"acumulado":5,"clientes_novos":0,"clientes_acum":5},{"dia":"2026-02-27","novas":2,"acumulado":7,"clientes_novos":2,"clientes_acum":7},{"dia":"2026-02-28","novas":0,"acumulado":7,"clientes_novos":0,"clientes_acum":7},{"dia":"2026-03-01","novas":0,"acumulado":7,"clientes_novos":0,"clientes_acum":7},{"dia":"2026-03-02","novas":1,"acumulado":8,"clientes_novos":1,"clientes_acum":8},{"dia":"2026-03-03","novas":6,"acumulado":14,"clientes_novos":6,"clientes_acum":14},{"dia":"2026-03-04","novas":1,"acumulado":15,"clientes_novos":1,"clientes_acum":15},{"dia":"2026-03-05","novas":2,"acumulado":17,"clientes_novos":2,"clientes_acum":15},{"dia":"2026-03-06","novas":1,"acumulado":18,"clientes_novos":1,"clientes_acum":16},{"dia":"2026-03-07","novas":0,"acumulado":18,"clientes_novos":0,"clientes_acum":16},{"dia":"2026-03-08","novas":0,"acumulado":18,"clientes_novos":0,"clientes_acum":16},{"dia":"2026-03-09","novas":1,"acumulado":19,"clientes_novos":1,"clientes_acum":16},{"dia":"2026-03-10","novas":2,"acumulado":21,"clientes_novos":2,"clientes_acum":18},{"dia":"2026-03-11","novas":1,"acumulado":22,"clientes_novos":1,"clientes_acum":19},{"dia":"2026-03-12","novas":4,"acumulado":26,"clientes_novos":4,"clientes_acum":23},{"dia":"2026-03-13","novas":2,"acumulado":28,"clientes_novos":2,"clientes_acum":25},{"dia":"2026-03-14","novas":0,"acumulado":28,"clientes_novos":0,"clientes_acum":25},{"dia":"2026-03-15","novas":0,"acumulado":28,"clientes_novos":0,"clientes_acum":25},{"dia":"2026-03-16","novas":2,"acumulado":30,"clientes_novos":2,"clientes_acum":27},{"dia":"2026-03-17","novas":7,"acumulado":37,"clientes_novos":7,"clientes_acum":33},{"dia":"2026-03-18","novas":2,"acumulado":39,"clientes_novos":2,"clientes_acum":35},{"dia":"2026-03-19","novas":0,"acumulado":39,"clientes_novos":0,"clientes_acum":35},{"dia":"2026-03-20","novas":1,"acumulado":40,"clientes_novos":1,"clientes_acum":36},{"dia":"2026-03-21","novas":0,"acumulado":40,"clientes_novos":0,"clientes_acum":36},{"dia":"2026-03-22","novas":0,"acumulado":40,"clientes_novos":0,"clientes_acum":36},{"dia":"2026-03-23","novas":0,"acumulado":40,"clientes_novos":0,"clientes_acum":36},{"dia":"2026-03-24","novas":3,"acumulado":43,"clientes_novos":3,"clientes_acum":38},{"dia":"2026-03-25","novas":4,"acumulado":47,"clientes_novos":4,"clientes_acum":42},{"dia":"2026-03-26","novas":3,"acumulado":50,"clientes_novos":3,"clientes_acum":45},{"dia":"2026-03-27","novas":0,"acumulado":50,"clientes_novos":0,"clientes_acum":45},{"dia":"2026-03-28","novas":0,"acumulado":50,"clientes_novos":0,"clientes_acum":45},{"dia":"2026-03-29","novas":0,"acumulado":50,"clientes_novos":0,"clientes_acum":45},{"dia":"2026-03-30","novas":1,"acumulado":51,"clientes_novos":1,"clientes_acum":46},{"dia":"2026-03-31","novas":2,"acumulado":53,"clientes_novos":2,"clientes_acum":48},{"dia":"2026-04-01","novas":2,"acumulado":55,"clientes_novos":2,"clientes_acum":49},{"dia":"2026-04-02","novas":0,"acumulado":55,"clientes_novos":0,"clientes_acum":49}]
+  },
+  {
+    i_sai: 100324, i_psai: 128572, cadastroPSAI: "2026-02-26",
+    gravidade: "Normal", total_ssc: 31, total_clientes: 29, ssc_na_geracao_sai: 8,
+    primeiro_ssc: "2026-02-24", ultimo_ssc: "2026-04-01",
+    timeline: [{"dia":"2026-02-24","novas":1,"acumulado":1,"clientes_novos":1,"clientes_acum":1},{"dia":"2026-02-25","novas":1,"acumulado":2,"clientes_novos":1,"clientes_acum":2},{"dia":"2026-02-26","novas":6,"acumulado":8,"clientes_novos":6,"clientes_acum":8},{"dia":"2026-02-27","novas":0,"acumulado":8,"clientes_novos":0,"clientes_acum":8},{"dia":"2026-02-28","novas":0,"acumulado":8,"clientes_novos":0,"clientes_acum":8},{"dia":"2026-03-01","novas":0,"acumulado":8,"clientes_novos":0,"clientes_acum":8},{"dia":"2026-03-02","novas":0,"acumulado":8,"clientes_novos":0,"clientes_acum":8},{"dia":"2026-03-03","novas":0,"acumulado":8,"clientes_novos":0,"clientes_acum":8},{"dia":"2026-03-04","novas":1,"acumulado":9,"clientes_novos":1,"clientes_acum":9},{"dia":"2026-03-05","novas":1,"acumulado":10,"clientes_novos":1,"clientes_acum":10},{"dia":"2026-03-06","novas":0,"acumulado":10,"clientes_novos":0,"clientes_acum":10},{"dia":"2026-03-07","novas":0,"acumulado":10,"clientes_novos":0,"clientes_acum":10},{"dia":"2026-03-08","novas":0,"acumulado":10,"clientes_novos":0,"clientes_acum":10},{"dia":"2026-03-09","novas":0,"acumulado":10,"clientes_novos":0,"clientes_acum":10},{"dia":"2026-03-10","novas":2,"acumulado":12,"clientes_novos":2,"clientes_acum":12},{"dia":"2026-03-11","novas":4,"acumulado":16,"clientes_novos":4,"clientes_acum":16},{"dia":"2026-03-12","novas":2,"acumulado":18,"clientes_novos":2,"clientes_acum":17},{"dia":"2026-03-13","novas":0,"acumulado":18,"clientes_novos":0,"clientes_acum":17},{"dia":"2026-03-14","novas":0,"acumulado":18,"clientes_novos":0,"clientes_acum":17},{"dia":"2026-03-15","novas":0,"acumulado":18,"clientes_novos":0,"clientes_acum":17},{"dia":"2026-03-16","novas":1,"acumulado":19,"clientes_novos":1,"clientes_acum":17},{"dia":"2026-03-17","novas":0,"acumulado":19,"clientes_novos":0,"clientes_acum":17},{"dia":"2026-03-18","novas":1,"acumulado":20,"clientes_novos":1,"clientes_acum":18},{"dia":"2026-03-19","novas":1,"acumulado":21,"clientes_novos":1,"clientes_acum":19},{"dia":"2026-03-20","novas":2,"acumulado":23,"clientes_novos":2,"clientes_acum":21},{"dia":"2026-03-21","novas":0,"acumulado":23,"clientes_novos":0,"clientes_acum":21},{"dia":"2026-03-22","novas":0,"acumulado":23,"clientes_novos":0,"clientes_acum":21},{"dia":"2026-03-23","novas":1,"acumulado":24,"clientes_novos":1,"clientes_acum":22},{"dia":"2026-03-24","novas":2,"acumulado":26,"clientes_novos":2,"clientes_acum":24},{"dia":"2026-03-25","novas":2,"acumulado":28,"clientes_novos":2,"clientes_acum":26},{"dia":"2026-03-26","novas":0,"acumulado":28,"clientes_novos":0,"clientes_acum":26},{"dia":"2026-03-27","novas":2,"acumulado":30,"clientes_novos":2,"clientes_acum":28},{"dia":"2026-03-28","novas":0,"acumulado":30,"clientes_novos":0,"clientes_acum":28},{"dia":"2026-03-29","novas":0,"acumulado":30,"clientes_novos":0,"clientes_acum":28},{"dia":"2026-03-30","novas":0,"acumulado":30,"clientes_novos":0,"clientes_acum":28},{"dia":"2026-03-31","novas":0,"acumulado":30,"clientes_novos":0,"clientes_acum":28},{"dia":"2026-04-01","novas":1,"acumulado":31,"clientes_novos":1,"clientes_acum":29},{"dia":"2026-04-02","novas":0,"acumulado":31,"clientes_novos":0,"clientes_acum":29}]
+  },
+  {
+    i_sai: 100192, i_psai: 128368, cadastroPSAI: "2026-02-23",
+    gravidade: "Normal", total_ssc: 23, total_clientes: 21, ssc_na_geracao_sai: 2,
+    primeiro_ssc: "2026-02-20", ultimo_ssc: "2026-03-30",
+    timeline: [{"dia":"2026-02-20","novas":1,"acumulado":1,"clientes_novos":1,"clientes_acum":1},{"dia":"2026-02-21","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-22","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-23","novas":1,"acumulado":2,"clientes_novos":1,"clientes_acum":2},{"dia":"2026-02-24","novas":1,"acumulado":3,"clientes_novos":1,"clientes_acum":3},{"dia":"2026-02-25","novas":0,"acumulado":3,"clientes_novos":0,"clientes_acum":3},{"dia":"2026-02-26","novas":0,"acumulado":3,"clientes_novos":0,"clientes_acum":3},{"dia":"2026-02-27","novas":1,"acumulado":4,"clientes_novos":1,"clientes_acum":4},{"dia":"2026-02-28","novas":0,"acumulado":4,"clientes_novos":0,"clientes_acum":4},{"dia":"2026-03-01","novas":0,"acumulado":4,"clientes_novos":0,"clientes_acum":4},{"dia":"2026-03-02","novas":0,"acumulado":4,"clientes_novos":0,"clientes_acum":4},{"dia":"2026-03-03","novas":0,"acumulado":4,"clientes_novos":0,"clientes_acum":4},{"dia":"2026-03-04","novas":0,"acumulado":4,"clientes_novos":0,"clientes_acum":4},{"dia":"2026-03-05","novas":0,"acumulado":4,"clientes_novos":0,"clientes_acum":4},{"dia":"2026-03-06","novas":0,"acumulado":4,"clientes_novos":0,"clientes_acum":4},{"dia":"2026-03-07","novas":0,"acumulado":4,"clientes_novos":0,"clientes_acum":4},{"dia":"2026-03-08","novas":0,"acumulado":4,"clientes_novos":0,"clientes_acum":4},{"dia":"2026-03-09","novas":0,"acumulado":4,"clientes_novos":0,"clientes_acum":4},{"dia":"2026-03-10","novas":1,"acumulado":5,"clientes_novos":1,"clientes_acum":5},{"dia":"2026-03-11","novas":0,"acumulado":5,"clientes_novos":0,"clientes_acum":5},{"dia":"2026-03-12","novas":0,"acumulado":5,"clientes_novos":0,"clientes_acum":5},{"dia":"2026-03-13","novas":0,"acumulado":5,"clientes_novos":0,"clientes_acum":5},{"dia":"2026-03-14","novas":0,"acumulado":5,"clientes_novos":0,"clientes_acum":5},{"dia":"2026-03-15","novas":0,"acumulado":5,"clientes_novos":0,"clientes_acum":5},{"dia":"2026-03-16","novas":2,"acumulado":7,"clientes_novos":2,"clientes_acum":7},{"dia":"2026-03-17","novas":0,"acumulado":7,"clientes_novos":0,"clientes_acum":7},{"dia":"2026-03-18","novas":3,"acumulado":10,"clientes_novos":3,"clientes_acum":9},{"dia":"2026-03-19","novas":2,"acumulado":12,"clientes_novos":2,"clientes_acum":11},{"dia":"2026-03-20","novas":2,"acumulado":14,"clientes_novos":2,"clientes_acum":13},{"dia":"2026-03-21","novas":0,"acumulado":14,"clientes_novos":0,"clientes_acum":13},{"dia":"2026-03-22","novas":0,"acumulado":14,"clientes_novos":0,"clientes_acum":13},{"dia":"2026-03-23","novas":4,"acumulado":18,"clientes_novos":3,"clientes_acum":16},{"dia":"2026-03-24","novas":0,"acumulado":18,"clientes_novos":0,"clientes_acum":16},{"dia":"2026-03-25","novas":3,"acumulado":21,"clientes_novos":3,"clientes_acum":19},{"dia":"2026-03-26","novas":1,"acumulado":22,"clientes_novos":1,"clientes_acum":20},{"dia":"2026-03-27","novas":0,"acumulado":22,"clientes_novos":0,"clientes_acum":20},{"dia":"2026-03-28","novas":0,"acumulado":22,"clientes_novos":0,"clientes_acum":20},{"dia":"2026-03-29","novas":0,"acumulado":22,"clientes_novos":0,"clientes_acum":20},{"dia":"2026-03-30","novas":1,"acumulado":23,"clientes_novos":1,"clientes_acum":21},{"dia":"2026-03-31","novas":0,"acumulado":23,"clientes_novos":0,"clientes_acum":21},{"dia":"2026-04-01","novas":0,"acumulado":23,"clientes_novos":0,"clientes_acum":21},{"dia":"2026-04-02","novas":0,"acumulado":23,"clientes_novos":0,"clientes_acum":21}]
+  },
+  {
+    i_sai: 100140, i_psai: 128316, cadastroPSAI: "2026-02-23",
+    gravidade: "Normal", total_ssc: 53, total_clientes: 49, ssc_na_geracao_sai: 3,
+    primeiro_ssc: "2026-02-18", ultimo_ssc: "2026-04-02",
+    timeline: [{"dia":"2026-02-18","novas":1,"acumulado":1,"clientes_novos":1,"clientes_acum":1},{"dia":"2026-02-19","novas":0,"acumulado":1,"clientes_novos":0,"clientes_acum":1},{"dia":"2026-02-20","novas":1,"acumulado":2,"clientes_novos":1,"clientes_acum":2},{"dia":"2026-02-21","novas":0,"acumulado":2,"clientes_novos":0,"clientes_acum":2},{"dia":"2026-02-22","novas":0,"acumulado":2,"clientes_novos":0,"clientes_acum":2},{"dia":"2026-02-23","novas":1,"acumulado":3,"clientes_novos":1,"clientes_acum":3},{"dia":"2026-02-24","novas":1,"acumulado":4,"clientes_novos":1,"clientes_acum":4},{"dia":"2026-02-25","novas":1,"acumulado":5,"clientes_novos":1,"clientes_acum":5},{"dia":"2026-02-26","novas":1,"acumulado":6,"clientes_novos":1,"clientes_acum":6},{"dia":"2026-02-27","novas":0,"acumulado":6,"clientes_novos":0,"clientes_acum":6},{"dia":"2026-02-28","novas":0,"acumulado":6,"clientes_novos":0,"clientes_acum":6},{"dia":"2026-03-01","novas":0,"acumulado":6,"clientes_novos":0,"clientes_acum":6},{"dia":"2026-03-02","novas":1,"acumulado":7,"clientes_novos":1,"clientes_acum":7},{"dia":"2026-03-03","novas":1,"acumulado":8,"clientes_novos":1,"clientes_acum":8},{"dia":"2026-03-04","novas":4,"acumulado":12,"clientes_novos":4,"clientes_acum":12},{"dia":"2026-03-05","novas":3,"acumulado":15,"clientes_novos":3,"clientes_acum":14},{"dia":"2026-03-06","novas":0,"acumulado":15,"clientes_novos":0,"clientes_acum":14},{"dia":"2026-03-07","novas":0,"acumulado":15,"clientes_novos":0,"clientes_acum":14},{"dia":"2026-03-08","novas":0,"acumulado":15,"clientes_novos":0,"clientes_acum":14},{"dia":"2026-03-09","novas":0,"acumulado":15,"clientes_novos":0,"clientes_acum":14},{"dia":"2026-03-10","novas":4,"acumulado":19,"clientes_novos":4,"clientes_acum":17},{"dia":"2026-03-11","novas":2,"acumulado":21,"clientes_novos":2,"clientes_acum":19},{"dia":"2026-03-12","novas":5,"acumulado":26,"clientes_novos":5,"clientes_acum":24},{"dia":"2026-03-13","novas":0,"acumulado":26,"clientes_novos":0,"clientes_acum":24},{"dia":"2026-03-14","novas":0,"acumulado":26,"clientes_novos":0,"clientes_acum":24},{"dia":"2026-03-15","novas":0,"acumulado":26,"clientes_novos":0,"clientes_acum":24},{"dia":"2026-03-16","novas":2,"acumulado":28,"clientes_novos":2,"clientes_acum":26},{"dia":"2026-03-17","novas":1,"acumulado":29,"clientes_novos":1,"clientes_acum":27},{"dia":"2026-03-18","novas":2,"acumulado":31,"clientes_novos":2,"clientes_acum":29},{"dia":"2026-03-19","novas":4,"acumulado":35,"clientes_novos":4,"clientes_acum":33},{"dia":"2026-03-20","novas":0,"acumulado":35,"clientes_novos":0,"clientes_acum":33},{"dia":"2026-03-21","novas":0,"acumulado":35,"clientes_novos":0,"clientes_acum":33},{"dia":"2026-03-22","novas":0,"acumulado":35,"clientes_novos":0,"clientes_acum":33},{"dia":"2026-03-23","novas":1,"acumulado":36,"clientes_novos":1,"clientes_acum":34},{"dia":"2026-03-24","novas":0,"acumulado":36,"clientes_novos":0,"clientes_acum":34},{"dia":"2026-03-25","novas":4,"acumulado":40,"clientes_novos":4,"clientes_acum":38},{"dia":"2026-03-26","novas":1,"acumulado":41,"clientes_novos":1,"clientes_acum":39},{"dia":"2026-03-27","novas":6,"acumulado":47,"clientes_novos":6,"clientes_acum":45},{"dia":"2026-03-28","novas":1,"acumulado":48,"clientes_novos":1,"clientes_acum":45},{"dia":"2026-03-29","novas":0,"acumulado":48,"clientes_novos":0,"clientes_acum":45},{"dia":"2026-03-30","novas":2,"acumulado":50,"clientes_novos":2,"clientes_acum":46},{"dia":"2026-03-31","novas":1,"acumulado":51,"clientes_novos":1,"clientes_acum":47},{"dia":"2026-04-01","novas":0,"acumulado":51,"clientes_novos":0,"clientes_acum":47},{"dia":"2026-04-02","novas":2,"acumulado":53,"clientes_novos":2,"clientes_acum":49}]
+  }
+];
+
+const COLORS = ['#58a6ff','#f78166','#7ee787','#d2a8ff','#ffd33d'];
+const COLORS_BG = ['rgba(88,166,255,0.12)','rgba(247,129,102,0.12)','rgba(126,231,135,0.12)','rgba(210,168,255,0.12)','rgba(255,211,61,0.12)'];
+const COLORS_CLI = ['#79c0ff','#ffb4a2','#b7f5bd','#e8d5ff','#fff0a0'];
+
+let mainChart, barChart;
+let currentMode = 'acumulado';
+let selectedNE = null;
+
+function fmtDate(s) {
+  if (!s) return '-';
+  const [y,m,d] = s.split('-');
+  return `${d}/${m}`;
+}
+
+function calcStats(ne) {
+  const diasAtivos = ne.timeline.filter(t => t.novas > 0).length;
+  const totalDias = ne.timeline.length;
+  const pico = Math.max(...ne.timeline.map(t => t.novas));
+  const picoDia = ne.timeline.find(t => t.novas === pico)?.dia;
+  const media = totalDias > 0 ? (ne.total_ssc / totalDias).toFixed(1) : '0';
+  const crescPosSAI = ne.total_ssc - ne.ssc_na_geracao_sai;
+  return { diasAtivos, totalDias, pico, picoDia, media, crescPosSAI };
+}
+
+function buildCards() {
+  const el = document.getElementById('cards');
+  el.innerHTML = '';
+  DATA.forEach((ne, i) => {
+    const stats = calcStats(ne);
+    const card = document.createElement('div');
+    card.className = 'card' + (selectedNE === i ? ' active' : '');
+    card.onclick = () => { selectedNE = selectedNE === i ? null : i; render(); };
+    card.innerHTML = `
+      <div class="card-sai" style="color:${COLORS[i]}">${ne.i_sai}</div>
+      <div class="card-psai">PSAI ${ne.i_psai} &middot; Cadastro ${fmtDate(ne.cadastroPSAI)}</div>
+      <div class="card-row">
+        <div class="card-metric">
+          <div class="card-metric-value">${ne.total_ssc}</div>
+          <div class="card-metric-label">SSCs</div>
+        </div>
+        <div class="card-metric">
+          <div class="card-metric-value" style="color:${COLORS_CLI[i]}">${ne.total_clientes}</div>
+          <div class="card-metric-label">Clientes</div>
+        </div>
+        <div class="card-metric">
+          <div class="card-metric-value">${stats.media}/d</div>
+          <div class="card-metric-label">Media</div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-item">
+          <span class="card-footer-val">${ne.ssc_na_geracao_sai}</span>
+          <span>SSCs na geracao SAI</span>
+        </div>
+        <div class="card-footer-item">
+          <span class="card-footer-val">+${stats.crescPosSAI}</span>
+          <span>apos SAI</span>
+        </div>
+      </div>`;
+    el.appendChild(card);
+  });
+}
+
+function getAllDates() {
+  const s = new Set();
+  DATA.forEach(ne => ne.timeline.forEach(t => s.add(t.dia)));
+  return [...s].sort();
+}
+
+function buildAnnotations(indices) {
+  const annotations = {};
+  indices.forEach(i => {
+    const ne = DATA[i];
+    annotations['saiLine' + i] = {
+      type: 'line', scaleID: 'x',
+      value: ne.cadastroPSAI,
+      borderColor: COLORS[i] + '88',
+      borderWidth: 2, borderDash: [6, 4],
+      label: {
+        display: true,
+        content: `SAI ${ne.i_sai} (${ne.ssc_na_geracao_sai} SSCs)`,
+        position: 'start',
+        backgroundColor: COLORS[i] + '33',
+        color: COLORS[i],
+        font: { size: 10, family: "'IBM Plex Sans'" },
+        padding: 3
+      }
+    };
+  });
+  return annotations;
+}
+
+function buildMainChart() {
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  if (mainChart) mainChart.destroy();
+
+  const allDates = getAllDates();
+  const indices = selectedNE !== null ? [selectedNE] : DATA.map((_, i) => i);
+  const isDual = currentMode === 'dual';
+  const isClientes = currentMode === 'clientes';
+  const isNovas = currentMode === 'novas';
+  const field = isNovas ? 'novas' : (isClientes ? 'clientes_acum' : 'acumulado');
+
+  const datasets = [];
+  indices.forEach(i => {
+    const ne = DATA[i];
+    const map = {}; const mapCli = {};
+    ne.timeline.forEach(t => { map[t.dia] = t[field]; mapCli[t.dia] = t.clientes_acum; });
+
+    datasets.push({
+      label: `SAI ${ne.i_sai}${isClientes ? ' (clientes)' : isDual ? ' (SSCs)' : ''}`,
+      data: allDates.map(d => ({ x: d, y: map[d] ?? null })),
+      borderColor: COLORS[i],
+      backgroundColor: COLORS_BG[i],
+      borderWidth: 2.5,
+      pointRadius: isNovas ? 3 : 2,
+      pointHoverRadius: 6,
+      pointBackgroundColor: COLORS[i],
+      fill: indices.length === 1 && !isDual,
+      tension: 0.3,
+      yAxisID: 'y'
+    });
+
+    if (isDual) {
+      datasets.push({
+        label: `SAI ${ne.i_sai} (clientes)`,
+        data: allDates.map(d => ({ x: d, y: mapCli[d] ?? null })),
+        borderColor: COLORS_CLI[i],
+        backgroundColor: 'transparent',
+        borderWidth: 2, borderDash: [5, 3],
+        pointRadius: 1.5, pointHoverRadius: 5,
+        pointBackgroundColor: COLORS_CLI[i],
+        fill: false, tension: 0.3,
+        yAxisID: 'y2'
+      });
+    }
+  });
+
+  const scales = {
+    x: {
+      type: 'time',
+      time: { unit: 'day', tooltipFormat: 'dd/MM', displayFormats: { day: 'dd/MM' } },
+      grid: { color: 'rgba(48,54,61,0.5)' },
+      ticks: { color: '#8b949e', font: { size: 10 }, maxRotation: 45 }
+    },
+    y: {
+      beginAtZero: true,
+      position: 'left',
+      grid: { color: 'rgba(48,54,61,0.5)' },
+      ticks: { color: '#8b949e', font: { size: 10 }, precision: 0 },
+      title: { display: isDual, text: 'SSCs', color: '#8b949e', font: { size: 11 } }
+    }
+  };
+
+  if (isDual) {
+    scales.y2 = {
+      beginAtZero: true, position: 'right',
+      grid: { drawOnChartArea: false },
+      ticks: { color: '#79c0ff', font: { size: 10 }, precision: 0 },
+      title: { display: true, text: 'Clientes distintos', color: '#79c0ff', font: { size: 11 } }
+    };
+  }
+
+  mainChart = new Chart(ctx, {
+    type: 'line',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: true, position: 'top',
+          labels: { color: '#8b949e', font: { family: "'IBM Plex Sans'" }, usePointStyle: true, pointStyle: 'circle' }
+        },
+        tooltip: {
+          backgroundColor: '#1c2333', borderColor: '#30363d', borderWidth: 1,
+          titleColor: '#e6edf3', bodyColor: '#8b949e', padding: 10,
+          callbacks: {
+            title: (items) => { const d = items[0]?.raw?.x; return d ? fmtDate(d) : ''; },
+            label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.y ?? '-'}`
+          }
+        },
+        annotation: { annotations: buildAnnotations(indices) }
+      },
+      scales
+    }
+  });
+
+  const title = document.getElementById('chartTitle');
+  const modeLabels = { acumulado: 'SSCs acumuladas', clientes: 'Clientes acumulados', novas: 'Novas SSCs/dia', dual: 'SSCs + Clientes' };
+  if (selectedNE !== null) {
+    const ne = DATA[selectedNE];
+    title.innerHTML = `SAI ${ne.i_sai} &mdash; ${modeLabels[currentMode]} &mdash; ${ne.total_clientes} clientes`;
+  } else {
+    title.innerHTML = `Todas as NEs &mdash; ${modeLabels[currentMode]}`;
+  }
+}
+
+function buildBarChart() {
+  const ctx = document.getElementById('barChart').getContext('2d');
+  if (barChart) barChart.destroy();
+
+  const allDates = getAllDates();
+  const indices = selectedNE !== null ? [selectedNE] : DATA.map((_, i) => i);
+
+  const datasets = indices.map(i => {
+    const ne = DATA[i];
+    const map = {};
+    ne.timeline.forEach(t => map[t.dia] = t.novas);
+    return {
+      label: `SAI ${ne.i_sai}`,
+      data: allDates.map(d => map[d] || 0),
+      backgroundColor: COLORS[i] + 'CC',
+      borderColor: COLORS[i], borderWidth: 1, borderRadius: 2
+    };
+  });
+
+  barChart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: allDates, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: indices.length > 1, position: 'top', labels: { color: '#8b949e', font: { family: "'IBM Plex Sans'", size: 10 }, usePointStyle: true } },
+        tooltip: {
+          backgroundColor: '#1c2333', borderColor: '#30363d', borderWidth: 1,
+          titleColor: '#e6edf3', bodyColor: '#8b949e',
+          callbacks: { title: (items) => fmtDate(items[0]?.label) }
+        }
+      },
+      scales: {
+        x: {
+          stacked: true, grid: { display: false },
+          ticks: { color: '#8b949e', font: { size: 9 }, maxRotation: 45, callback: (_, i, ticks) => fmtDate(ticks[i]?.label || '') }
+        },
+        y: {
+          stacked: true, beginAtZero: true,
+          grid: { color: 'rgba(48,54,61,0.5)' },
+          ticks: { color: '#8b949e', font: { size: 10 }, precision: 0 }
+        }
+      }
+    }
+  });
+}
+
+function buildTable() {
+  const tbody = document.querySelector('#summaryTable tbody');
+  tbody.innerHTML = '';
+  DATA.forEach((ne, i) => {
+    const s = calcStats(ne);
+    const pctPosSAI = ne.ssc_na_geracao_sai > 0
+      ? ((ne.total_ssc / ne.ssc_na_geracao_sai - 1) * 100).toFixed(0)
+      : '-';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color:${COLORS[i]};font-weight:600">${ne.i_sai}</td>
+      <td>${ne.i_psai}</td>
+      <td>${fmtDate(ne.cadastroPSAI)}</td>
+      <td><span class="badge badge-info">${ne.ssc_na_geracao_sai} SSCs</span></td>
+      <td><strong>${ne.total_ssc}</strong></td>
+      <td><strong style="color:${COLORS_CLI[i]}">${ne.total_clientes}</strong></td>
+      <td>${s.media}</td>
+      <td><span class="badge ${s.pico >= 5 ? 'badge-high' : 'badge-ok'}">${s.pico} em ${fmtDate(s.picoDia)}</span></td>
+      <td><span class="badge badge-warn">+${s.crescPosSAI} (${pctPosSAI}%)</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function render() {
+  buildCards();
+  buildMainChart();
+  buildBarChart();
+  buildTable();
+}
+
+document.querySelectorAll('.btn[data-mode]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.btn[data-mode]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMode = btn.dataset.mode;
+    render();
+  });
+});
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+---
+description: Duvidas pendentes e decisoes em aberto
+globs: **/*
+alwaysApply: false
+---
+
+# Duvidas Pendentes
+
+## Duvidas ativas
+
+### (nenhuma duvida ativa no momento)
+
+### [2026-02-14] Feriados nos dias uteis
+- **Contexto**: Calculo de "5 dias uteis" exclui sab/dom mas NAO feriados
+- **Status**: Funcional sem feriados por enquanto
+- **Proximos passos**: Implementar tabela de feriados quando necessario
+
+## Duvidas resolvidas
+
+- [2026-02-14] Porta do servidor -> 4000
+- [2026-02-14] Pasta de relatorios -> dentro do projeto
+- [2026-02-14] Data base 95 dias -> CadastroPSAI (confirmado)
+- [2026-02-14] 5 dias uteis -> dias uteis (confirmado, excl. sab/dom)
+- [2026-02-14] Meta tempo trabalhado -> 36.4% em dezembro (progressao)
+- [2026-02-14] Tempo medio NE -> 1000 min (constante historica, fixo por agora)
+- [2026-02-14] Mes sem Criticas/Graves -> mostrar 0, verde
+- [2026-02-14] Tempo disponivel -> projecao manual (Dev+Teste), config/projecoes-2026.json
+- [2026-02-14] **PIAZZA funciona via ODBC** -> Sim! Com schema `PIAZZA.` (antes falhava por sintaxe errada)
+- [2026-02-14] **Periodo por VERSAO** -> RESOLVIDO! Todos indicadores usam PIAZZA functions
+- [2026-02-14] **Liberada vs Descartada** -> nomeVersao preenchido = liberada, vazio = descartada
+- [2026-02-14] **Situacao 26** -> "Liberado em versoes anteriores" (limpeza de backlog manual)
+- [2026-02-14] **i_produto_grupo** -> Filtrar COALESCE(psai.i_produto_grupo, 1) = 1
+- [2026-02-14] **NE_PREVENCAO** -> NAO e filtro! E classificacao (0=externa, 1=interna). Considerar todas.
+- [2026-02-14] **NE->SAIL** -> 1 NE reclassificada como SAIL, saldo 10.6A-01 mostra 298, real=299. Excecao conhecida.
+- [2026-02-14] **Gap saldo vs entrada RESOLVIDO** -> Causa: contava nomeVersao sem Liberacao (NEs commitadas mas nao liberadas). Fix: AND Liberacao IS NOT NULL. Variacao agora bate: 0.
+- [2026-02-14] **Ciclo NE na versao** -> i_versoes=alocada, nomeVersao=commitada(dev concluido), Liberacao=liberada de fato.
+- [2026-02-14] **Situacoes SAI** -> Mapeadas todas 53 situacoes. Sit 10=Em Dev, 11=Dev Concluido, 25=Aprovada, 16=Liberado, 26=Lib vers anteriores.
+- [2026-02-16] **Fonte do tempo correcao NE** -> sai_roteiro_desenvolvimento.tempo_realizado (NAO gaGerenciadorAtividades). Confirmado por Marianna Saggiorato. Formula: SUM(NE) / SUM(TOTAL) * 100. Validado: 31.4% vs ref 30.8% para 10.6A-01.
+- [2026-02-16] **Tempo medio NE 1000 min** -> NAO mais usado no calculo. Substituido por tempo real do roteiro de desenvolvimento. Mantido em projecoes apenas como referencia historica.
+- [2026-02-16] **Tempo disponivel projetado** -> NAO mais usado como denominador. Denominador agora e o tempo real de dev de TODAS SAIs da area Escrita liberadas.
+- [2026-02-18] **SAI em Paralelo** -> SAIs em versoes especiais (nomeVersao nao-numerico: PacotesIA, ImportacaoEsoci, ParalelaPlatafo).
+  No banco: nomeVersao armazenado SEM prefixo "(P) - " (ex: "PacotesIA", nao "(P) - PacotesIA").
+  Identificacao: `SUBSTR(nomeVersao, 1, 1) NOT BETWEEN '0' AND '9'`.
+  Filtro temporal: `data_conclusao` dos roteiros dentro do periodo da versao (PIAZZA).
+  Resultado: 10.6A-01 passou de 33.7% para 30.1% (ref: 30.8%, diff 0.7pp). Confirmado!

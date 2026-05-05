@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset='utf-8'>
+<title>Relatório de Conflitos - Escrita Fiscal vs Time SA</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+  @page { size: A4; margin: 2cm 2.5cm; }
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #1a1a2e; line-height: 1.5; }
+  
+  .cover { text-align: center; padding-top: 100px; page-break-after: always; }
+  .cover h1 { font-size: 28pt; color: #0f3460; margin-bottom: 10px; letter-spacing: 1px; }
+  .cover h2 { font-size: 16pt; color: #16213e; font-weight: normal; margin-bottom: 40px; }
+  .cover .meta { font-size: 11pt; color: #555; margin-top: 60px; }
+  .cover .meta p { margin: 4px 0; }
+  .cover .line { width: 60%; height: 3px; background: #e94560; margin: 30px auto; }
+  
+  h1 { font-size: 18pt; color: #0f3460; border-bottom: 3px solid #e94560; padding-bottom: 6px; margin-top: 30px; }
+  h2 { font-size: 14pt; color: #16213e; margin-top: 24px; border-left: 4px solid #e94560; padding-left: 10px; }
+  h3 { font-size: 12pt; color: #0f3460; margin-top: 18px; }
+  
+  .badge { display: inline-block; padding: 3px 12px; border-radius: 4px; font-size: 9pt; font-weight: bold; color: white; margin-right: 6px; }
+  .badge-critico { background: #c0392b; }
+  .badge-alto { background: #e67e22; }
+  .badge-medio { background: #f39c12; color: #333; }
+  .badge-baixo { background: #27ae60; }
+  .badge-ne { background: #2980b9; }
+  .badge-sam { background: #8e44ad; }
+  
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 10pt; }
+  th { background: #0f3460; color: white; padding: 8px 10px; text-align: left; font-weight: 600; }
+  td { padding: 7px 10px; border-bottom: 1px solid #ddd; vertical-align: top; }
+  tr:nth-child(even) td { background: #f8f9fa; }
+  
+  .summary-box { background: #f0f4ff; border: 2px solid #0f3460; padding: 16px 20px; margin: 16px 0; }
+  .summary-box h3 { margin-top: 0; color: #0f3460; }
+  .summary-box ul { margin: 6px 0; padding-left: 20px; }
+  .summary-box li { margin: 4px 0; }
+  
+  .alert-critico { background: #fde8e8; border-left: 5px solid #c0392b; padding: 12px 16px; margin: 12px 0; }
+  .alert-alto { background: #fef3e2; border-left: 5px solid #e67e22; padding: 12px 16px; margin: 12px 0; }
+  .alert-medio { background: #fef9e7; border-left: 5px solid #f39c12; padding: 12px 16px; margin: 12px 0; }
+  
+  .diagram { background: #f5f6fa; border: 1px solid #ccc; padding: 14px; font-family: Courier New, monospace; font-size: 10pt; margin: 12px 0; white-space: pre; line-height: 1.6; }
+  
+  .person-sa { display: inline-block; padding: 2px 8px; background: #e8daef; color: #6c3483; font-size: 9pt; margin: 2px; }
+  .person-ne { display: inline-block; padding: 2px 8px; background: #d4efdf; color: #1e8449; font-size: 9pt; margin: 2px; }
+  
+  .action-urgente { background: #fde8e8; border: 1px solid #c0392b; padding: 12px 16px; margin: 10px 0; }
+  .action-quinzena { background: #fef9e7; border: 1px solid #f39c12; padding: 12px 16px; margin: 10px 0; }
+  .action-estrutural { background: #eafaf1; border: 1px solid #27ae60; padding: 12px 16px; margin: 10px 0; }
+  
+  .psai-card { background: white; border: 1px solid #ddd; padding: 14px; margin: 10px 0; }
+  .psai-card h3 { margin-top: 0; }
+  .psai-card .status { font-size: 10pt; color: #666; }
+  
+  .page-break { page-break-before: always; }
+  
+  .footer { text-align: center; font-size: 9pt; color: #999; margin-top: 40px; border-top: 1px solid #ddd; padding-top: 10px; }
+  
+  code { font-family: Consolas, monospace; background: #f0f0f0; padding: 1px 4px; font-size: 9pt; }
+</style>
+</head>
+<body>
+
+<!-- ============ CAPA ============ -->
+<div class="cover">
+  <div style="font-size: 13pt; color: #e94560; font-weight: bold; letter-spacing: 3px;">THOMSON REUTERS / BETHA SISTEMAS</div>
+  <div class="line"></div>
+  <h1>Relat&#243;rio de Conflitos e Riscos</h1>
+  <h2>Escrita Fiscal vs Time SA (Sabrina)</h2>
+  <div class="line"></div>
+  <div class="meta">
+    <p><strong>Per&#237;odo analisado:</strong> 04/03/2026 a 18/03/2026</p>
+    <p><strong>Vers&#227;o:</strong> 10.6A-03 (23/02 &#8211; 23/03)</p>
+    <p><strong>Data de emiss&#227;o:</strong> 18/03/2026</p>
+    <p><strong>Solicitante:</strong> Vitor Justino &#8211; Coordenador Escrita Fiscal</p>
+  </div>
+</div>
+
+<!-- ============ SUMARIO EXECUTIVO ============ -->
+<h1>Sum&#225;rio Executivo</h1>
+
+<div class="summary-box">
+  <h3>Resultado da An&#225;lise</h3>
+  <table>
+    <tr>
+      <td style="width:50%"><span class="badge badge-critico">CR&#205;TICO</span> <strong>2 conflitos diretos</strong></td>
+      <td><span class="badge badge-alto">ALTO</span> <strong>2 conflitos diretos</strong></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-medio">M&#201;DIO</span> <strong>3 sobreposi&#231;&#245;es funcionais</strong></td>
+      <td><span class="badge badge-baixo">BAIXO</span> <strong>5 pontos de aten&#231;&#227;o</strong></td>
+    </tr>
+  </table>
+</div>
+
+<div class="summary-box">
+  <h3>Dados Analisados</h3>
+  <ul>
+    <li><strong>52 PSAIs</strong> tramitadas pelo time SA nos &#250;ltimos 14 dias (41 SAMs, 5 SALs, 3 SAILs, 3 NEs)</li>
+    <li><strong>408 NEs</strong> pendentes da Escrita (sem libera&#231;&#227;o e sem descarte)</li>
+    <li><strong>17 PSAIs</strong> trabalhadas ativamente pelo time NE (via logs de analistas)</li>
+    <li><strong>400+</strong> registros de atividades dos 9 analistas SA</li>
+    <li><strong>39 dias-pessoa</strong> de logs analisados (Ana L&#237;gia 8, Camila 7, Luana 6, Taiane 6, Talita 4, Jessica 3, Jerusa 2, Hellen 3)</li>
+  </ul>
+</div>
+
+<!-- ============ INDICE ============ -->
+<h1>&#205;ndice</h1>
+<ol style="font-size: 11pt; line-height: 2;">
+  <li>Conflito 1 &#8211; Cluster IRRF / Transportador Aut&#244;nomo / DIRF <span class="badge badge-critico">CR&#205;TICO</span></li>
+  <li>Conflito 2 &#8211; Ajuste INSS F&#233;rias + Zerar Verbas Rescis&#227;o <span class="badge badge-alto">ALTO</span></li>
+  <li>Conflito 3 &#8211; Campo Dependentes DIRF (128698 vs 105827) <span class="badge badge-alto">ALTO</span></li>
+  <li>Conflito 4 &#8211; SAM 127289 Responsabilidade Compartilhada <span class="badge badge-alto">ALTO</span></li>
+  <li>Sobreposi&#231;&#245;es Funcionais (F&#233;rias, DIRF, S-1210)</li>
+  <li>Mapa Completo de Riscos</li>
+  <li>A&#231;&#245;es Recomendadas</li>
+  <li>N&#250;meros Finais</li>
+</ol>
+
+<div class="page-break"></div>
+
+<!-- ============ CONFLITO 1 ============ -->
+<h1><span class="badge badge-critico">CR&#205;TICO</span> Conflito 1 &#8211; Cluster IRRF / Transportador / DIRF</h1>
+
+<p><strong>7 PSAIs interligadas &#8226; 3+ arquivos de c&#243;digo compartilhados &#8226; 2 times atuando simultaneamente</strong></p>
+
+<p>Este cluster envolve PSAIs que mexem nos <strong>mesmos relat&#243;rios</strong> e nas <strong>mesmas fun&#231;&#245;es do c&#243;digo-fonte</strong>. Qualquer altera&#231;&#227;o em uma afeta diretamente as outras.</p>
+
+<div class="diagram">128834 (LIBERADA) &#8594; 128909 (EM DEV) &#8594; 128910 (PENDENTE)
+     |                       |
+     +-----------------------+--&#8594; 105827 (EM TESTE 10.6A-03)
+                             |
+                             +--&#8594; 128770 (A ESTIMAR) &#8592;-- 128724
+
+128698 (A DESENVOLVER) --&#8594; MESMO TEMA (Dependente DIRF / 105827)
+127289 (SAM) -----------&#8594; MESMO TEMA (Transp. Aut&#244;nomo IRRF eSocial)</div>
+
+<!-- 1A -->
+<div class="psai-card">
+  <h3>PSAI 128909 / SAI 100471 &#8211; A NE Central do Cluster</h3>
+  <p class="status"><span class="badge badge-ne">NE</span> Em Desenvolvimento &#8226; Vers&#227;o 10.6A-03 &#8226; N&#237;vel 3 &#8226; 29.4h previstas</p>
+  <p><strong>Problema:</strong> Diverg&#234;ncia no Demonstrativo de IRRF para Transportador Aut&#244;nomo. Na base de c&#225;lculo do grupo &#8220;Sistema&#8221; est&#225; descontando INSS indevidamente. No Extrator da DIRF est&#225; considerando indevidamente o total da rubrica 9452 na linha &#8220;Outros&#8221;.</p>
+  <p><strong>Altera&#231;&#245;es necess&#225;rias:</strong></p>
+  <ul>
+    <li><strong>Rubricas:</strong> Alterar incid&#234;ncia IRRF de &#8220;79&#8221; para &#8220;9&#8221; em rubricas com classifica&#231;&#227;o &#8220;Servi&#231;os Frete&#8221;. Atualizar hist&#243;rico eSocial automaticamente.</li>
+    <li><strong>Demonstrativo IRRF:</strong> Para Transportador Aut&#244;nomo (SEFIP 15,16,18,23,25), N&#195;O deduzir INSS nem dedu&#231;&#227;o simplificada da base.</li>
+    <li><strong>Extrator DIRF:</strong> Complementar SAI 98201. Linha &#8220;Outros&#8221; n&#227;o considerar a diferen&#231;a.</li>
+  </ul>
+  <div class="alert-critico">
+    <strong>Refer&#234;ncia expl&#237;cita a outras PSAIs na defini&#231;&#227;o:</strong><br>
+    &#8220;Esta situa&#231;&#227;o ser&#225; ajustada na Pr&#233;-SAI <strong>128910</strong>&#8221;<br>
+    &#8220;A diferen&#231;a da coluna dedu&#231;&#227;o ser&#225; ajustada na Pr&#233;-SAI <strong>105827</strong>&#8221;
+  </div>
+  <p><strong>Quem trabalha:</strong> <span class="person-sa">Ana Paula (SA)</span> <span class="person-sa">Jerusa (SA/NE)</span></p>
+</div>
+
+<!-- 1B -->
+<div class="psai-card">
+  <h3>PSAI 128910 / SAI 100473 &#8211; Irm&#227; da 128909 (Base IRRF ao editar RPA)</h3>
+  <p class="status"><span class="badge badge-ne">NE</span> A Estimar Tempo &#8226; Sem vers&#227;o &#8226; N&#237;vel 1</p>
+  <p><strong>Problema:</strong> Ao salvar e reabrir RPA de Transportador Aut&#244;nomo, o campo Base IRRF muda de 3.600 para 3.468 (deduz INSS indevidamente na reabertura).</p>
+  <p><strong>Conex&#227;o:</strong> Explicitamente referenciada na defini&#231;&#227;o da 128909.</p>
+  <p><strong>Quem:</strong> <span class="person-sa">Jerusa (SA/NE)</span> <span class="person-ne">Ana L&#237;gia (NE)</span></p>
+</div>
+
+<!-- 1C -->
+<div class="psai-card">
+  <h3>PSAI 105827 / SAI 100547 &#8211; SAM &#8220;Dependentes&#8221; DIRF/IRRF</h3>
+  <p class="status"><span class="badge badge-sam">SAM</span> Em Teste na 10.6A-03</p>
+  <p><strong>Descri&#231;&#227;o:</strong> Alterar o comportamento do sistema nos relat&#243;rios &#8216;Demonstrativo de IRRF&#8217; e &#8216;Extrator da DIRF&#8217; para que seja considerado o mesmo valor de &#8216;Dependentes&#8217; entre o sistema e o eSocial.</p>
+  <div class="alert-critico">
+    <strong>Conflito com 128698:</strong> Jerusa (SA) testa a 105827 que mexe nos campos de Dependentes do Demonstrativo IRRF e Extrator DIRF. Ana L&#237;gia (NE) investiga a NE 128698 que trata do MESMO campo Dependentes no Extrator DIRF.
+  </div>
+  <p><strong>Quem:</strong> <span class="person-sa">Ana Paula (SA)</span> <span class="person-sa">Jerusa (SA)</span> <span class="person-ne">Ana L&#237;gia (NE resp.)</span></p>
+</div>
+
+<!-- 1D -->
+<div class="psai-card">
+  <h3>PSAI 128834 / SAI 100358 &#8211; J&#225; Liberada em 10/03</h3>
+  <p class="status"><span class="badge badge-ne">NE</span> <span style="color: green; font-weight: bold;">&#10004; LIBERADA</span></p>
+  <p>Implementada e liberada. A 128909 foi gerada a partir dos mesmos testes.</p>
+  <p><strong>Quem:</strong> <span class="person-sa">Ana Paula (SA)</span> <span class="person-sa">Jerusa (SA/NE)</span></p>
+</div>
+
+<!-- 1E -->
+<div class="psai-card">
+  <h3>PSAI 128724 &#8211; Extrator DIRF Valores Negativos</h3>
+  <p class="status">Em Defini&#231;&#227;o &#8226; Talita trabalhou 17/03</p>
+  <p><strong>Problema:</strong> Valores negativos no Extrator DIRF. Mexe no <strong>mesmo arquivo de c&#243;digo</strong> (<code>uo_rel_linhas_extrator_dirf.sru</code>) que 128909 e 105827.</p>
+  <p><strong>Quem:</strong> <span class="person-sa">Talita (SA)</span></p>
+</div>
+
+<!-- 1F -->
+<div class="psai-card">
+  <h3>PSAI 128770 / SAI 100512 &#8211; Comprovante Rendimentos Base Negativa</h3>
+  <p class="status"><span class="badge badge-ne">NE</span> A Estimar Tempo &#8226; N&#237;vel 3</p>
+  <p><strong>Problema:</strong> N&#227;o est&#225; gerando o Comprovante de Rendimentos, demonstra base negativa na coluna Valor Sistema do Extrator da DIRF.</p>
+  <p><strong>Quem:</strong> <span class="person-ne">Camila (NE)</span> <span class="person-ne">Ana L&#237;gia (NE resp.)</span></p>
+</div>
+
+<!-- 1G -->
+<div class="psai-card">
+  <h3>PSAI 128698 / SAI 100384 &#8211; Campo Dependente Extrator DIRF <span style="color: #c0392b;">(NOVO!)</span></h3>
+  <p class="status"><span class="badge badge-ne">NE</span> A Desenvolver</p>
+  <p><strong>Problema:</strong> N&#227;o est&#225; demonstrando a dedu&#231;&#227;o do Dependente do 13&#186; integral no Extrator da DIRF quando h&#225; c&#225;lculo de diferen&#231;a de IRRF 13&#186; na folha mensal paga no ano-base seguinte.</p>
+  <div class="alert-alto">
+    <strong>Por que &#233; conflito:</strong> O tema &#8220;Dependentes no Extrator DIRF&#8221; &#233; exatamente o que a PSAI 105827 (em teste pelo SA) trata. Ana L&#237;gia investiga pelo lado da NE e Jerusa pelo lado da SAM, sem evid&#234;ncia de comunica&#231;&#227;o entre elas.
+  </div>
+  <p><strong>Quem:</strong> <span class="person-ne">Ana L&#237;gia (NE)</span></p>
+</div>
+
+<!-- Resumo Cluster -->
+<h3>Resumo do Cluster &#8211; Quem faz o qu&#234;</h3>
+<table>
+  <tr><th>PSAI</th><th>Tipo</th><th>Status</th><th>Time SA</th><th>Time NE</th></tr>
+  <tr><td>128909</td><td><span class="badge badge-ne">NE</span></td><td>Em Dev 10.6A-03</td><td><span class="person-sa">Ana Paula</span> <span class="person-sa">Jerusa</span></td><td>(mesmos)</td></tr>
+  <tr><td>128910</td><td><span class="badge badge-ne">NE</span></td><td>A Estimar</td><td><span class="person-sa">Jerusa</span></td><td><span class="person-ne">Ana L&#237;gia</span></td></tr>
+  <tr><td>105827</td><td><span class="badge badge-sam">SAM</span></td><td>Em Teste 10.6A</td><td><span class="person-sa">Ana Paula</span> <span class="person-sa">Jerusa</span></td><td><span class="person-ne">Ana L&#237;gia (resp)</span></td></tr>
+  <tr><td>128834</td><td><span class="badge badge-ne">NE</span></td><td style="color:green"><strong>LIBERADA</strong></td><td><span class="person-sa">Ana Paula</span> <span class="person-sa">Jerusa</span></td><td>&#8211;</td></tr>
+  <tr><td>128724</td><td>&#8211;</td><td>Em Defini&#231;&#227;o</td><td><span class="person-sa">Talita</span></td><td>&#8211;</td></tr>
+  <tr><td>128770</td><td><span class="badge badge-ne">NE</span></td><td>A Estimar</td><td>&#8211;</td><td><span class="person-ne">Camila</span> <span class="person-ne">Ana L&#237;gia</span></td></tr>
+  <tr><td>128698</td><td><span class="badge badge-ne">NE</span></td><td>A Desenvolver</td><td>&#8211;</td><td><span class="person-ne">Ana L&#237;gia</span></td></tr>
+</table>
+
+<h3>Riscos T&#233;cnicos do Cluster</h3>
+<table>
+  <tr><th>#</th><th>Risco</th><th>Detalhe</th></tr>
+  <tr><td>1</td><td>Arquivo compartilhado</td><td><code>uo_rel_linhas_extrator_dirf.sru</code> &#8211; 3+ PSAIs mexem neste arquivo</td></tr>
+  <tr><td>2</td><td>Arquivo compartilhado</td><td><code>uo_rel_linhas_demonstrativo_irrf_folha_esocial.sru</code> &#8211; 2+ PSAIs</td></tr>
+  <tr><td>3</td><td>Depend&#234;ncia cruzada</td><td>SAI 98201 &#233; referenciada por 128909, 105827 e 128770 como base</td></tr>
+  <tr><td>4</td><td>Investiga&#231;&#227;o duplicada</td><td>Campo &#8220;Dependentes&#8221; &#8211; Jerusa (SA) e Ana L&#237;gia (NE) investigam o mesmo tema</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- ============ CONFLITO 2 ============ -->
+<h1><span class="badge badge-alto">ALTO</span> Conflito 2 &#8211; Ajuste INSS F&#233;rias + Zerar Verbas</h1>
+
+<p><strong>3 PSAIs interligadas &#8226; Mesmas rubricas (821 e 836) &#8226; 2 times definindo simultaneamente</strong></p>
+
+<!-- 2A -->
+<div class="psai-card">
+  <h3>PSAI 128913 / Sem SAI &#8211; NE em Defini&#231;&#227;o</h3>
+  <p class="status"><span class="badge badge-ne">NE</span> Em Defini&#231;&#227;o &#8226; N&#237;vel 2</p>
+  <p><strong>Problema:</strong> N&#227;o est&#225; realizando ajuste de INSS segurado quando empregado possui f&#233;rias na compet&#234;ncia e rescis&#227;o com a op&#231;&#227;o &#8220;Zerar verbas rescis&#243;rias devido a reclam&#225;toria trabalhista&#8221;.</p>
+  <p><strong>Causa raiz (identificada pela Talita):</strong> SAI 98887 &#8211; efeito colateral n&#227;o previsto. A fun&#231;&#227;o <code>of_calc_inss_dif_fer()</code> em <code>uo_calculo_inss.sru</code> N&#195;O verifica a flag <code>ibZerarVerbasRescisorias</code>.</p>
+  
+  <p><strong>C&#243;digo afetado:</strong></p>
+  <table>
+    <tr><th>Arquivo</th><th>Fun&#231;&#227;o</th><th>Problema</th></tr>
+    <tr><td>uo_calculo_inss.sru</td><td>of_calc_inss_dif_fer()</td><td>Gap principal &#8211; n&#227;o verifica flag</td></tr>
+    <tr><td>uo_calculo.sru</td><td>of_soma_valor (ln 12985)</td><td>Distorce valores com zeragem ativa</td></tr>
+    <tr><td>uo_srv_rescisao.sru</td><td>ibZerarVerbasRescisorias</td><td>Tratamento do flag</td></tr>
+    <tr><td>uo_calculo_ferias.sru</td><td>C&#225;lculo de bases</td><td>Bases para compara&#231;&#227;o</td></tr>
+  </table>
+  
+  <p><strong>5 cen&#225;rios de teste j&#225; gerados pela Talita em 10/03.</strong></p>
+  
+  <div class="alert-alto">
+    <strong>Risco de retrabalho:</strong> Talita investiu ~3h gerando defini&#231;&#227;o completa (cen&#225;rios, an&#225;lise de c&#243;digo, 4 pontos, 7 aten&#231;&#245;es). Se Ana L&#237;gia fizer outra defini&#231;&#227;o independente, s&#227;o ~3h+ de retrabalho duplicado.
+  </div>
+  
+  <table>
+    <tr><th>Pessoa</th><th>Time</th><th>O que fez</th></tr>
+    <tr><td><span class="person-sa">Vivian</span></td><td>SA</td><td>09/03: Iniciou defini&#231;&#227;o</td></tr>
+    <tr><td><span class="person-sa">Talita</span></td><td>SA</td><td>10/03: Defini&#231;&#227;o COMPLETA com IA (~3h) &#8226; 13/03: Analisada &#8226; 16/03: Retomou</td></tr>
+    <tr><td><span class="person-ne">Ana L&#237;gia</span></td><td>NE</td><td>Respons&#225;vel PSAI &#8211; pode estar fazendo defini&#231;&#227;o pr&#243;pria</td></tr>
+  </table>
+</div>
+
+<!-- 2B -->
+<div class="psai-card">
+  <h3>PSAI 128950 &#8211; Op&#231;&#227;o para n&#227;o demonstrar 821/836</h3>
+  <p class="status"><span class="badge badge-sam">SAM</span> Em Teste &#8226; Talita (SA)</p>
+  <p><strong>Descri&#231;&#227;o:</strong> Implementar op&#231;&#227;o para que o sistema n&#227;o demonstre as rubricas de INSS Diferen&#231;a de F&#233;rias (821 e 836) quando no c&#225;lculo das f&#233;rias o INSS j&#225; for calculado pelo teto.</p>
+  <div class="alert-medio">Mexe nas <strong>mesmas rubricas</strong> que a 128913. A pr&#243;pria Talita identificou esse conflito potencial no log de 10/03.</div>
+</div>
+
+<!-- 2C -->
+<div class="psai-card">
+  <h3>PSAI 128959 &#8211; INSS DIF F&#201;RIAS Fracionadas <span style="color: #c0392b;">(NOVO!)</span></h3>
+  <p class="status"><span class="badge badge-sam">SAM</span> Em tr&#226;mite &#8226; Talita (SA)</p>
+  <p><strong>Descri&#231;&#227;o:</strong> Alterar o sistema para n&#227;o calcular a rubrica &#8220;836- INSS DIF DE FERIAS&#8221; quando houver f&#233;rias fracionadas na compet&#234;ncia e alterar a al&#237;quota de INSS.</p>
+  <div class="alert-medio"><strong>3&#170; PSAI nas rubricas 821/836!</strong> Tr&#234;s PSAIs diferentes alterando l&#243;gica da mesma rubrica sem alinhamento evidente.</div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============ CONFLITO 3 ============ -->
+<h1><span class="badge badge-alto">ALTO</span> Conflito 3 &#8211; Campo Dependentes DIRF</h1>
+
+<p><strong>Mesma investiga&#231;&#227;o por 2 pessoas de times diferentes</strong></p>
+
+<table>
+  <tr><th>Pessoa</th><th>Time</th><th>PSAI</th><th>Tema investigado</th></tr>
+  <tr><td><span class="person-ne">Ana L&#237;gia</span></td><td>NE</td><td>128698</td><td>Campo Dependente 13&#186; Extrator DIRF</td></tr>
+  <tr><td><span class="person-sa">Jerusa</span></td><td>SA</td><td>105827</td><td>Campo Dependentes IRRF/DIRF sistema = eSocial</td></tr>
+</table>
+
+<div class="alert-alto">
+  Ambas investigam &#8220;Dependentes no IRRF/DIRF&#8221; por caminhos diferentes sem evid&#234;ncia de comunica&#231;&#227;o. Ana L&#237;gia declarou no log de 06/03: <em>&#8220;recebemos uma NE na PSAI 128698 sobre o campo Dependente do Extrator da DIRF... primeiro precisamos arrumar a defini&#231;&#227;o da SAI 83256.&#8221;</em>
+</div>
+
+<!-- ============ CONFLITO 4 ============ -->
+<h1><span class="badge badge-alto">ALTO</span> Conflito 4 &#8211; SAM 127289 Responsabilidade Compartilhada</h1>
+
+<div class="psai-card">
+  <h3>PSAI 127289 / SAI 100310</h3>
+  <p class="status"><span class="badge badge-sam">SAM</span> Ana Paula (SA) tramitou</p>
+  <p><strong>Descri&#231;&#227;o:</strong> Reestruturar a configura&#231;&#227;o da rubrica com classifica&#231;&#227;o &#8216;Servi&#231;o Frete&#8217; e o envio das informa&#231;&#245;es junto ao eSocial do Transportador Aut&#244;nomo com categoria SEFIP 15, 16, 18, 23 ou 25, para ajustar a confer&#234;ncia de IRRF &#8216;Sistema x eSocial&#8217;.</p>
+  <p><strong>Respons&#225;veis:</strong> <span class="person-ne">Ana L&#237;gia (NE)</span> <span class="person-sa">Ana Paula (SA) &#8211; 6x</span> <span class="person-sa">Jerusa (SA/NE)</span></p>
+  <div class="alert-alto">
+    Esta SAM trata de <strong>Transportador Aut&#244;nomo + IRRF + SEFIP</strong> &#8211; exatamente o mesmo tema do Cluster 1. O risco &#233; que altera&#231;&#245;es nesta SAM impactem ou sejam impactadas pelas NEs 128909/128910.
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============ SOBREPOSICOES FUNCIONAIS ============ -->
+<h1>Sobreposi&#231;&#245;es Funcionais</h1>
+
+<p>SAMs que o time SA trabalha que mexem nas <strong>mesmas &#225;reas funcionais</strong> que NEs pendentes do time NE.</p>
+
+<h2>A) &#193;rea F&#233;rias &#8211; 5 SAMs SA &#215; 3 NEs NE</h2>
+
+<table>
+  <tr><th colspan="3" style="background: #8e44ad;">SAMs do Time SA</th></tr>
+  <tr><th>PSAI</th><th>Analista</th><th>Descri&#231;&#227;o</th></tr>
+  <tr><td>128750</td><td><span class="person-sa">Talita</span></td><td>Sal&#225;rio Base c&#225;lculo recibo f&#233;rias &#8211; horistas</td></tr>
+  <tr><td>128994</td><td><span class="person-sa">Talita</span></td><td>Programa&#231;&#227;o de f&#233;rias filtro PROGRAMADAS</td></tr>
+  <tr><td>86339</td><td><span class="person-sa">Ana Paula, Helen</span></td><td>F&#233;rias em dobro para intermitente</td></tr>
+  <tr><td>129086</td><td><span class="person-sa">Vivian</span></td><td>Estudo m&#233;todo envio rubricas f&#233;rias S-1200/S-2299</td></tr>
+  <tr><td>129051</td><td><span class="person-sa">Taiane</span></td><td>Licen&#231;a pr&#234;mio + f&#233;rias ou 13&#186; conforme CCT</td></tr>
+</table>
+
+<table>
+  <tr><th colspan="3" style="background: #2980b9;">NEs do Time NE</th></tr>
+  <tr><th>PSAI</th><th>Analista</th><th>Descri&#231;&#227;o</th></tr>
+  <tr><td>128706</td><td><span class="person-ne">Luana</span></td><td>N&#227;o dilata per&#237;odo aquisitivo afastamento motivos 90/91</td></tr>
+  <tr><td>128913</td><td><span class="person-ne">Ana L&#237;gia</span> <span class="person-sa">Talita</span></td><td>INSS diferen&#231;a f&#233;rias + rescis&#227;o</td></tr>
+  <tr><td>125728</td><td><span class="person-ne">Ana L&#237;gia</span></td><td>M&#233;dia rubrica 8125 REFLEXO HE DSR com f&#233;rias 2 compet&#234;ncias</td></tr>
+</table>
+
+<div class="alert-medio">
+  <strong>Risco:</strong> Vivian (SA) gastou <strong>1.446 min (24h!)</strong> em atividades de f&#233;rias. Se alguma SAM alterar comportamento de c&#225;lculo de f&#233;rias, pode impactar NEs pendentes.
+</div>
+
+<h2>B) &#193;rea DIRF / Extrator / Comprovante &#8211; 5 SAMs &#215; 4 NEs</h2>
+
+<table>
+  <tr><th colspan="3" style="background: #8e44ad;">SAMs do Time SA</th></tr>
+  <tr><th>PSAI</th><th>Analista</th><th>Descri&#231;&#227;o</th></tr>
+  <tr><td>105827</td><td><span class="person-sa">Ana Paula, Jerusa</span></td><td>Dependentes IRRF/DIRF</td></tr>
+  <tr><td>127289</td><td><span class="person-sa">Ana Paula</span></td><td>Transportador Aut&#244;nomo IRRF eSocial</td></tr>
+  <tr><td>125491</td><td><span class="person-sa">Ana Paula</span></td><td>Extrator DIRF somente com IRRF retido</td></tr>
+  <tr><td>127976</td><td><span class="person-sa">Elis&#226;ngela</span></td><td>Comprovante rendimento por compet&#234;ncia/per&#237;odo</td></tr>
+  <tr><td>128754</td><td><span class="person-sa">Talita</span></td><td>Rendimentos tribut&#225;veis para aut&#244;nomos MEI</td></tr>
+</table>
+
+<table>
+  <tr><th colspan="3" style="background: #2980b9;">NEs do Time NE</th></tr>
+  <tr><th>PSAI</th><th>Analista</th><th>Descri&#231;&#227;o</th></tr>
+  <tr><td>128698</td><td><span class="person-ne">Ana L&#237;gia</span></td><td>Dependente 13&#186; no Extrator DIRF</td></tr>
+  <tr><td>128770</td><td><span class="person-ne">Camila</span></td><td>Comprovante Rendimentos base negativa + Extrator DIRF</td></tr>
+  <tr><td>128572</td><td><span class="person-ne">Camila</span></td><td>Valores repetidos Extrator DIRF coluna Valor Sistema</td></tr>
+  <tr><td>129135</td><td><span class="person-ne">Luana</span></td><td>Comprovante Rendimento empregado transferido + contribuinte</td></tr>
+</table>
+
+<h2>C) &#193;rea eSocial S-1210 &#8211; 2 SAMs &#215; 3 NEs</h2>
+
+<table>
+  <tr><th colspan="3" style="background: #8e44ad;">SAMs do Time SA</th></tr>
+  <tr><th>PSAI</th><th>Analista</th><th>Descri&#231;&#227;o</th></tr>
+  <tr><td>127963</td><td><span class="person-sa">Taiane, Ana Paula</span></td><td>Plano sa&#250;de retificar grupo planSaude no S-1210</td></tr>
+  <tr><td>128807</td><td><span class="person-sa">Vivian, Ana Paula</span></td><td>Nova consulta protocolos retorno eSocial</td></tr>
+</table>
+
+<table>
+  <tr><th colspan="3" style="background: #2980b9;">NEs do Time NE</th></tr>
+  <tr><th>PSAI</th><th>Analista</th><th>Descri&#231;&#227;o</th></tr>
+  <tr><td>128926</td><td><span class="person-ne">Luana</span></td><td>Erro exporta/importa tabela S-1210 com perAnt</td></tr>
+  <tr><td>129072</td><td><span class="person-ne">Luana</span></td><td>Compet&#234;ncia retroativa S-1210 com fim dependente</td></tr>
+  <tr><td>129090</td><td><span class="person-ne">Luana</span></td><td>Compet&#234;ncia perAnt S-1210 retifica&#231;&#227;o</td></tr>
+</table>
+
+<div class="alert-medio">
+  <strong>Novo:</strong> Taiane (SA) trabalha na SAI 100581 que &#233; a mesma SAI da PSAI 129090. Luana (NE) tamb&#233;m est&#225; analisando essa mesma PSAI.
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============ MAPA DE RISCOS ============ -->
+<h1>Mapa Completo de Riscos</h1>
+
+<table>
+  <tr><th style="width:5%">#</th><th style="width:12%">Risco</th><th style="width:53%">Descri&#231;&#227;o</th><th style="width:30%">Pessoas</th></tr>
+  <tr style="background: #fde8e8;">
+    <td><strong>1</strong></td>
+    <td><span class="badge badge-critico">CR&#205;TICO</span></td>
+    <td>Cluster IRRF/Transportador/DIRF &#8211; 7 PSAIs, 3+ arquivos de c&#243;digo, 2 times</td>
+    <td>Ana Paula, Jerusa, Talita, Ana L&#237;gia, Camila</td>
+  </tr>
+  <tr style="background: #fef3e2;">
+    <td><strong>2</strong></td>
+    <td><span class="badge badge-alto">ALTO</span></td>
+    <td>Defini&#231;&#227;o duplicada PSAI 128913 + conflito rubricas 821/836 (3 PSAIs!)</td>
+    <td>Talita, Vivian, Ana L&#237;gia</td>
+  </tr>
+  <tr style="background: #fef3e2;">
+    <td><strong>3</strong></td>
+    <td><span class="badge badge-alto">ALTO</span></td>
+    <td>Campo Dependentes: 128698 (NE) vs 105827 (SA) &#8211; mesma investiga&#231;&#227;o</td>
+    <td>Ana L&#237;gia, Jerusa</td>
+  </tr>
+  <tr style="background: #fef3e2;">
+    <td><strong>4</strong></td>
+    <td><span class="badge badge-alto">ALTO</span></td>
+    <td>SAM 127289 responsab. compartilhada + mesmo tema Cluster 1</td>
+    <td>Ana L&#237;gia, Ana Paula, Jerusa</td>
+  </tr>
+  <tr style="background: #fef9e7;">
+    <td><strong>5</strong></td>
+    <td><span class="badge badge-medio">M&#201;DIO</span></td>
+    <td>PSAI 128959 &#8211; 3&#170; PSAI nas rubricas 821/836</td>
+    <td>Talita</td>
+  </tr>
+  <tr style="background: #fef9e7;">
+    <td><strong>6</strong></td>
+    <td><span class="badge badge-medio">M&#201;DIO</span></td>
+    <td>PSAI 129090/SAI 100581 &#8211; Taiane (SA) e Luana (NE) na mesma SAI S-1210</td>
+    <td>Taiane, Luana</td>
+  </tr>
+  <tr style="background: #fef9e7;">
+    <td><strong>7</strong></td>
+    <td><span class="badge badge-medio">M&#201;DIO</span></td>
+    <td>Sobreposi&#231;&#227;o F&#233;rias: 5 SAMs SA + 3 NEs NE na mesma &#225;rea</td>
+    <td>Vivian, Talita, Luana, Ana L&#237;gia</td>
+  </tr>
+  <tr style="background: #fef9e7;">
+    <td><strong>8</strong></td>
+    <td><span class="badge badge-medio">M&#201;DIO</span></td>
+    <td>Sobreposi&#231;&#227;o DIRF/Extrator: 5 SAMs + 4 NEs nos mesmos relat&#243;rios</td>
+    <td>Ana Paula, Camila, Ana L&#237;gia, Luana</td>
+  </tr>
+  <tr>
+    <td><strong>9</strong></td>
+    <td><span class="badge badge-baixo">BAIXO</span></td>
+    <td>Sobreposi&#231;&#227;o S-1210: 2 SAMs + 3 NEs no mesmo evento eSocial</td>
+    <td>Taiane, Ana Paula, Luana</td>
+  </tr>
+  <tr>
+    <td><strong>10</strong></td>
+    <td><span class="badge badge-baixo">BAIXO</span></td>
+    <td>PSAI 128572 (Camila) &#8211; Extrator DIRF valores repetidos</td>
+    <td>Camila</td>
+  </tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- ============ ACOES RECOMENDADAS ============ -->
+<h1>A&#231;&#245;es Recomendadas</h1>
+
+<div class="action-urgente">
+  <h2 style="color: #c0392b; margin-top: 0; border: none; padding: 0;">&#9888; URGENTE &#8211; Esta Semana</h2>
+  
+  <h3>a) Reuni&#227;o Vitor + Sabrina + Ana Paula + Jerusa + Ana L&#237;gia</h3>
+  <ul>
+    <li>Mapear ownership do cluster IRRF/Transportador (7 PSAIs!)</li>
+    <li>Ana L&#237;gia + Jerusa: alinhar sobre campo Dependentes (128698 vs 105827)</li>
+    <li>Garantir que DEV da 128909 saiba que 128834 j&#225; foi liberada</li>
+    <li>SAM 127289 &#233; parte do cluster? Quem lidera a integra&#231;&#227;o?</li>
+  </ul>
+  
+  <h3>b) Alinhar Ana L&#237;gia + Talita sobre PSAI 128913</h3>
+  <ul>
+    <li>Talita j&#225; tem defini&#231;&#227;o COMPLETA (cen&#225;rios, c&#243;digo, pontos de aten&#231;&#227;o)</li>
+    <li>Ana L&#237;gia &#233; respons&#225;vel &#8211; verificar se come&#231;ou defini&#231;&#227;o pr&#243;pria</li>
+    <li>Se n&#227;o, usar a da Talita como base (evita ~3h de retrabalho)</li>
+  </ul>
+  
+  <h3>c) Alinhar Taiane + Luana sobre SAI 100581 / PSAI 129090</h3>
+  <ul>
+    <li>Ambos aparecem trabalhando neste item do S-1210</li>
+  </ul>
+</div>
+
+<div class="action-quinzena">
+  <h2 style="color: #e67e22; margin-top: 0; border: none; padding: 0;">&#128197; Esta Quinzena</h2>
+  
+  <h3>d) Revisar 3 PSAIs das rubricas 821/836 (128913 + 128950 + 128959)</h3>
+  <ul>
+    <li>Talita (SA) est&#225; nas 3 &#8211; ela &#233; a pessoa certa para mapear depend&#234;ncias</li>
+    <li>Garantir que a 128913 (NE) considere a op&#231;&#227;o que a 128950 (SAM) introduz</li>
+  </ul>
+  
+  <h3>e) Verificar PSAI 128724 (Talita) &#8211; Extrator DIRF negativos</h3>
+  <ul>
+    <li>Precisa ser sincronizada com 128909 e 105827 (mesmo arquivo de c&#243;digo)</li>
+  </ul>
+  
+  <h3>f) Mapear impacto SAMs de f&#233;rias nas NEs de f&#233;rias</h3>
+  <ul>
+    <li>SAMs: 128750, 128994, 86339, 129086, 129051</li>
+    <li>NEs: 128706, 125728, 128913</li>
+  </ul>
+</div>
+
+<div class="action-estrutural">
+  <h2 style="color: #27ae60; margin-top: 0; border: none; padding: 0;">&#9881; Estrutural</h2>
+  <ul>
+    <li><strong>Ritual semanal 15min</strong> entre Vitor e Sabrina para sincronizar PSAIs/SAIs</li>
+    <li><strong>Antes de tramitar PSAI</strong>, verificar se h&#225; outra PSAI do mesmo tema/c&#243;digo</li>
+    <li><strong>Compartilhar artefatos</strong> gerados com IA entre os times (Talita j&#225; gera .md)</li>
+    <li><strong>Extrator DIRF:</strong> designar UM respons&#225;vel t&#233;cnico que revise todas as altera&#231;&#245;es</li>
+  </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============ NUMEROS FINAIS ============ -->
+<h1>N&#250;meros Finais</h1>
+
+<table>
+  <tr><th colspan="2" style="background: #8e44ad;">Time SA (Sabrina) &#8211; &#218;ltimos 14 dias</th></tr>
+  <tr><td style="width:40%">PSAIs tramitadas</td><td><strong>52</strong> (41 SAMs, 5 SALs, 3 SAILs, 3 NEs)</td></tr>
+  <tr><td>NEs com respons&#225;veis do time NE</td><td>3 (128834, 128909, 128913)</td></tr>
+  <tr><td>SAMs com respons&#225;vel NE</td><td>1 (127289)</td></tr>
+  <tr><td>Analistas ativos</td><td>Ana Paula (mais ativa), Talita, Douglas, Vivian, Elis&#226;ngela, Helen, Taiane, Jerusa, Sabrina</td></tr>
+</table>
+
+<table>
+  <tr><th colspan="2" style="background: #2980b9;">Time NE &#8211; &#218;ltimos 14 dias (via logs)</th></tr>
+  <tr><td style="width:40%">PSAIs trabalhadas ativamente</td><td><strong>17</strong></td></tr>
+  <tr><td>Analistas com logs</td><td>Ana L&#237;gia (8 dias), Camila (7), Luana (6), Taiane (6), Talita (4), Jessica (3)</td></tr>
+</table>
+
+<table>
+  <tr><th colspan="2" style="background: #16213e;">Intersec&#231;&#245;es Identificadas</th></tr>
+  <tr><td style="width:40%">Conflitos diretos</td><td><strong>4</strong></td></tr>
+  <tr><td>Sobreposi&#231;&#245;es funcionais</td><td><strong>3</strong></td></tr>
+  <tr><td>Itens no mapa de riscos</td><td><strong>10</strong></td></tr>
+  <tr><td>PSAIs do NE com conex&#227;o tem&#225;tica SA</td><td>~30%</td></tr>
+</table>
+
+<br><br>
+<div class="footer">
+  <p>Relat&#243;rio gerado em 18/03/2026 | Dados: banco PBCVS9 + ne-pendentes.json + logs analistas</p>
+  <p>Projeto Dashboard Diretrizes &#8211; Vitor Justino &#8211; Escrita Fiscal</p>
+</div>
+
+</body>
+</html>
