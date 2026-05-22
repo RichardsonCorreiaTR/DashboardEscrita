@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Escrita Fiscal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0d1117; color: #e6edf3;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    }
+    .card {
+      background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+      padding: 3rem 2.5rem; max-width: 480px; width: 90%; text-align: center;
+    }
+    .logo { font-size: 2.5rem; margin-bottom: 1rem; }
+    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; color: #fff; }
+    .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 2rem; }
+    .info {
+      background: #1f2937; border: 1px solid #374151; border-radius: 8px;
+      padding: 1.25rem; margin-bottom: 2rem; text-align: left;
+    }
+    .info p { font-size: 0.85rem; color: #9ca3af; line-height: 1.6; }
+    .info strong { color: #e6edf3; }
+    .badge {
+      display: inline-block; background: #1f6feb; color: #fff;
+      padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem;
+      font-weight: 600; margin-bottom: 1.5rem;
+    }
+    .btn {
+      display: inline-block; background: #238636; color: #fff;
+      padding: 0.75rem 1.75rem; border-radius: 8px; text-decoration: none;
+      font-weight: 600; font-size: 0.95rem; transition: background 0.2s;
+    }
+    .btn:hover { background: #2ea043; }
+    .footer { margin-top: 2rem; color: #484f58; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">📊</div>
+    <span class="badge">Thomson Reuters · Escrita Fiscal</span>
+    <h1>Dashboard de Metas</h1>
+    <p class="subtitle">Indicadores de produto e equipe da Escrita Fiscal</p>
+
+    <div class="info">
+      <p>
+        Este dashboard é uma ferramenta <strong>interna</strong> da equipe Escrita Fiscal.<br><br>
+        O acesso aos dados requer conexão com a rede da Thomson Reuters e autenticação no sistema SGD.
+      </p>
+    </div>
+
+    <a href="http://192.168.1.61:4000" class="btn">🔗 Acessar Dashboard</a>
+
+    <div class="footer">
+      Disponível apenas na rede interna · Porta 4000
+    </div>
+  </div>
+</body>
+</html>
