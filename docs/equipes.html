@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metas da Equipe - Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="com-sidebar">
+
+  <!-- SIDEBAR (renderizado por nav.js) -->
+  <nav id="nav-container"></nav>
+
+  <!-- CONTEUDO DA PAGINA -->
+  <div class="pagina">
+
+    <header class="header">
+      <div class="header__info">
+        <h1 class="header__title">Metas da Equipe</h1>
+        <span class="header__subtitle">Escrita Fiscal - Thomson Reuters / Betha</span>
+      </div>
+      <div class="header__acoes">
+        <button id="btn-atualizar" class="btn btn--outline" title="Busca dados ao vivo do banco e atualiza o cache" hidden>Atualizar</button>
+      </div>
+    </header>
+
+    <div id="eq-fonte-info" class="fonte-info" hidden></div>
+
+    <main id="equipes-main" class="dashboard">
+      <div class="loading" id="equipes-loading">
+        <div class="loading__spinner"></div>
+        <span>Carregando...</span>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>Dashboard Escrita Fiscal v0.2.0</span>
+      <span>Coord. Richardson Picinini Correia</span>
+    </footer>
+
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="/js/nav.js?v=7"></script>
+  <script src="/js/format-utils.js?v=7"></script>
+  <script src="/js/metas-config.js?v=7"></script>
+  <script src="/js/equipes-mensal.js?v=7"></script>
+  <script src="/js/equipes-detalhe.js?v=7"></script>
+  <script src="/js/equipes-coordenador.js?v=6"></script>
+  <script src="/js/app-equipes.js?v=7"></script>
+</body>
+</html>

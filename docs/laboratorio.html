@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laboratorio IA - Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</head>
+<body class="com-sidebar">
+  <nav id="nav-container"></nav>
+  <div class="pagina">
+    <header class="header">
+      <h1 class="header__titulo">Laboratorio de Previsibilidade</h1>
+      <div class="header__controles">
+        <span id="lab-status" class="header__badge">Carregando...</span>
+      </div>
+    </header>
+
+    <div id="lab-loading" class="loading" style="display:none">
+      <div class="loading__spinner"></div>
+      <p>Carregando dados...</p>
+    </div>
+    <div id="lab-erro" class="erro-global" style="display:none"></div>
+
+    <!-- VIEW: Raio-X da Versao -->
+    <main id="view-raio-x" class="dashboard view-toggle">
+      <div class="lab-seletor">
+        <label for="sel-versao">Versao</label>
+        <select id="sel-versao"></select>
+      </div>
+      <div id="rx-kpis" class="cards-grid"></div>
+      <div class="graficos-grid">
+        <section class="card">
+          <h2 class="card__titulo">Distribuicao de Complexidade</h2>
+          <canvas id="rx-complex" height="220"></canvas>
+        </section>
+        <section class="card">
+          <h2 class="card__titulo">Distribuicao de Risco</h2>
+          <canvas id="rx-risco" height="220"></canvas>
+        </section>
+      </div>
+      <section class="card" style="margin-top:1rem">
+        <h2 class="card__titulo">Areas Tecnicas Afetadas</h2>
+        <canvas id="rx-areas" height="180"></canvas>
+      </section>
+      <section class="card" style="margin-top:1rem">
+        <h2 class="card__titulo">Todas as SAIs da Versao</h2>
+        <p class="lab-legenda">Linhas em destaque = alto risco ou alta complexidade. Passe o mouse no resumo para ver texto completo.</p>
+        <div id="rx-criticas" class="tabela-scroll"></div>
+      </section>
+    </main>
+
+    <!-- VIEW: Evolucao -->
+    <main id="view-evolucao" class="dashboard view-toggle">
+      <div class="graficos-grid">
+        <section class="card">
+          <h2 class="card__titulo">Complexidade Media por Versao</h2>
+          <canvas id="ev-complex" height="220"></canvas>
+        </section>
+        <section class="card">
+          <h2 class="card__titulo">% SAIs de Alto Risco por Versao</h2>
+          <canvas id="ev-risco" height="220"></canvas>
+        </section>
+      </div>
+      <section class="card" style="margin-top:1rem">
+        <h2 class="card__titulo">Volume por Versao (total de SAIs)</h2>
+        <canvas id="ev-volume" height="180"></canvas>
+      </section>
+    </main>
+
+    <!-- VIEW: Backtest -->
+    <main id="view-backtest" class="dashboard view-toggle">
+      <section id="bt-resumo" style="margin-bottom:1rem"></section>
+      <section class="estudo-resumo" id="bt-kpis" style="margin-bottom:1.25rem"></section>
+      <section id="bt-impacto" style="margin-bottom:1.25rem"></section>
+      <section id="bt-prova" style="margin-bottom:1.25rem"></section>
+      <section id="bt-exemplo" style="margin-bottom:1.25rem"></section>
+      <section id="bt-estrategias" style="margin-bottom:1.25rem"></section>
+    </main>
+
+    <!-- VIEW: DNA Tecnico -->
+    <main id="view-dna" class="dashboard view-toggle">
+      <section class="card">
+        <h2 class="card__titulo">Frequencia por Area Tecnica</h2>
+        <canvas id="dna-freq" height="300"></canvas>
+      </section>
+      <section class="card" style="margin-top:1rem">
+        <h2 class="card__titulo">Detalhamento por Area</h2>
+        <div id="dna-tabela" class="tabela-scroll"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Laboratorio de Previsibilidade NE &mdash; 2.813 SAIs classificadas desde fev/2022</span>
+    </footer>
+  </div>
+
+  <script src="/js/nav.js"></script>
+  <script src="/js/lab-render.js"></script>
+  <script src="/js/app-lab-backtest.js"></script>
+  <script src="/js/app-laboratorio.js"></script>
+</body>
+</html>
