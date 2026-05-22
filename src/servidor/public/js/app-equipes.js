@@ -12,9 +12,24 @@ const AppEquipes = (() => {
   let fonteAtual = 'cache';
 
   async function init() {
-    await MetasConfig.carregar();
+    // Verificar sessao
+    const me = await fetch('/auth/me').then(r => r.json()).catch(() => ({ logado: false }));
+    if (!me.logado) { window.location.href = '/login.html'; return; }
+
+    // Exibir nome do usuario no header
+    const el = document.getElementById('header-usuario');
+    if (el) el.textContent = me.usuario;
+
+    // Analistas so podem ver seus proprios dados
     const params = new URLSearchParams(window.location.search);
-    slugAtual = params.get('colaborador') || '';
+    const slugParam = params.get('colaborador');
+    if (me.papel === 'analista' && slugParam && slugParam !== me.slug) {
+      window.location.href = '/equipes.html?colaborador=' + me.slug;
+      return;
+    }
+
+    await MetasConfig.carregar();
+    slugAtual = slugParam || '';
     const coordParam = params.get('coord');
     document.getElementById('equipes-loading').hidden = true;
     if (coordParam) {

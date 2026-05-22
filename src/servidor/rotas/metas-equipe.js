@@ -46,7 +46,23 @@ router.get('/metas-equipe/config', (_req, res) => {
   });
 });
 
-router.get('/metas-equipe', async (req, res) => {
+// Middleware: somente coordenadores acessam dados de outros usuarios
+function apenasCoord(req, res, next) {
+  if (req.session && req.session.papel === 'coordenador') return next();
+  return res.status(403).json({ erro: 'Acesso restrito ao coordenador' });
+}
+
+function meuSlug(req, res, next) {
+  const papel = req.session && req.session.papel;
+  const slug = req.session && req.session.slug;
+  if (papel === 'coordenador') return next();
+  if (slug && req.params.slug && req.params.slug !== slug) {
+    return res.status(403).json({ erro: 'Acesso restrito aos seus proprios dados' });
+  }
+  next();
+}
+
+router.get('/metas-equipe', apenasCoord, async (req, res) => {
   const fonte = req.query.fonte;
   if (fonte === 'cache') {
     const todos = cacheMetas.obterTodos();
@@ -67,7 +83,7 @@ router.get('/metas-equipe', async (req, res) => {
   }
 });
 
-router.get('/metas-equipe/:slug', async (req, res) => {
+router.get('/metas-equipe/:slug', meuSlug, async (req, res) => {
   const a = getAnalistas().find(x => x.slug === req.params.slug);
   if (!a) return res.status(404).json({ erro: 'Nao encontrado' });
   const fonte = req.query.fonte;

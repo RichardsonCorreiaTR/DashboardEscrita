@@ -25,6 +25,7 @@
   "dependencies": {
     "exceljs": "^4.4.0",
     "express": "^4.21.2",
+    "express-session": "^1.19.0",
     "jszip": "^3.10.1",
     "odbc": "^2.4.9"
   },
