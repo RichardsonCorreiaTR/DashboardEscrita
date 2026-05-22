@@ -227,6 +227,50 @@ router.get('/estudos/resumo/:versao', async (req, res) => {
   }
 });
 
+/** GET /api/estudos/diff-niveis - Diferenças de nivel entre Planilha e SGD */
+router.get('/estudos/diff-niveis', async (req, res) => {
+  const planilha = require('../../core/planilha-escrita');
+  const MESES = [1,2,3,4,5,6,7,8,9,10,11,12];
+  const NIVEL_DB = { 1: 'Baixa', 2: 'Média', 3: 'Alta', 4: 'Extra Alta' };
+  const NIVEL_CHAVE = { 'baixa': 1, 'media': 2, 'média': 2, 'alta': 3, 'extra alta': 4 };
+  try {
+    // 1. Ler todas as SAIs da planilha com nivel
+    const saiMap = {};
+    for (const mes of MESES) {
+      const rows = await planilha.obterSaisPorMes(mes).catch(() => []);
+      rows.forEach(r => {
+        if (r.i_sai && r.nivel) saiMap[r.i_sai] = { nivel_planilha: r.nivel, responsavel: r.responsavel_psai, tipo: r.tipoSAI };
+      });
+    }
+    const ids = Object.keys(saiMap);
+    if (!ids.length) return res.json({ divergencias: [], total: 0 });
+
+    // 2. Buscar nivel no banco em lotes de 200
+    const loteSize = 200;
+    const dbMap = {};
+    for (let i = 0; i < ids.length; i += loteSize) {
+      const lote = ids.slice(i, i + loteSize).join(',');
+      const rows = await qe.executar(`SELECT sp.i_sai, p.nivel_alteracao FROM UP.SAI_PSAI sp JOIN bethadba.psai p ON sp.i_psai = p.i_psai WHERE sp.i_sai IN (${lote})`);
+      rows.forEach(r => { dbMap[r.i_sai] = r.nivel_alteracao; });
+    }
+
+    // 3. Comparar
+    const divergencias = [];
+    for (const [id, d] of Object.entries(saiMap)) {
+      const nivelDb = dbMap[id];
+      const nivelDbLabel = NIVEL_DB[nivelDb] || 'Não definido';
+      const nivelPlanChave = NIVEL_CHAVE[(d.nivel_planilha || '').toLowerCase().trim()];
+      if (nivelDb !== nivelPlanChave) {
+        divergencias.push({ i_sai: parseInt(id), tipo: d.tipo, responsavel: d.responsavel, nivel_planilha: d.nivel_planilha, nivel_sgd: nivelDbLabel, nivel_sgd_raw: nivelDb });
+      }
+    }
+    divergencias.sort((a, b) => a.responsavel?.localeCompare(b.responsavel || '') || a.i_sai - b.i_sai);
+    res.json({ divergencias, total: divergencias.length, total_planilha: ids.length });
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
+});
+
 /* ============== HELPERS ============== */
 
 async function detectarAtualSafe() {

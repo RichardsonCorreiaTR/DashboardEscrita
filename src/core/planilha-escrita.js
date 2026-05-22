@@ -54,7 +54,8 @@ function parsearLinha(row) {
     responsavel_sai: cel(9),
     nivel: cel(11),
     nivel_analista: cel(16),
-    pontos: num(17)
+    pontos: num(17),
+    qtdTramite: num(12)
   };
 }
 

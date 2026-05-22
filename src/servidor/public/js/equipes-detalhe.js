@@ -8,7 +8,7 @@
 
 /* eslint-disable no-unused-vars */
 const EquipesDetalhe = (() => {
-  const { MESES, fmtMin, fmtData, isTrabalho } = FormatUtils;
+  const { MESES, fmtMin, fmtData, isTrabalho, isOutrasAtividades, isPrincipalQualquer } = FormatUtils;
   const URL_SAI = 'https://sgsai.dominiosistemas.com.br/sgsai/faces/sai.html?sai=';
   const URL_PSAI = 'https://sgd.dominiosistemas.com.br/sgsa/faces/psai.html?psai=';
   function linkSai(id) { return '<a href="' + URL_SAI + id + '" target="_blank" class="link-sgd">' + id + '</a>'; }
@@ -16,8 +16,8 @@ const EquipesDetalhe = (() => {
 
   function isAusencia(nome) {
     const n = nome.toLowerCase();
-    return n.includes('feriado') || n.includes('rias') || n.includes('folga') ||
-      n.includes('particular') || n.includes('afastamento');
+    return n.includes('feriado') || (n.includes('rias') && n.length < 12) ||
+      (n.includes('folga') && !n.includes('banco de horas'));
   }
 
   function render(metaId, mes, registros, planilha) {
@@ -25,32 +25,42 @@ const EquipesDetalhe = (() => {
       return '<div class="eq-sem-dados">Nenhum registro encontrado em ' + MESES[mes] + '</div>';
     }
     const t = '<h4 class="eq-det__titulo">Detalhamento - ' + MESES[mes] + ' (' + registros.length + ' registros)</h4>';
-    if (metaId.startsWith('tempo-trabalho')) return t + detAtividades(registros);
+    if (metaId.startsWith('tempo-trabalho')) return t + detAtividades(registros, metaId);
     if (metaId.startsWith('indice-revisoes')) return t + detRevisoes(registros);
-    if (metaId === 'pontos-definicao') return t + detPontos(registros) + detCruzamentoPlanilha(planilha);
-    if (metaId.startsWith('gerar-sai')) return t + detGeracao(registros);
+    if (metaId.startsWith('indice-retornos')) return t + detRetornos(registros, metaId);
+    if (metaId === 'pontos-definicao') return t + detPontos(registros);
+    if (metaId.startsWith('gerar-sai')) {
+      const maxDias = metaId.includes('-7d') ? 7 : metaId.includes('-5d') ? 5 : 3;
+      return t + detGeracao(registros, maxDias);
+    }
+    if (metaId === 'pct-descartes') return t + detPctDescartes(registros);
+    if (metaId === 'controle-descartes') return t + detDescartes(registros);
+    if (metaId === 'tempo-medio-sal') return t + detTempoSal(registros);
     if (metaId === 'respostas-ss-3d') return t + detSS(registros);
     return t + '<pre>' + JSON.stringify(registros, null, 2) + '</pre>';
   }
 
-  function detAtividades(rows) {
+  function detAtividades(rows, metaId) {
+    const isPrincipal = metaId === 'tempo-trabalho-principal';
     const trabalho = [], outras = [], ausencias = [];
     rows.forEach(r => {
       const a = String(r.atividade).trim();
       if (isAusencia(a)) ausencias.push(r);
-      else if (isTrabalho(a)) trabalho.push(r);
+      else if (isPrincipal ? isPrincipalQualquer(a) : (!isOutrasAtividades(a) && isTrabalho(a))) trabalho.push(r);
       else outras.push(r);
     });
     const sT = somaMin(trabalho), sO = somaMin(outras), sA = somaMin(ausencias);
     const total = sT + sO + sA, efetivo = total - sA;
     const pct = efetivo > 0 ? Math.round((sT / efetivo) * 10000) / 100 : 0;
+    const metaStr = metaId === 'tempo-trabalho-analise' ? '85%'
+      : metaId === 'tempo-trabalho-principal' ? '70% (an.) / 50% (esp.)' : '80%';
 
-    return grupoAtiv('\u2705 Trabalho SAI/PSAI (numerador)', trabalho, total, 'eq-det--destaque') +
+    return grupoAtiv('\u2705 Trabalho Principal (numerador)', trabalho, total, 'eq-det--destaque') +
       grupoAtiv('Outras atividades', outras, total, '') +
       grupoAtiv('\u26D4 Ausencias (excluidas do calculo)', ausencias, total, 'eq-det--ausencia') +
       '<div class="eq-det__formula"><strong>Calculo:</strong> ' +
-      fmtMin(sT) + ' (SAI/PSAI) / ' + fmtMin(efetivo) + ' (Efetivo) = <strong>' +
-      pct + '%</strong> [Meta: \u2265 80%]</div>';
+      fmtMin(sT) + ' / ' + fmtMin(efetivo) + ' (Efetivo) = <strong>' +
+      pct + '%</strong> [Meta: \u2265 ' + metaStr + ']</div>';
   }
 
   function grupoAtiv(titulo, rows, total, cls) {
@@ -70,9 +80,36 @@ const EquipesDetalhe = (() => {
     return html;
   }
 
+  function detRetornos(rows, metaId) {
+    const comRet = rows.filter(r => (r.qtdTramite || 0) > 0);
+    const semRet = rows.filter(r => !r.qtdTramite || r.qtdTramite === 0);
+    const totalRet = rows.reduce((s, r) => s + (r.qtdTramite || 0), 0);
+    const indice = rows.length > 0 ? Math.round((totalRet / rows.length) * 100) / 100 : 0;
+    const metaStr = metaId === 'indice-retornos-sal' ? '\u2264 1,00' : '\u2264 1,50';
+    return grupoRet('\u26A0 PSAIs com retorno', comRet, 'eq-det--alerta') +
+      grupoRet('\u2705 PSAIs sem retorno', semRet, '') +
+      '<div class="eq-det__formula"><strong>Calculo:</strong> ' + totalRet +
+      ' retornos / ' + rows.length + ' PSAIs = <strong>' +
+      indice.toFixed(2).replace('.', ',') + '</strong> [Meta: ' + metaStr + ']</div>';
+  }
+
+  function grupoRet(titulo, rows, cls) {
+    if (rows.length === 0) return '';
+    let html = '<div class="eq-det__grupo"><h5>' + titulo + ' (' + rows.length + ')</h5>' +
+      '<table class="eq-tabela eq-tabela--det"><thead><tr>' +
+      '<th>PSAI</th><th>SAI</th><th>Tipo</th><th>Retornos</th></tr></thead><tbody>';
+    rows.forEach(r => {
+      html += '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + linkPsai(r.i_psai) +
+        '</td><td>' + linkSai(r.i_sai) + '</td><td>' + r.tipoSAI + '</td><td><strong>' +
+        (r.qtdTramite || 0) + '</strong></td></tr>';
+    });
+    html += '</tbody></table></div>';
+    return html;
+  }
+
   function detRevisoes(rows) {
-    var denom = rows.filter(function(r) { return r.grupo === 'denominador' || !r.grupo; });
-    var numer = rows.filter(function(r) { return r.grupo === 'numerador'; });
+    var denom = rows;
+    var numer = [];
     var denomComRev = denom.filter(function(r) { return r.revisoes > 0; });
     var denomSemRev = denom.filter(function(r) { return !r.revisoes || r.revisoes === 0; });
     var revDenom = denomComRev.reduce(function(s, r) { return s + r.revisoes; }, 0);
@@ -81,12 +118,11 @@ const EquipesDetalhe = (() => {
     var totalSais = denom.length;
     var indice = totalSais > 0 ? Math.round((totalRev / totalSais) * 100) / 100 : 0;
 
-    return grupoSai('\u26A0 SAIs do mes com revisao (A/C)', denomComRev, 'revisoes', 'eq-det--alerta') +
-      grupoSai('\u2705 SAIs do mes sem revisao', denomSemRev, 'revisoes', '') +
-      (numer.length > 0 ? grupoSai('\u2139 Revisoes de SAIs de outros meses', numer, 'revisoes', 'eq-det--alerta') : '') +
-      '<div class="eq-det__formula"><strong>Calculo:</strong> ' +
-      totalRev + ' revisoes no mes / ' + totalSais + ' SAIs criadas no mes = <strong>' +
-      indice.toFixed(2).replace('.', ',') + '</strong> [Meta: \u2264 0,60]</div>';
+    return grupoSai('\u26A0 SAIs liberadas no m\u00eas com revis\u00e3o (A/C)', denomComRev, 'revisoes', 'eq-det--alerta') +
+      grupoSai('\u2705 SAIs liberadas no m\u00eas sem revis\u00e3o', denomSemRev, 'revisoes', '') +
+      '<div class="eq-det__formula"><strong>C\u00e1lculo:</strong> ' +
+      totalRev + ' revis\u00f5es totais / ' + totalSais + ' SAIs liberadas no m\u00eas = <strong>' +
+      indice.toFixed(2).replace('.', ',') + '</strong></div>';
   }
 
   function grupoSai(titulo, rows, colExtra, cls) {
@@ -108,48 +144,49 @@ const EquipesDetalhe = (() => {
 
   function detPontos(rows) {
     let soma = 0;
-    const semPontos = rows.filter(r => !r.pontuacao || Number(r.pontuacao) === 0);
-    const comPontos = rows.filter(r => r.pontuacao && Number(r.pontuacao) > 0);
+    const semNivel = rows.filter(r => r.nivel_inferido);
     let html = '';
-    if (semPontos.length > 0) {
-      html += '<div class="eq-det__grupo eq-det--alerta"><h5>\u26A0 SAIs sem pontuacao (' +
-        semPontos.length + ') \u2014 corrigir no SGD</h5>' +
-        '<table class="eq-tabela eq-tabela--det"><thead><tr>' +
-        '<th>SAI</th><th>Tipo</th><th>Cadastro</th><th>Pontos</th></tr></thead><tbody>';
-      semPontos.forEach(r => {
-        html += '<tr class="eq-det--alerta"><td>' + linkSai(r.i_sai) + '</td><td>' + r.tipoSAI +
-          '</td><td>' + fmtData(r.CadastroSAI) + '</td><td><strong>—</strong></td></tr>';
-      });
-      html += '</tbody></table></div>';
+    if (semNivel.length > 0) {
+      html += '<div class="eq-det__aviso">\u26A0 ' + semNivel.length +
+        ' SAI(s) sem n\u00edvel definido na planilha \u2014 consideradas como <strong>Baixa</strong></div>';
     }
-    html += '<div class="eq-det__grupo"><h5>SAIs com pontuacao (' + comPontos.length + ')</h5>' +
+    html += '<div class="eq-det__grupo"><h5>SAIs (' + rows.length + ')</h5>' +
       '<table class="eq-tabela eq-tabela--det"><thead><tr>' +
-      '<th>SAI</th><th>Tipo</th><th>Cadastro</th><th>Pontos</th></tr></thead><tbody>';
-    comPontos.forEach(r => {
-      soma += Number(r.pontuacao);
-      html += '<tr><td>' + linkSai(r.i_sai) + '</td><td>' + r.tipoSAI +
-        '</td><td>' + fmtData(r.CadastroSAI) + '</td><td>' + r.pontuacao + '</td></tr>';
+      '<th>SAI</th><th>Tipo</th><th>N\u00edvel</th><th>Pontos</th></tr></thead><tbody>';
+    rows.forEach(r => {
+      const pts = Number(r.pontuacao) || 0;
+      soma += pts;
+      const isFallback = r.pontos_fallback;
+      const isInferido = r.nivel_inferido;
+      const isOverride = r.override;
+      const cls = isOverride ? ' class="eq-det--override"' : (isFallback || isInferido) ? ' class="eq-det--alerta"' : '';
+      const nivelLabel = isInferido ? 'Baixa *' : (r.nivel || 'Baixa');
+      const ptLabel = isFallback ? pts + ' \u26A0' : pts;
+      html += '<tr' + cls + '><td>' + linkSai(r.i_sai) + '</td><td>' + r.tipoSAI +
+        '</td><td>' + nivelLabel + '</td><td>' + ptLabel + '</td></tr>';
     });
     html += '</tbody><tfoot><tr><td colspan="3"><strong>Total</strong></td><td><strong>' +
       soma + '</strong></td></tr></tfoot></table></div>' +
-      '<div class="eq-det__formula"><strong>Total:</strong> ' + soma + ' pontos [Meta: \u2265 80]' +
-      (semPontos.length > 0 ? ' \u2014 <span class="eq-det__aviso">' + semPontos.length +
-        ' SAI(s) sem pontuacao (nao contabilizadas)</span>' : '') + '</div>';
+      '<div class="eq-det__formula"><strong>Total calculado:</strong> ' + soma +
+      ' pontos (tabela cargo x tipo x n\u00edvel) [Meta: \u2265 80]' +
+      (rows.some(r => r.pontos_fallback) ? ' \u2014 \u26A0 linhas vermelhas usam pontuacao da planilha (combinacao sem tabela)' : '') +
+      '</div>';
     return html;
   }
 
   const SIT_LABELS = { 4: 'Respondida', 11: 'Em Analise Coord.', 12: 'A Desenvolver' };
 
-  function detGeracao(rows) {
-    const dentro = rows.filter(r => (Number(r.dias_uteis) || 0) <= 3);
-    const fora = rows.filter(r => (Number(r.dias_uteis) || 0) > 3);
+  function detGeracao(rows, maxDias) {
+    const limite = maxDias || 3;
+    const dentro = rows.filter(r => (Number(r.dias_uteis) || 0) <= limite);
+    const fora = rows.filter(r => (Number(r.dias_uteis) || 0) > limite);
     const pct = rows.length > 0 ? Math.round((dentro.length / rows.length) * 10000) / 100 : 0;
 
     return grupoGer('\u2705 Dentro do prazo (\u2264 3 dias uteis)', dentro, '') +
       grupoGer('\u26A0 Fora do prazo (> 3 dias uteis)', fora, 'eq-det--alerta') +
       '<div class="eq-det__formula"><strong>Calculo:</strong> ' +
       dentro.length + '/' + rows.length + ' dentro do prazo (' + pct + '%). ' +
-      'Media: <strong>' + media(rows) + ' d.u.</strong> [Meta: media \u2264 3 d.u.]</div>';
+      'Media: <strong>' + media(rows) + ' d.u.</strong> [Meta: media \u2264 ' + limite + ' d.u.]</div>';
   }
 
   function grupoGer(titulo, rows, cls) {
@@ -230,6 +267,90 @@ const EquipesDetalhe = (() => {
 
     html += '<div class="eq-det__formula">Total planilha: <strong>' + p.totalPlanilha + ' pts</strong></div></div>';
     return html;
+  }
+
+  const SIT_DESC_LABEL = { 5: 'Conc. sem Dev', 6: 'Reprovada', 23: 'Prescrita', 33: 'Sist. Desc.' };
+
+  function detPctDescartes(rows) {
+    if (!rows.length) return '<div class="eq-sem-dados">Nenhuma SAI no mes</div>';
+    const descartadas = rows.filter(r => Number(r.descartada) === 1);
+    const analisadas = rows.filter(r => Number(r.descartada) === 0);
+    const pct = rows.length > 0 ? Math.round(descartadas.length / rows.length * 100) : 0;
+    const tabelaRows = arr => arr.map(r => {
+      const sit = SIT_DESC_LABEL[Number(r.i_psai_situacoes)] || '';
+      return '<tr><td>' + linkPsai(r.i_psai) + '</td><td>' + linkSai(r.i_sai) +
+        '</td><td>' + r.tipoSAI + '</td><td>' + fmtData(r.CadastroSAI) +
+        (sit ? '</td><td>' + sit : '</td><td>—') + '</td></tr>';
+    }).join('');
+    const theadDesc = '<table class="eq-tabela eq-tabela--det"><thead><tr>' +
+      '<th>PSAI</th><th>SAI</th><th>Tipo</th><th>Data Situa\u00e7\u00e3o</th><th>Situa\u00e7\u00e3o</th>' +
+      '</tr></thead><tbody>';
+    const theadAnal = '<table class="eq-tabela eq-tabela--det"><thead><tr>' +
+      '<th>PSAI</th><th>SAI</th><th>Tipo</th><th>Cadastro</th><th>Situa\u00e7\u00e3o</th>' +
+      '</tr></thead><tbody>';
+    let html = '';
+    if (descartadas.length) {
+      html += '<div class="eq-det__grupo eq-det--alerta"><h5>\u26A0 Descartadas (' + descartadas.length + ')</h5>' +
+        theadDesc + tabelaRows(descartadas) + '</tbody></table></div>';
+    }
+    if (analisadas.length) {
+      html += '<div class="eq-det__grupo"><h5>\u2705 Analisadas (' + analisadas.length + ')</h5>' +
+        theadAnal + tabelaRows(analisadas) + '</tbody></table></div>';
+    }
+    const totalDenom = analisadas.length + rows.filter(r => Number(r.descartada) === 0).length;
+    html += '<div class="eq-det__formula"><strong>% Descarte:</strong> ' +
+      descartadas.length + ' / (' + analisadas.filter(r => r.i_sai > 0).length + ' SAIs + ' +
+      analisadas.filter(r => !r.i_sai || r.i_sai == 0).length + ' An\u00e1lises) = <strong>' + pct + '%</strong> [Meta: \u2264 30%]</div>';
+    return html;
+  }
+  function detDescartes(rows) {
+    if (!rows.length) return '<div class="eq-sem-dados">Nenhuma PSAI descartada no mes</div>';
+    const soma = rows.reduce((s, r) => s + (Number(r.total_analise)||0) + (Number(r.total_definicao)||0), 0);
+    const media = Math.round(soma / rows.length);
+    let html = '<div class="eq-det__grupo"><table class="eq-tabela eq-tabela--det"><thead><tr>' +
+      '<th>PSAI</th><th>Situa\u00e7\u00e3o</th><th>Cadastro</th><th>An\u00e1lise</th><th>Defini\u00e7\u00e3o</th><th>Total</th>' +
+      '</tr></thead><tbody>';
+    rows.forEach(r => {
+      const anal = Number(r.total_analise)||0, def = Number(r.total_definicao)||0, tot = anal+def;
+      const cls = tot > 300 ? ' class="eq-det--alerta"' : '';
+      const sit = SIT_DESC_LABEL[Number(r.i_psai_situacoes)] || ('sit=' + r.i_psai_situacoes);
+      html += '<tr' + cls + '><td>' + linkPsai(r.i_psai) + '</td><td>' + sit +
+        '</td><td>' + fmtData(r.CadastroPSAI) + '</td><td>' + fmtMin(anal) +
+        '</td><td>' + fmtMin(def) + '</td><td><strong>' + tot + ' min</strong></td></tr>';
+    });
+    html += '</tbody></table></div><div class="eq-det__formula"><strong>M\u00e9dia por PSAI:</strong> ' +
+      media + ' min (' + fmtMin(media) + ') | PSAIs: ' + rows.length + ' | Meta: \u2264 300min</div>';
+    return html;
+  }
+
+  function detTempoSal(rows) {
+    if (!rows.length) return '<div class="eq-sem-dados">Nenhuma an\u00e1lise no mes</div>';
+    const isSalBaixa = r => r.tipoSAI === 'SAL' && ['baixa','pequena'].includes((r.nivel||'').toLowerCase());
+    const salBaixa = rows.filter(isSalBaixa);
+    const outros = rows.filter(r => !isSalBaixa(r));
+    const tabelaAnal = (grupo, limite) => {
+      if (!grupo.length) return '';
+      let t = '<table class="eq-tabela eq-tabela--det"><thead><tr>' +
+        '<th>PSAI</th><th>SAI</th><th>Tipo</th><th>N\u00edvel</th><th>An\u00e1lise</th><th>Defini\u00e7\u00e3o</th><th>Total</th>' +
+        '</tr></thead><tbody>';
+      grupo.forEach(r => {
+        const anal = Number(r.total_analise)||0, def = Number(r.total_definicao)||0, tot = anal+def;
+        const rowCls = limite && tot > limite ? ' class="eq-det--alerta"' : '';
+        t += '<tr' + rowCls + '><td>' + linkPsai(r.i_psai) + '</td><td>' + linkSai(r.i_sai) +
+          '</td><td>' + r.tipoSAI + '</td><td>' + (r.nivel||'N/D') +
+          '</td><td>' + fmtMin(anal) + '</td><td>' + fmtMin(def) +
+          '</td><td><strong>' + fmtMin(tot) + '</strong></td></tr>';
+      });
+      return t + '</tbody></table>';
+    };
+    const somaTot = arr => arr.reduce((s, r) => s + (Number(r.total_analise)||0) + (Number(r.total_definicao)||0), 0);
+    const mr = salBaixa.length ? Math.round(somaTot(salBaixa) / salBaixa.length) : 0;
+    return '<div class="eq-det__grupo"><h5>\u2705 SAL Baixa \u2014 contam para meta (' + salBaixa.length + ')</h5>' +
+      tabelaAnal(salBaixa, 800) + '</div>' +
+      (outros.length ? '<div class="eq-det__grupo"><h5>\u2139 Outros tipos/n\u00edveis \u2014 n\u00e3o contam para meta (' + outros.length + ')</h5>' +
+        tabelaAnal(outros) + '</div>' : '') +
+      '<div class="eq-det__formula"><strong>M\u00e9dia SAL Baixa:</strong> ' + fmtMin(mr) +
+      ' | Meta: \u2264 800min</div>';
   }
 
   function somaMin(rows) { return rows.reduce((s, r) => s + (r.minutos || 0), 0); }

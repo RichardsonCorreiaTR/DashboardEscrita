@@ -2,7 +2,7 @@
 
 > Documento de referencia para o agente Cursor que vai construir este projeto.
 > Criado em: 14/02/2026
-> Autor da decisao arquitetural: Vitor (coordenador Escrita Fiscal) + agente Cursor (conversa de planejamento)
+> Autor da decisao arquitetural: Richardson Picinini Correia (coordenador Escrita Fiscal) + agente Cursor (conversa de planejamento)
 > Consulte a secao relevante deste documento quando necessario. Leia-o inteiro APENAS para mudancas estruturais.
 > Ele e a fonte de verdade do projeto.
 
@@ -117,16 +117,50 @@ C:\Users\6038243\OneDrive - Thomson Reuters Incorporated\Aplicações Cursor\PBC
 ## CONTEXTO DO NEGOCIO
 
 ### Equipe Escrita Fiscal
-| Nome | I_USUARIOS | CODIGO_SGD | Senioridade |
-|------|------------|------------|-------------|
-| Vitor Justino (Coord.) | 628 | 1392773 | coordenador |
-| Ana Ligia Vanella Passarelli | 796 | 902202 | senior |
-| Flávia Felipe Cardoso | 1282 | 1220798 | junior |
-| Jessica Vieira Maximiano | 1263 | 922589 | junior |
-| Mateus Alves | 1010 | 1116513 | junior |
-| Laiz Velho de Almeida | 614 | 241472 | especialista |
 
 Equipe: i_equipes = 12 | i_departamentos = 2 | i_area = 6
+
+**Gerencia**
+| Nome | Cargo |
+|------|-------|
+| Mariana Sartori | Gerente |
+
+**Coordenadores**
+| Nome | I_USUARIOS | CODIGO_SGD | Papel |
+|------|------------|------------|-------|
+| Richardson Correia | 73 | 6828 | coordenador |
+| Marielli Neves | 186 | 110669 | coordenador |
+
+**Equipe Richardson**
+| Nome | I_USUARIOS | CODIGO_SGD | Senioridade |
+|------|------------|------------|-------------|
+| Victor Ferreira | 479 | 54762 | especialista |
+| Giovani Cunha | 251 | 5867 | especialista |
+| Jennifer Rodrigues | 91 | 79127 | especialista |
+| Laís de Andrade | - | - | especialista |
+| Carolina Esmeraldino | 947 | 501722 | senior |
+| Bárbara De Melo Teixeira | 864 | 999820 | pleno |
+| Daniela Stupp Ferreira | 778 | 427967 | pleno |
+| Erick Pacheco Vicente | 1237 | 1306310 | pleno |
+| Fabio Coral Sasso | 1192 | 769104 | pleno |
+| Felipi Ferreira | 943 | 1059913 | pleno |
+| Flávia Cardoso Felipe | 1282 | 1220798 | junior |
+| Mateus Do Canto Alves | 1010 | 1116513 | junior |
+
+**Equipe Marielli**
+| Nome | I_USUARIOS | CODIGO_SGD | Senioridade |
+|------|------------|------------|-------------|
+| Bruna Ferro | 191 | 119694 | especialista |
+| Patricia Costa | 181 | 108955 | especialista |
+| Bárbara Leite | 952 | 1069309 | pleno |
+| Juliana Kuerten Guizoni | 771 | 865290 | pleno |
+| Renan das Neves Maiato | 890 | 1025089 | pleno |
+| Gabriely Marques Jesuina | 1284 | 1079572 | junior |
+| Laysa Gabriela da Silva Daleffe Barbosa | 1309 | 1242239 | junior |
+| Rafaela Gubert Ribeiro | 620 | 1146992 | junior |
+| Rafaela Silva Sampaio | 1244 | 1317326 | junior |
+| Sabrina Neves | 944 | 1061056 | junior |
+| Vinicyos Gonçalves Magnus | 1283 | 1382400 | junior |
 
 ### Fluxo do SGD (workflow de demandas)
 ```

@@ -43,8 +43,8 @@ alwaysApply: false
 ## Equipe Escrita Fiscal (25 pessoas - Richardson + Marielli)
 | Nome | CODIGO_SGD | i_usuarios | Slug | Senioridade |
 |------|------------|------------|------|-------------|
-| Richardson Picinini Correia (Coord.) | 6828 | 73 | richardson | coordenador (gestor, nao registra tempo em vanalise_registro_atividades) |
-| Marielli Cardoso das Neves (Coord.) | 110669 | 186 | marielli | coordenador (gestor, nao registra tempo em vanalise_registro_atividades) |
+| Richardson Correia (Coord.) | 6828 | 73 | richardson | coordenador (gestor, nao registra tempo em vanalise_registro_atividades) |
+| Marielli Neves (Coord.) | 110669 | 186 | marielli | coordenador (gestor, nao registra tempo em vanalise_registro_atividades) |
 | Bruna Ferro | 119694 | 191 | bruna | especialista (Marielli) |
 | Patricia Costa | 108955 | 181 | patricia | especialista (Marielli) |
 | Bárbara Leite | 1069309 | 952 | barbara-leite | pleno (Marielli) |
@@ -53,16 +53,16 @@ alwaysApply: false
 | Laysa Gabriela da Silva Daleffe Barbosa | 1242239 | 1309 | laysa | junior (Marielli) |
 | Rafaela Gubert Ribeiro | 1146992 | 620 | rafaela-ribeiro | junior (Marielli) |
 | Rafaela Silva Sampaio | 1317326 | 1244 | rafaela-sampaio | junior (Marielli) |
-| Renan das Neves Maioto | 1025089 | 890 | renan | pleno (Marielli) |
+| Renan das Neves Maiato | 1025089 | 890 | renan | pleno (Marielli) |
 | Sabrina Neves | 1061056 | 944 | sabrine | junior (Marielli) |
-| Vinicyos Gonçalves Marques | 1382400 | 1283 | vinicyos | junior (Marielli) |
+| Vinicyos Gonçalves Magnus | 1382400 | 1283 | vinicyos | junior (Marielli) |
 | Fabio Coral Sasso | 769104 | 1192 | fabio | pleno |
-| Victor Velho Ferreeira | 54762 | 479 | victor | especialista |
+| Victor Ferreira | 54762 | 479 | victor | especialista |
 | Giovani Cunha | 5867 | 251 | giovani | especialista |
 | Jennifer Rodrigues | 79127 | 91 | jennifer | especialista |
 | Mateus Alves | 1116513 | 1010 | mateus | junior |
 | Flávia Felipe Cardoso | 1220798 | 1282 | flavia | junior |
-| Daniela Stuup Ferreira | 427967 | 778 | daniela | pleno |
+| Daniela Stupp Ferreira | 427967 | 778 | daniela | pleno |
 | Erick Vicente | 1306310 | 1237 | erick | pleno |
 | Carolina Esmeraldino | 501722 | 947 | carolina | senior |
 | Bárbara Teixeira Melo | 999820 | 864 | barbara-melo | pleno |
@@ -105,8 +105,8 @@ gaGerenciadorAtividades.i_usuarios = CAST(UDUSUARIOS.CODIGO_SGD AS INT)
   - Encoding: `CAST(NomeAtividade AS BINARY)` para contornar Latin-1 do ODBC
 - **Pontos definicao**: `UP.SAI_PSAI` + `bethadba.sai` por `psai.i_responsaveis` = `codigo-sgd`
 - **Indice revisoes**: `sai_revisoes` + `sai_revisoes_motivos` (motivos A/C: 1,2,4,5)
-  - Considerar **somente** Alteracao na definicao (A) e Complemento na definicao (C)
-  - **NAO considerar** Formatacao (F=7), Outros (O=8), motivo 6 (A de outro tipo) nem E (3, inativo)
+  - Considerar **somente** motivo 1 (Alteracao na definicao) e motivo 2 (Complemento na definicao)
+  - **NAO considerar** motivo 4 (Alteracao motivo externo), motivo 5 (Complemento motivo externo), Formatacao (F=7), Outros (O=8), motivo 6 nem E (3, inativo)
   - Analistas: por `psai.i_responsaveis` | Especialista: por `sai.i_usuarios`
   - **Numerador** (revisoes): contado pela **data da revisao** (`sai_revisoes.entrada`), NAO pela data da SAI
   - **Denominador** (SAIs): contado pela **data de cadastro** (`CadastroSAI`)

@@ -13,9 +13,39 @@
     },
     {
       "id": "tempo-trabalho-analise",
-      "descricao": "Atingir 80% do tempo trabalhado para analise e definicao de SA/NE",
+      "descricao": "Atingir 85% do tempo trabalhado para analise e definicao de SA/NE",
       "detalhes": "Analises, retornos, revisoes, esclarecimento de duvida, teste e desenvolvimento, apresentacoes de SAIs e respostas de SS",
+      "valor-esperado": 85,
+      "unidade": "%",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "registro-atividades"
+    },
+    {
+      "id": "pontos-atividade-principal",
+      "descricao": "Pontos com meta ajustada pelo % de Atividade Principal",
+      "detalhes": "Meta = 80 pts se %AtivPrincipal >= 85%; caso contrario meta = round(80 * pct / 85). Mesmos pontos do Pontos Definicao.",
       "valor-esperado": 80,
+      "unidade": "pontos",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "sai-psai"
+    },
+    {
+      "id": "pontos-gerados",
+      "descricao": "Pontos das SAIs geradas pelo analista (onde nao e o responsavel da PSAI)",
+      "detalhes": "SAIs criadas pelo analista (sai.i_usuarios) onde ele NAO e o responsavel da PSAI. Pontuacao calculada pela tabela cargo x tipo x nivel usando o cargo do proprio analista.",
+      "valor-esperado": 0,
+      "unidade": "pontos",
+      "contribui-para": "Informativo",
+      "data-limite": "2026-12-31",
+      "fonte": "sai-psai"
+    },
+    {
+      "id": "tempo-trabalho-principal",
+      "descricao": "Atingir 70% (analistas) ou 50% (especialistas) no tempo de atividade principal",
+      "detalhes": "Analistas: analise/definicao/revisao de SAIs. Especialistas: geracao de SAIs (SAI-Gerando SAI de...)",
+      "valor-esperado": 70,
       "unidade": "%",
       "contribui-para": "Customer",
       "data-limite": "2026-12-31",
@@ -26,6 +56,16 @@
       "descricao": "Atingir 80% do tempo trabalhado para geracao de SAIs",
       "detalhes": "Analise, retornos, revisoes, esclarecimento de duvida dos analistas, teste e desenvolvimento, apresentacoes e estudos",
       "valor-esperado": 80,
+      "unidade": "%",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "registro-atividades"
+    },
+    {
+      "id": "tempo-gerando-sai",
+      "descricao": "Atingir o Resultado de 50% nas Atividades Gerando SAI",
+      "detalhes": "Atividades registradas como 'Gerando SAI ...' sobre o tempo efetivo (total - ausencias). Meta exclusiva de especialistas.",
+      "valor-esperado": 50,
       "unidade": "%",
       "contribui-para": "Customer",
       "data-limite": "2026-12-31",
@@ -65,9 +105,9 @@
     },
     {
       "id": "indice-revisoes-sail",
-      "descricao": "Manter indice de revisoes abaixo de 0,50 em SAIL",
+      "descricao": "Manter indice de revisoes abaixo de 1,15 em SAIL",
       "detalhes": "Somente revisoes de Alteracao na definicao (1,4) e Complemento na definicao (2,5)",
-      "valor-esperado": 0.50,
+      "valor-esperado": 1.15,
       "unidade": "indice",
       "direcao": "menor-melhor",
       "contribui-para": "Customer",
@@ -84,6 +124,17 @@
       "contribui-para": "Customer",
       "data-limite": "2026-12-31",
       "fonte": "sai-revisoes"
+    },
+    {
+      "id": "tempo-medio-sal",
+      "descricao": "Manter tempo medio de analise e definicao de SAL abaixo de 800 min",
+      "detalhes": "Media do tempo realizado (tempoRealizadoTotal) e previsto (tempoPrevistoTotal) por SAL no mes",
+      "valor-esperado": 800,
+      "unidade": "min",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "sai-psai"
     },
     {
       "id": "indice-revisoes-sam-esc",
@@ -115,49 +166,143 @@
       "contribui-para": "Customer",
       "data-limite": "2026-12-31",
       "fonte": "psai-tramites"
+    },
+    {
+      "id": "gerar-sai-sal-5d",
+      "descricao": "SAL - Gerar SAIs de SAL ou retornar ao analista em no maximo 5 dias uteis",
+      "detalhes": "Mesmas regras da NE (sit=2 Analisada -> sit 4/11/12), porem para PSAIs do tipo SAL. Prazo: 5 dias uteis.",
+      "valor-esperado": 5,
+      "unidade": "dias-uteis",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "psai-tramites"
+    },
+    {
+      "id": "gerar-sai-sail-sam-7d",
+      "descricao": "SAIL/SAM - Gerar SAIs ou retornar ao analista em no maximo 7 dias uteis",
+      "detalhes": "Mesmas regras da NE (sit=2 Analisada -> sit 4/11/12), porem para PSAIs do tipo SAIL e SAM. Prazo: 7 dias uteis.",
+      "valor-esperado": 7,
+      "unidade": "dias-uteis",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "psai-tramites"
+    },
+    {
+      "id": "indice-retornos-sal",
+      "descricao": "Manter indice de retornos abaixo de 1,00 em PSAIs de SAL",
+      "detalhes": "Retornos por complemento ou alteracao de definicao. Indice = SUM(Qtde Tramite) / COUNT(PSAIs SAL) por mes. Fonte: planilha de acompanhamento.",
+      "valor-esperado": 1.00,
+      "unidade": "indice",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "planilha-tramites"
+    },
+    {
+      "id": "indice-retornos-sail-sam",
+      "descricao": "Manter indice de retornos abaixo de 1,50 em PSAIs de SAIL/SAM",
+      "detalhes": "Retornos por complemento ou alteracao de definicao. Indice = SUM(Qtde Tramite) / COUNT(PSAIs SAIL+SAM) por mes. Fonte: planilha de acompanhamento.",
+      "valor-esperado": 1.50,
+      "unidade": "indice",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "planilha-tramites"
+    },
+    {
+      "id": "pct-descartes",
+      "descricao": "Manter % de descarte abaixo de 30% das analises realizadas",
+      "detalhes": "% Descarte = PSAIs descartadas / SAIs analisadas x 100. Descartadas: sit 5, 6, 23, 33.",
+      "valor-esperado": 30,
+      "unidade": "%",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "psai-responsaveis"
+    },
+    {
+      "id": "controle-descartes",
+      "descricao": "Manter tempo medio de analise/definicao em PSAIs descartadas abaixo de 300 min",
+      "detalhes": "PSAIs com situacao: Concluido sem Desenvolvimento (5), Reprovada (6), Prescrita (23) ou Sistema Descontinuado (33). Tempo = SUM(tempo_analise + tempo_definicao) por PSAI.",
+      "valor-esperado": 300,
+      "unidade": "min",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "psai-responsaveis"
     }
   ],
   "templates": {
     "junior": [
       "diretrizes-95",
-      "tempo-trabalho-analise",
       "pontos-definicao",
+      "pontos-atividade-principal",
+      "pontos-gerados",
+      "tempo-trabalho-analise",
+      "tempo-trabalho-principal",
+      "tempo-medio-sal",
       "indice-revisoes-sal",
       "indice-revisoes-ne",
       "indice-revisoes-sail",
       "indice-revisoes-sam-imp",
-      "indice-revisoes-sam-esc"
+      "indice-revisoes-sam-esc",
+      "indice-retornos-sal",
+      "indice-retornos-sail-sam",
+      "controle-descartes",
+      "pct-descartes"
     ],
     "pleno": [
       "diretrizes-95",
-      "tempo-trabalho-analise",
       "pontos-definicao",
+      "pontos-atividade-principal",
+      "pontos-gerados",
+      "tempo-trabalho-analise",
+      "tempo-trabalho-principal",
+      "tempo-medio-sal",
       "indice-revisoes-sal",
       "indice-revisoes-ne",
       "indice-revisoes-sail",
       "indice-revisoes-sam-imp",
-      "indice-revisoes-sam-esc"
+      "indice-revisoes-sam-esc",
+      "indice-retornos-sal",
+      "indice-retornos-sail-sam",
+      "controle-descartes",
+      "pct-descartes"
     ],
     "senior": [
       "diretrizes-95",
-      "tempo-trabalho-analise",
       "pontos-definicao",
+      "pontos-atividade-principal",
+      "pontos-gerados",
+      "tempo-trabalho-analise",
+      "tempo-trabalho-principal",
+      "tempo-medio-sal",
       "indice-revisoes-sal",
       "indice-revisoes-ne",
       "indice-revisoes-sail",
       "indice-revisoes-sam-imp",
-      "indice-revisoes-sam-esc"
+      "indice-revisoes-sam-esc",
+      "indice-retornos-sal",
+      "indice-retornos-sail-sam",
+      "controle-descartes",
+      "pct-descartes"
     ],
     "especialista": [
       "diretrizes-95",
       "tempo-trabalho-geracao",
+      "tempo-trabalho-principal",
+      "tempo-gerando-sai",
       "indice-revisoes-sal",
       "indice-revisoes-ne",
       "indice-revisoes-sail",
       "indice-revisoes-sam-imp",
       "indice-revisoes-sam-esc",
       "respostas-ss-3d",
-      "gerar-sai-ne-sal-3d"
+      "gerar-sai-ne-sal-3d",
+      "gerar-sai-sal-5d",
+      "gerar-sai-sail-sam-7d"
     ]
   },
   "overrides": {}

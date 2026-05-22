@@ -12,6 +12,7 @@
 
 const express = require('express');
 const path = require('path');
+const os = require('os');
 
 const indicadores = require('../indicadores');
 const conexao = require('../core/conexao');
@@ -74,8 +75,14 @@ async function iniciar() {
     // Iniciar agendador de snapshots (8h, 12h, 18h em dias uteis)
     agendador.iniciar(indicadores, qe);
 
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
+      const ipLocal = Object.values(os.networkInterfaces())
+        .flat()
+        .find(i => i.family === 'IPv4' && !i.internal);
       console.log('[servidor] Dashboard rodando em http://localhost:%d', PORT);
+      if (ipLocal) {
+        console.log('[servidor] Acesso na rede:    http://%s:%d', ipLocal.address, PORT);
+      }
     });
   } catch (err) {
     console.error('[servidor] Erro ao iniciar:', err.message);

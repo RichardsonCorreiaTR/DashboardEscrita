@@ -13,8 +13,18 @@ const AppEquipes = (() => {
 
   async function init() {
     await MetasConfig.carregar();
-    slugAtual = new URLSearchParams(window.location.search).get('colaborador') || '';
+    const params = new URLSearchParams(window.location.search);
+    slugAtual = params.get('colaborador') || '';
+    const coordParam = params.get('coord');
     document.getElementById('equipes-loading').hidden = true;
+    if (coordParam) {
+      Nav.filtrarNavEquipes(coordParam);
+      const main = document.getElementById('equipes-main');
+      document.querySelector('.header__title').textContent = 'Metas da Equipe';
+      document.querySelector('.header__subtitle').textContent = 'Escrita Fiscal — Painel do Coordenador';
+      EquipesCoordenador.render(coordParam, main);
+      return;
+    }
     const colab = MetasConfig.colaboradores().find(c => c.slug === slugAtual);
     if (!colab) { renderLista(); return; }
     renderColaborador(colab);
@@ -116,12 +126,22 @@ const AppEquipes = (() => {
     main.innerHTML =
       '<div id="eq-totalizador"><div class="eq-sem-dados">Carregando...</div></div>' +
       '<div class="eq-abas-container"><div class="abas">' +
-      agrupadas.map((m, i) => '<button class="aba' + (i === 0 ? ' aba--ativa' : '') +
-        '" data-idx="' + i + '">' + (m.isGrupo ? 'Controle Revis\u00f5es' : (LABELS[m.id] || m.id)) + '</button>').join('') +
+      MetasConfig.buildGruposVisuais(agrupadas).map(g => {
+        const tabs = g.items.map(({ m, i, label }) =>
+          '<button class="aba' + (i === 0 ? ' aba--ativa' : '') + '" data-idx="' + i + '">' + label + '</button>'
+        ).join('');
+        return g.titulo
+          ? '<div class="aba-grupo"><span class="aba-grupo__titulo">' + g.titulo + '</span><div class="aba-grupo__abas">' + tabs + '</div></div>'
+          : tabs;
+      }).join('') +
       '</div>' + agrupadas.map((m, i) =>
         '<div class="aba-conteudo' + (i === 0 ? ' aba-conteudo--ativo' : '') + '" data-idx="' + i + '">' +
-        (m.isGrupo
+        (m.isGrupo && m.tipo === 'revisoes'
           ? MetasConfig.renderConteudoGrupoRevisoes(m.subIds)
+          : m.isGrupo && m.tipo === 'retornos'
+            ? MetasConfig.renderConteudoGrupoRetornos(m.subIds)
+            : m.isGrupo && m.tipo === 'geracao'
+              ? MetasConfig.renderConteudoGrupoGeracao(m.subIds)
           : renderMetaInfo(m) + '<div class="eq-meta__dados" data-meta-id="' + m.id + '"><div class="eq-sem-dados">Carregando...</div></div>')
         + '</div>'
       ).join('') + '</div>';
@@ -145,12 +165,14 @@ const AppEquipes = (() => {
       const json = await (await fetch('/api/metas-equipe/' + slug + qs)).json();
       mostrarFonte(json);
       const totEl = document.getElementById('eq-totalizador');
-      if (totEl && json.totalizador) totEl.innerHTML = EquipesMensal.renderTotalizador(json.totalizador);
+      const valorMap = {};
+      metas.forEach(m => { valorMap[m.id] = m.valor; });
+      if (totEl && json.totalizador) totEl.innerHTML = EquipesMensal.renderTotalizador(json.totalizador, json.metas, valorMap);
       metas.forEach(m => {
         const el = container.querySelector('[data-meta-id="' + m.id + '"]');
         if (!el) return;
         el.innerHTML = json.metas[m.id]
-          ? EquipesMensal.renderTabela(m.id, json.metas[m.id])
+          ? EquipesMensal.renderTabela(m.id, json.metas[m.id], m.valor)
           : '<div class="eq-sem-dados">Fonte de dados a definir</div>';
       });
       ativarBotoesDetalhe(container);
@@ -182,7 +204,9 @@ const AppEquipes = (() => {
         det.innerHTML = '<div class="eq-sem-dados">Carregando detalhes...</div>';
         try {
           const url = '/api/metas-equipe/' + slugAtual + '/detalhe/' + meta + '/' + mes;
-          let json = await (await fetch(url + '?fonte=cache')).json();
+          // pontos-definicao usa planilha - sempre ao vivo (cache pode ter dados antigos do banco)
+          const semCache = meta === 'pontos-definicao';
+          let json = semCache ? { erro: true } : await (await fetch(url + '?fonte=cache')).json();
           if (json.erro || !json.registros) {
             json = await (await fetch(url)).json();
           }

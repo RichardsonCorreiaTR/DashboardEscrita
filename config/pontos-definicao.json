@@ -1,0 +1,28 @@
+{
+  "_comentario": "Tabela de pontos por tipo de SAI, nivel de alteracao e senioridade do analista",
+  "_nivel_alteracao": { "1": "Baixa", "2": "Media", "3": "Alta", "4": "Extra Alta" },
+  "_atualizado": "2026-05-14",
+  "meta": 80,
+  "pontos": {
+    "SAL": {
+      "junior": { "1": 10,   "2": 20,   "3": 40,  "4": 160 },
+      "pleno":  { "1": 8,    "2": 13,   "3": 20,  "4": 80  },
+      "senior": { "1": 6.5,  "2": 10,   "3": 13,  "4": 40  }
+    },
+    "NE": {
+      "junior": { "1": 4,    "2": 6.5,  "3": 12  },
+      "pleno":  { "1": 3,    "2": 5,    "3": 10  },
+      "senior": { "1": 2,    "2": 4,    "3": 8   }
+    },
+    "SAIL": {
+      "junior": { "1": 26,   "2": 40,   "3": 80,  "4": 240 },
+      "pleno":  { "1": 20,   "2": 26,   "3": 80,  "4": 160 },
+      "senior": { "1": 13,   "2": 20,   "3": 40,  "4": 80  }
+    },
+    "SAM": {
+      "junior": { "1": 11.5, "2": 26.5, "3": 40  },
+      "pleno":  { "1": 10,   "2": 20,   "3": 40  },
+      "senior": { "1": 8,    "2": 13,   "3": 20  }
+    }
+  }
+}

@@ -5,11 +5,13 @@
   "main": "src/servidor/app.js",
   "scripts": {
     "start": "node src/servidor/app.js",
+    "start:v2": "node src/servidor/app-v2.js",
+    "dev": "nodemon src/servidor/app.js",
+    "dev:v2": "nodemon src/servidor/app-v2.js",
     "test-conexao": "node src/core/conexao.js --test",
     "calcular": "node src/indicadores/index.js",
     "screenshot-isv": "node scripts/screenshot-isv.js",
-    "offline": "node src/servidor/app-offline.js",
-    "start:v2": "node src/servidor/app-v2.js"
+    "offline": "node src/servidor/app-offline.js"
   },
   "keywords": [
     "dashboard",
@@ -30,6 +32,7 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
+    "nodemon": "^3.1.14",
     "puppeteer": "^23.0.0"
   }
 }

@@ -5,6 +5,23 @@
  * e calcula atingimento mensal + totalizador.
  */
 
+const {
+  isAusencia, isGerandoSai, isTrabalhoSai, isOutrasAtividades,
+  isPrincipalAnalista, isPrincipalEspecialista
+} = require('./atividades-classifier');
+const tempoSal = require('./tempo-sal-calculador');
+
+function extrairQtdMes(mapMes) {
+  if (!mapMes) return null;
+  const m = {};
+  for (const [mes, val] of Object.entries(mapMes)) {
+    m[mes] = typeof val === 'object' ? (val.qtd || 0) : (val || 0);
+  }
+  return m;
+}
+const descartesCalc = require('./descartes-calculador');
+const pontosAtiv = require('./pontos-atividade-calc');
+
 function agrupar(rows) {
   const m = {};
   rows.forEach(r => {
@@ -26,19 +43,9 @@ function agruparAtividades(rows) {
   return m;
 }
 
-function isAusencia(nome) {
-  const n = nome.toLowerCase();
-  return n.includes('feriado') || n.includes('rias') || n.includes('folga') ||
-    n.includes('particular') || n.includes('afastamento');
-}
 
-function isTrabalhoSai(nome) {
-  const n = nome.toLowerCase();
-  return n.includes('ne') || n.includes('sai') || n.includes('ss') || n.includes('vida') ||
-    n.includes('sal') || n.includes('sam') || n.includes('validando') || n.includes('performance');
-}
-
-function mensalAtividades(mapMes, meta) {
+function mensalAtividades(mapMes, meta, filtro) {
+  const ehRelevante = filtro || isTrabalhoSai;
   const mensal = {};
   for (let m = 1; m <= 12; m++) {
     const ativs = mapMes ? mapMes[m] : null;
@@ -46,11 +53,12 @@ function mensalAtividades(mapMes, meta) {
     let total = 0, ausencia = 0, trabalhoSai = 0;
     ativs.forEach(a => {
       total += a.minutos;
-      if (isAusencia(a.atividade)) ausencia += a.minutos;
-      else if (isTrabalhoSai(a.atividade)) trabalhoSai += a.minutos;
+      if (isOutrasAtividades(a.atividade)) { /* outras: nao conta em nenhum bucket */ }
+      else if (isAusencia(a.atividade)) ausencia += a.minutos;
+      else if (ehRelevante(a.atividade)) trabalhoSai += a.minutos;
     });
     const efetivo = total - ausencia;
-    const pct = efetivo > 0 ? Math.round((trabalhoSai / efetivo) * 10000) / 100 : 0;
+    const pct = total > 0 ? Math.round((trabalhoSai / total) * 10000) / 100 : 0;
     mensal[m] = { pct, total, ausencia, trabalhoSai, efetivo, atingida: pct >= meta };
   }
   return mensal;
@@ -79,14 +87,15 @@ function mensalPontos(mapMes, meta) {
   return mensal;
 }
 
-function mensalTempo(mapMes) {
+function mensalTempo(mapMes, maxDias) {
+  const limite = maxDias || 3;
   const mensal = {};
   for (let m = 1; m <= 12; m++) {
     const row = mapMes ? mapMes[m] : null;
     if (!row || !row.total_ciclos) { mensal[m] = null; continue; }
     const pct = Math.round((row.dentro_prazo / row.total_ciclos) * 10000) / 100;
     const media = Math.round(Number(row.media_dias) * 100) / 100;
-    mensal[m] = { pct, media_dias: media, total: row.total_ciclos, dentro_prazo: row.dentro_prazo, atingida: media <= 3 };
+    mensal[m] = { pct, media_dias: media, total: row.total_ciclos, dentro_prazo: row.dentro_prazo, atingida: media <= limite };
   }
   return mensal;
 }
@@ -103,16 +112,40 @@ function mensalSS(mapMes) {
   return mensal;
 }
 
+function mensalRetornos(mapMes, meta) {
+  const mensal = {};
+  for (let m = 1; m <= 12; m++) {
+    const row = mapMes ? mapMes[m] : null;
+    if (!row || !row.total_psais) { mensal[m] = null; continue; }
+    const indice = Math.round((row.total_retornos / row.total_psais) * 100) / 100;
+    mensal[m] = { indice, total_psais: row.total_psais, total_retornos: row.total_retornos, atingida: indice <= meta };
+  }
+  return mensal;
+}
+
+
+// Metas informativas: aparecem nos cards mas NAO entram no total geral
+const EXCLUIR_DO_TOTAL = new Set(['tempo-medio-sal', 'controle-descartes', 'tempo-trabalho-principal', 'pontos-gerados', 'pontos-atividade-principal', 'pct-descartes']);
+
 function totalizador(metasObj) {
+  const mesAtual = new Date().getMonth() + 1;
   let atingidas = 0, nao = 0;
   const porMeta = {};
   for (const [id, data] of Object.entries(metasObj)) {
     if (!data || !data.mensal) continue;
+    const contaNoTotal = !EXCLUIR_DO_TOTAL.has(id);
+    const temDados = Object.values(data.mensal).some(d => d !== null && d !== undefined);
     let ma = 0, mn = 0;
-    for (let m = 1; m <= 12; m++) {
-      if (!data.mensal[m]) continue;
-      if (data.mensal[m].atingida) { ma++; atingidas++; }
-      else { mn++; nao++; }
+    if (!temDados) {
+      // Sem dados = sem violacoes = considera atingida para o totalizador (total=0 para exibir "0" no card)
+      ma = 0; mn = 0;
+      if (contaNoTotal) atingidas++;
+    } else {
+      for (let m = 1; m <= mesAtual; m++) {
+        const d = data.mensal[m];
+        if (d && d.atingida) { ma++; if (contaNoTotal) atingidas++; }
+        else { mn++; if (contaNoTotal) nao++; }
+      }
     }
     porMeta[id] = { atingidas: ma, nao_atingidas: mn, total: ma + mn };
   }
@@ -122,19 +155,44 @@ function totalizador(metasObj) {
 function calcularMetas(analista, dados, metaIds) {
   const sgd = analista['codigo-sgd'], uid = analista['i-usuarios'];
   const isEsp = analista.senioridade === 'especialista';
-  const metaTempo = 80;
+  const metaTempoAnalise = 85;
+  const metaTempoGeracao = 80;
   const rev = isEsp ? dados.revCtrl.ger : dados.revCtrl.def;
+  // Calcular atividade principal separado para uso em pontos-atividade-principal
+  const mensalAtivPrincipal = mensalAtividades(dados.ativs[uid], isEsp ? 50 : 70,
+    isEsp ? isPrincipalEspecialista : isPrincipalAnalista);
   const todas = {
-    'tempo-trabalho-analise': { mensal: mensalAtividades(dados.ativs[uid], metaTempo) },
-    'tempo-trabalho-geracao': { mensal: mensalAtividades(dados.ativs[uid], metaTempo) },
+    'tempo-trabalho-analise': { mensal: mensalAtividades(dados.ativs[uid], metaTempoAnalise) },
+    'tempo-trabalho-geracao': { mensal: mensalAtividades(dados.ativs[uid], metaTempoGeracao) },
+    'tempo-trabalho-principal': { mensal: mensalAtivPrincipal },
+    'tempo-gerando-sai':      { mensal: mensalAtividades(dados.ativs[uid], 50, isGerandoSai) },
     'indice-revisoes-sal':     { mensal: mensalIndice(rev.sal[sgd], 0.50) },
     'indice-revisoes-ne':      { mensal: mensalIndice(rev.ne[sgd], 0.50) },
-    'indice-revisoes-sail':    { mensal: mensalIndice(rev.sail[sgd], 0.50) },
+    'indice-revisoes-sail':    { mensal: mensalIndice(rev.sail[sgd], 1.15) },
     'indice-revisoes-sam-imp': { mensal: mensalIndice(rev.samImp[sgd], 0.80) },
     'indice-revisoes-sam-esc': { mensal: mensalIndice(rev.samEsc[sgd], 0.50) },
     'pontos-definicao': { mensal: mensalPontos(dados.pontos[sgd], 80) },
-    'gerar-sai-ne-sal-3d': { mensal: mensalTempo(dados.tempoGer[sgd]) },
-    'respostas-ss-3d': { mensal: mensalSS(dados.ss[uid]) }
+    'pontos-atividade-principal': { mensal: pontosAtiv.mensalPontosAtivPrincipal(
+      dados.pontos[sgd], mensalAtivPrincipal
+    ) },
+    'pontos-gerados':   { mensal: (m => {
+      const base = mensalPontos(dados.pontosGerados?.[uid], 0);
+      for (let i = 1; i <= 12; i++) { if (!base[i]) base[i] = { pontos: 0, qtd_sais: 0, atingida: true }; }
+      return base;
+    })() },
+    'gerar-sai-ne-sal-3d':    { mensal: mensalTempo(dados.tempoGer[sgd], 3) },
+    'gerar-sai-sal-5d':       { mensal: mensalTempo(dados.tempoGerSal?.[sgd], 5) },
+    'gerar-sai-sail-sam-7d':  { mensal: mensalTempo(dados.tempoGerSailSam?.[sgd], 7) },
+    'respostas-ss-3d': { mensal: mensalSS(dados.ss[uid]) },
+    'tempo-medio-sal': { mensal: tempoSal.mensalTempoSal(dados.tempoMedioSal?.[sgd]) },
+    'controle-descartes': { mensal: descartesCalc.mensalDescartes(dados.descartes?.[sgd]) },
+    'pct-descartes': { mensal: descartesCalc.mensalPctDescartes(
+      dados.pontos?.[sgd],
+      dados.descartesDataSit?.[sgd],
+      extrairQtdMes(dados.analisesSemSai?.[sgd])
+    ) },
+    'indice-retornos-sal':      { mensal: mensalRetornos(dados.retornos?.[sgd]?.sal, 1.00) },
+    'indice-retornos-sail-sam': { mensal: mensalRetornos(dados.retornos?.[sgd]?.sailSam, 1.50) }
   };
   const metas = {};
   metaIds.forEach(id => { if (todas[id]) metas[id] = todas[id]; });
@@ -168,6 +226,6 @@ function agruparControleRevisoes(rows) {
 
 module.exports = {
   agrupar, agruparAtividades, agruparControleRevisoes,
-  mensalAtividades, mensalIndice, mensalPontos, mensalTempo, mensalSS,
+  mensalAtividades, mensalIndice, mensalPontos, mensalTempo, mensalSS, mensalRetornos,
   totalizador, calcularMetas
 };

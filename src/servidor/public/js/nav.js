@@ -16,29 +16,13 @@ const Nav = (() => {
     { id: 'inicio', href: '/', titulo: 'Visao Geral', icone: '\u25A3' },
     { id: 'diretrizes', href: '/diretrizes.html', titulo: 'Diretrizes', icone: '\u25C6' },
     {
-      id: 'estudos', titulo: 'Estudos e Analises', icone: '\u25B2',
+      id: 'equipes', titulo: 'Metas da Equipe', icone: '\u25CF', href: '/equipes.html',
       sub: [
-        { id: 'semanal-versao', href: '/estudos.html?view=semanal-versao', titulo: 'Semanal - NE por Versao' },
-        { id: 'semanal-historica', href: '/estudos.html?view=semanal-historica', titulo: 'Semanal - NE Historica' },
-        { id: 'isv-ne', href: '/estudos.html?view=isv-ne', titulo: 'ISV - Saude da Versao' },
-        { id: 'isv-yoy', href: '/estudos.html?view=isv-yoy', titulo: 'ISV - Year by Year' },
-        { id: 'descartes-ne', href: '/estudos.html?view=descartes-ne', titulo: 'Descartes (CsD/Repr/Presc)' },
-        { id: 'liberacoes-sa-v2', href: '/estudos.html?view=liberacoes-sa-v2', titulo: 'Liberacoes de SA (V2)' },
-        { id: 'liberacoes-sa', href: '/estudos.html?view=liberacoes-sa', titulo: 'Liberacoes de SA (V1)' }
-      ]
-    },
-    {
-      id: 'laboratorio', titulo: 'Laboratorio IA', icone: '\u2666',
-      sub: [
-        { id: 'lab-raio-x', href: '/laboratorio.html?view=raio-x', titulo: 'Raio-X da Versao' },
-        { id: 'lab-evolucao', href: '/laboratorio.html?view=evolucao', titulo: 'Evolucao' },
-        { id: 'lab-dna', href: '/laboratorio.html?view=dna', titulo: 'DNA Tecnico' },
-        { id: 'lab-backtest', href: '/laboratorio.html?view=backtest', titulo: 'Backtest' }
-      ]
-    },
-    {
-      id: 'equipes', titulo: 'Metas da Equipe', icone: '\u25CF',
-      sub: [
+        { tipo: 'header', titulo: 'Coordenadores' },
+        { tipo: 'coord-header', titulo: 'Richardson', coord: 'richardson' },
+        { id: 'eq-coord-richardson', href: '/equipes.html?coord=richardson', titulo: 'Painel', tipo: 'coord-item', coord: 'richardson' },
+        { tipo: 'coord-header', titulo: 'Marielli', coord: 'marielli' },
+        { id: 'eq-coord-marielli', href: '/equipes.html?coord=marielli', titulo: 'Painel', tipo: 'coord-item', coord: 'marielli' },
         { tipo: 'header', titulo: 'Especialistas' },
         { id: 'eq-giovani', href: '/equipes.html?colaborador=giovani', titulo: 'Giovani', coord: 'richardson' },
         { id: 'eq-jennifer', href: '/equipes.html?colaborador=jennifer', titulo: 'Jennifer', coord: 'richardson' },
@@ -52,17 +36,39 @@ const Nav = (() => {
         { id: 'eq-erick', href: '/equipes.html?colaborador=erick', titulo: 'Erick (Pleno)', coord: 'richardson' },
         { id: 'eq-fabio', href: '/equipes.html?colaborador=fabio', titulo: 'Fabio (Pleno)', coord: 'richardson' },
         { id: 'eq-felipi', href: '/equipes.html?colaborador=felipi', titulo: 'Felipi (Pleno)', coord: 'richardson' },
-        { id: 'eq-flavia', href: '/equipes.html?colaborador=flavia', titulo: 'Flávia (Jr)', coord: 'richardson' },
-        { id: 'eq-mateus', href: '/equipes.html?colaborador=mateus', titulo: 'Mateus (Jr)', coord: 'richardson' },
+        { id: 'eq-flavia', href: '/equipes.html?colaborador=flavia', titulo: 'Flávia (Júnior)', coord: 'richardson' },
+        { id: 'eq-mateus', href: '/equipes.html?colaborador=mateus', titulo: 'Mateus (Júnior)', coord: 'richardson' },
         { id: 'eq-barbara-leite', href: '/equipes.html?colaborador=barbara-leite', titulo: 'Bárbara Leite (Pleno)', coord: 'marielli' },
-        { id: 'eq-gabriely', href: '/equipes.html?colaborador=gabriely', titulo: 'Gabriely (Jr)', coord: 'marielli' },
+        { id: 'eq-gabriely', href: '/equipes.html?colaborador=gabriely', titulo: 'Gabriely (Júnior)', coord: 'marielli' },
         { id: 'eq-juliana', href: '/equipes.html?colaborador=juliana', titulo: 'Juliana (Pleno)', coord: 'marielli' },
-        { id: 'eq-laysa', href: '/equipes.html?colaborador=laysa', titulo: 'Laysa (Jr)', coord: 'marielli' },
-        { id: 'eq-rafaela-ribeiro', href: '/equipes.html?colaborador=rafaela-ribeiro', titulo: 'Rafaela Ribeiro (Jr)', coord: 'marielli' },
-        { id: 'eq-rafaela-sampaio', href: '/equipes.html?colaborador=rafaela-sampaio', titulo: 'Rafaela Sampaio (Jr)', coord: 'marielli' },
+        { id: 'eq-laysa', href: '/equipes.html?colaborador=laysa', titulo: 'Laysa (Júnior)', coord: 'marielli' },
+        { id: 'eq-rafaela-ribeiro', href: '/equipes.html?colaborador=rafaela-ribeiro', titulo: 'Rafaela Ribeiro (Júnior)', coord: 'marielli' },
+        { id: 'eq-rafaela-sampaio', href: '/equipes.html?colaborador=rafaela-sampaio', titulo: 'Rafaela Sampaio (Júnior)', coord: 'marielli' },
         { id: 'eq-renan', href: '/equipes.html?colaborador=renan', titulo: 'Renan (Pleno)', coord: 'marielli' },
-        { id: 'eq-sabrine', href: '/equipes.html?colaborador=sabrine', titulo: 'Sabrine (Jr)', coord: 'marielli' },
-        { id: 'eq-vinicyos', href: '/equipes.html?colaborador=vinicyos', titulo: 'Vinicyos (Jr)', coord: 'marielli' }
+        { id: 'eq-sabrine', href: '/equipes.html?colaborador=sabrine', titulo: 'Sabrine (Júnior)', coord: 'marielli' },
+        { id: 'eq-vinicyos', href: '/equipes.html?colaborador=vinicyos', titulo: 'Vinicyos (Júnior)', coord: 'marielli' }
+      ]
+    },
+    {
+      id: 'estudos', titulo: 'Estudos e Analises', icone: '\u25B2',
+      sub: [
+        { id: 'semanal-versao', href: '/estudos.html?view=semanal-versao', titulo: 'Semanal - NE por Versao' },
+        { id: 'semanal-historica', href: '/estudos.html?view=semanal-historica', titulo: 'Semanal - NE Historica' },
+        { id: 'isv-ne', href: '/estudos.html?view=isv-ne', titulo: 'ISV - Saude da Versao' },
+        { id: 'isv-yoy', href: '/estudos.html?view=isv-yoy', titulo: 'ISV - Year by Year' },
+        { id: 'descartes-ne', href: '/estudos.html?view=descartes-ne', titulo: 'Descartes (CsD/Repr/Presc)' },
+        { id: 'liberacoes-sa-v2', href: '/estudos.html?view=liberacoes-sa-v2', titulo: 'Liberacoes de SA (V2)' },
+        { id: 'liberacoes-sa', href: '/estudos.html?view=liberacoes-sa', titulo: 'Liberacoes de SA (V1)' },
+        { id: 'diff-niveis', href: '/estudos.html?view=diff-niveis', titulo: 'Diferenças SGD x Planilha' }
+      ]
+    },
+    {
+      id: 'laboratorio', titulo: 'Laboratorio IA', icone: '\u2666',
+      sub: [
+        { id: 'lab-raio-x', href: '/laboratorio.html?view=raio-x', titulo: 'Raio-X da Versao' },
+        { id: 'lab-evolucao', href: '/laboratorio.html?view=evolucao', titulo: 'Evolucao' },
+        { id: 'lab-dna', href: '/laboratorio.html?view=dna', titulo: 'DNA Tecnico' },
+        { id: 'lab-backtest', href: '/laboratorio.html?view=backtest', titulo: 'Backtest' }
       ]
     },
     { id: 'proposta-metas', href: '/proposta-metas.html', titulo: 'Proposta Metas', icone: '\u2605' },
@@ -88,8 +94,10 @@ const Nav = (() => {
 
     // Verificar subpaginas de equipes
     const colaborador = params.get('colaborador');
+    const coord = params.get('coord');
     if (path === '/equipes.html' && colaborador) return 'eq-' + colaborador;
-    if (path === '/equipes.html') return 'eq-victor';
+    if (path === '/equipes.html' && coord) return 'eq-coord-' + coord;
+    if (path === '/equipes.html') return 'equipes';
 
     const p = PAGINAS.find(pg => pg.href && path === pg.href);
     return p ? p.id : null;
@@ -130,6 +138,7 @@ const Nav = (() => {
     // Event listeners para submenus
     container.querySelectorAll('.sidebar__grupo-toggle').forEach(btn => {
       btn.addEventListener('click', (e) => {
+        if (btn.getAttribute('href') !== '#') return; // permite navegacao para grupos com href real
         e.preventDefault();
         const li = btn.closest('.sidebar__grupo');
         const aberto = li.classList.toggle('sidebar__grupo--aberto');
@@ -173,7 +182,7 @@ const Nav = (() => {
       const aberto = grupoAtivo === p.id;
       return `
         <li class="sidebar__grupo${aberto ? ' sidebar__grupo--aberto' : ''}">
-          <a href="#" class="sidebar__item sidebar__grupo-toggle" role="button"
+          <a href="${p.href || '#'}" class="sidebar__item sidebar__grupo-toggle" role="button"
              aria-expanded="${aberto ? 'true' : 'false'}"
              aria-label="Submenu: ${p.titulo}">
             <span class="sidebar__icone" aria-hidden="true">${p.icone}</span>
@@ -181,17 +190,19 @@ const Nav = (() => {
             <span class="sidebar__seta" aria-hidden="true">\u25B8</span>
           </a>
           <ul class="sidebar__submenu" role="group">
-            ${p.sub.map(s => s.tipo === 'header' ? `
-              <li class="sidebar__subheader">${s.titulo}</li>
-            ` : `
-              <li${s.coord ? ` data-coord="${s.coord}"` : ''}>
-                <a href="${s.href}"
-                   class="sidebar__subitem${s.id === atual ? ' sidebar__subitem--ativo' : ''}"
-                   ${s.id === atual ? 'aria-current="page"' : ''}>
-                  <span class="sidebar__subtexto">${s.titulo}</span>
-                </a>
-              </li>
-            `).join('')}
+            ${p.sub.map(s => {
+              if (s.tipo === 'header') return `<li class="sidebar__subheader">${s.titulo}</li>`;
+              if (s.tipo === 'coord-header') return `<li class="sidebar__subheader sidebar__subheader--coord">\u25B6 ${s.titulo}</li>`;
+              const isCoordItem = s.tipo === 'coord-item';
+              return `
+                <li${!isCoordItem && s.coord ? ` data-coord="${s.coord}"` : ''}>
+                  <a href="${s.href}"
+                     class="sidebar__subitem${s.id === atual ? ' sidebar__subitem--ativo' : ''}${isCoordItem ? ' sidebar__subitem--coord-item' : ''}"
+                     ${s.id === atual ? 'aria-current="page"' : ''}>
+                    <span class="sidebar__subtexto">${isCoordItem ? '\u2514 ' : ''}${s.titulo}</span>
+                  </a>
+                </li>`;
+            }).join('')}
           </ul>
         </li>
       `;

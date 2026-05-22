@@ -27,8 +27,12 @@ const EquipesDetalhe = (() => {
     const t = '<h4 class="eq-det__titulo">Detalhamento - ' + MESES[mes] + ' (' + registros.length + ' registros)</h4>';
     if (metaId.startsWith('tempo-trabalho')) return t + detAtividades(registros);
     if (metaId.startsWith('indice-revisoes')) return t + detRevisoes(registros);
+    if (metaId.startsWith('indice-retornos')) return t + detRetornos(registros, metaId);
     if (metaId === 'pontos-definicao') return t + detPontos(registros);
-    if (metaId.startsWith('gerar-sai')) return t + detGeracao(registros);
+    if (metaId.startsWith('gerar-sai')) {
+      const maxDias = metaId.includes('-7d') ? 7 : metaId.includes('-5d') ? 5 : 3;
+      return t + detGeracao(registros, maxDias);
+    }
     if (metaId === 'respostas-ss-3d') return t + detSS(registros);
     return t + '<pre>' + JSON.stringify(registros, null, 2) + '</pre>';
   }
@@ -70,23 +74,46 @@ const EquipesDetalhe = (() => {
     return html;
   }
 
+  function detRetornos(rows, metaId) {
+    const comRet = rows.filter(r => (r.qtdTramite || 0) > 0);
+    const semRet = rows.filter(r => !r.qtdTramite || r.qtdTramite === 0);
+    const totalRet = rows.reduce((s, r) => s + (r.qtdTramite || 0), 0);
+    const indice = rows.length > 0 ? Math.round((totalRet / rows.length) * 100) / 100 : 0;
+    const metaStr = metaId === 'indice-retornos-sal' ? '\u2264 1,00' : '\u2264 1,50';
+    return grupoRet('\u26A0 PSAIs com retorno', comRet, 'eq-det--alerta') +
+      grupoRet('\u2705 PSAIs sem retorno', semRet, '') +
+      '<div class="eq-det__formula"><strong>Calculo:</strong> ' + totalRet +
+      ' retornos / ' + rows.length + ' PSAIs = <strong>' +
+      indice.toFixed(2).replace('.', ',') + '</strong> [Meta: ' + metaStr + ']</div>';
+  }
+
+  function grupoRet(titulo, rows, cls) {
+    if (rows.length === 0) return '';
+    let html = '<div class="eq-det__grupo"><h5>' + titulo + ' (' + rows.length + ')</h5>' +
+      '<table class="eq-tabela eq-tabela--det"><thead><tr>' +
+      '<th>PSAI</th><th>SAI</th><th>Tipo</th><th>Retornos</th></tr></thead><tbody>';
+    rows.forEach(r => {
+      html += '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + linkPsai(r.i_psai) +
+        '</td><td>' + linkSai(r.i_sai) + '</td><td>' + r.tipoSAI + '</td><td><strong>' +
+        (r.qtdTramite || 0) + '</strong></td></tr>';
+    });
+    html += '</tbody></table></div>';
+    return html;
+  }
+
   function detRevisoes(rows) {
-    var denom = rows.filter(function(r) { return r.grupo === 'denominador' || !r.grupo; });
-    var numer = rows.filter(function(r) { return r.grupo === 'numerador'; });
+    var denom = rows;
     var denomComRev = denom.filter(function(r) { return r.revisoes > 0; });
     var denomSemRev = denom.filter(function(r) { return !r.revisoes || r.revisoes === 0; });
-    var revDenom = denomComRev.reduce(function(s, r) { return s + r.revisoes; }, 0);
-    var revNumer = numer.reduce(function(s, r) { return s + r.revisoes; }, 0);
-    var totalRev = revDenom + revNumer;
+    var totalRev = denomComRev.reduce(function(s, r) { return s + r.revisoes; }, 0);
     var totalSais = denom.length;
     var indice = totalSais > 0 ? Math.round((totalRev / totalSais) * 100) / 100 : 0;
 
-    return grupoSai('\u26A0 SAIs do mes com revisao (A/C)', denomComRev, 'revisoes', 'eq-det--alerta') +
-      grupoSai('\u2705 SAIs do mes sem revisao', denomSemRev, 'revisoes', '') +
-      (numer.length > 0 ? grupoSai('\u2139 Revisoes de SAIs de outros meses', numer, 'revisoes', 'eq-det--alerta') : '') +
-      '<div class="eq-det__formula"><strong>Calculo:</strong> ' +
-      totalRev + ' revisoes no mes / ' + totalSais + ' SAIs criadas no mes = <strong>' +
-      indice.toFixed(2).replace('.', ',') + '</strong> [Meta: \u2264 0,60]</div>';
+    return grupoSai('\u26A0 SAIs liberadas no m\u00eas com revis\u00e3o (A/C)', denomComRev, 'revisoes', 'eq-det--alerta') +
+      grupoSai('\u2705 SAIs liberadas no m\u00eas sem revis\u00e3o', denomSemRev, 'revisoes', '') +
+      '<div class="eq-det__formula"><strong>C\u00e1lculo:</strong> ' +
+      totalRev + ' revis\u00f5es totais / ' + totalSais + ' SAIs liberadas no m\u00eas = <strong>' +
+      indice.toFixed(2).replace('.', ',') + '</strong></div>';
   }
 
   function grupoSai(titulo, rows, colExtra, cls) {
@@ -140,16 +167,17 @@ const EquipesDetalhe = (() => {
 
   const SIT_LABELS = { 4: 'Respondida', 11: 'Em Analise Coord.', 12: 'A Desenvolver' };
 
-  function detGeracao(rows) {
-    const dentro = rows.filter(r => (Number(r.dias_uteis) || 0) <= 3);
-    const fora = rows.filter(r => (Number(r.dias_uteis) || 0) > 3);
+  function detGeracao(rows, maxDias) {
+    const limite = maxDias || 3;
+    const dentro = rows.filter(r => (Number(r.dias_uteis) || 0) <= limite);
+    const fora = rows.filter(r => (Number(r.dias_uteis) || 0) > limite);
     const pct = rows.length > 0 ? Math.round((dentro.length / rows.length) * 10000) / 100 : 0;
 
-    return grupoGer('\u2705 Dentro do prazo (\u2264 3 dias uteis)', dentro, '') +
-      grupoGer('\u26A0 Fora do prazo (> 3 dias uteis)', fora, 'eq-det--alerta') +
+    return grupoGer('\u2705 Dentro do prazo (\u2264 ' + limite + ' dias uteis)', dentro, '') +
+      grupoGer('\u26A0 Fora do prazo (> ' + limite + ' dias uteis)', fora, 'eq-det--alerta') +
       '<div class="eq-det__formula"><strong>Calculo:</strong> ' +
       dentro.length + '/' + rows.length + ' dentro do prazo (' + pct + '%). ' +
-      'Media: <strong>' + media(rows) + ' d.u.</strong> [Meta: media \u2264 3 d.u.]</div>';
+      'Media: <strong>' + media(rows) + ' d.u.</strong> [Meta: media \u2264 ' + limite + ' d.u.]</div>';
   }
 
   function grupoGer(titulo, rows, cls) {

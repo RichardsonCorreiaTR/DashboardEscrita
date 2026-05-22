@@ -58,7 +58,8 @@ const AppEstudos = (() => {
       viewLiberacoesV2: document.getElementById('view-liberacoes-sa-v2'),
       viewDescartes: document.getElementById('view-descartes-ne'),
       viewISV: document.getElementById('view-isv-ne'),
-      viewISVYoY: document.getElementById('view-isv-yoy')
+      viewISVYoY: document.getElementById('view-isv-yoy'),
+      viewDiffNiveis: document.getElementById('view-diff-niveis')
     };
   }
 
@@ -124,6 +125,9 @@ const AppEstudos = (() => {
     if (els.viewISVYoY) {
       els.viewISVYoY.classList.toggle('view-toggle--ativo', view === 'isv-yoy');
     }
+    if (els.viewDiffNiveis) {
+      els.viewDiffNiveis.classList.toggle('view-toggle--ativo', view === 'diff-niveis');
+    }
 
     if (view === 'semanal-versao') {
       els.titulo.textContent = 'Analise Semanal - NE por Versao';
@@ -132,6 +136,10 @@ const AppEstudos = (() => {
     } else if (view === 'semanal-historica') {
       els.titulo.textContent = 'Analise Semanal - NE Historica';
       els.subtitulo.textContent = 'Comparativo de todas as versoes desde 2022';
+      els.seletorVersao.closest('.header__versao').style.display = 'none';
+    } else if (view === 'diff-niveis') {
+      els.titulo.textContent = 'Diferen\u00e7as SGD x Planilha';
+      els.subtitulo.textContent = 'SAIs com n\u00edvel diferente entre a Planilha de Acompanhamento e o SGD';
       els.seletorVersao.closest('.header__versao').style.display = 'none';
     } else if (view === 'liberacoes-sa') {
       els.titulo.textContent = 'Liberacoes de SA';
@@ -2075,6 +2083,48 @@ const AppEstudos = (() => {
     }
   }
 
+  async function carregarDiffNiveis() {
+    mostrarLoading(true, 'Comparando n\u00edveis Planilha x SGD...');
+    mostrarBanner(null);
+    try {
+      const json = await (await fetch('/api/estudos/diff-niveis')).json();
+      if (json.erro) throw new Error(json.erro);
+      const area = document.getElementById('diff-niveis-area');
+      if (!json.divergencias.length) {
+        area.innerHTML = '<div class="estudo-vazio"><p>\u2705 Nenhuma diverg\u00eancia encontrada. Todos os n\u00edveis da planilha coincidem com o SGD.</p></div>';
+        mostrarLoading(false);
+        return;
+      }
+      // Agrupar por responsavel
+      const porResp = {};
+      json.divergencias.forEach(d => {
+        const r = d.responsavel || 'Sem responsavel';
+        if (!porResp[r]) porResp[r] = [];
+        porResp[r].push(d);
+      });
+      let html = '<div class="estudo-diff-niveis"><h3>' + json.total + ' diverg\u00eancia(s) encontrada(s) de ' + json.total_planilha + ' SAIs na planilha</h3>';
+      for (const [resp, itens] of Object.entries(porResp)) {
+        html += '<div class="diff-grupo"><h4>' + resp + ' (' + itens.length + ')</h4>';
+        html += '<table class="estudo-tabela"><thead><tr><th>SAI</th><th>Tipo</th><th>N\u00edvel Planilha</th><th>N\u00edvel SGD</th></tr></thead><tbody>';
+        itens.forEach(d => {
+          const corPlan = d.nivel_planilha.toLowerCase().includes('extra') ? '#8b5cf6' : d.nivel_planilha.toLowerCase() === 'alta' ? '#f59e0b' : d.nivel_planilha.toLowerCase() === 'm\u00e9dia' ? '#3b82f6' : '#6b7280';
+          const sgdLabel = d.nivel_sgd === 'N\u00e3o definido' ? '<span style="color:var(--vermelho)">N\u00e3o definido</span>' : d.nivel_sgd;
+          html += '<tr><td><a href="https://sgsai.dominiosistemas.com.br/sgsai/faces/sai.html?sai=' + d.i_sai + '" target="_blank" class="link-sgd">' + d.i_sai + '</a></td>';
+          html += '<td>' + d.tipo + '</td>';
+          html += '<td><strong style="color:' + corPlan + '">' + d.nivel_planilha + '</strong></td>';
+          html += '<td>' + sgdLabel + '</td></tr>';
+        });
+        html += '</tbody></table></div>';
+      }
+      html += '</div>';
+      area.innerHTML = html;
+      mostrarLoading(false);
+      els.atualizadoLabel.textContent = 'Atualizado: ' + new Date().toLocaleString('pt-BR');
+    } catch (err) {
+      mostrarErro('Erro ao carregar diferen\u00e7as: ' + err.message);
+    }
+  }
+
   /* ============== CHART UTILS ============== */
 
   function destruirChart(key) {
@@ -2152,6 +2202,9 @@ const AppEstudos = (() => {
     } else if (viewParam === 'liberacoes-sa') {
       ativarView('liberacoes-sa');
       await carregarLiberacoes(false);
+    } else if (viewParam === 'diff-niveis') {
+      ativarView('diff-niveis');
+      await carregarDiffNiveis();
     } else {
       ativarView('semanal-versao');
       if (estado.versaoAtual) {

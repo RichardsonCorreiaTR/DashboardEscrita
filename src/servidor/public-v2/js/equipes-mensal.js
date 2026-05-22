@@ -74,7 +74,7 @@ const EquipesMensal = (() => {
     if (id.startsWith('tempo-trabalho')) return [
       { label: '% SAI/NE', render: d => d.pct + '%' },
       { label: 'Trab. SAI', render: d => fmtMin(d.trabalhoSai) },
-      { label: 'Efetivo', render: d => fmtMin(d.efetivo) },
+      { label: 'Total', render: d => fmtMin(d.total) },
       { label: 'Meta', render: () => '\u2265 80%' }
     ];
     if (id.startsWith('indice-revisoes')) return [
@@ -88,18 +88,30 @@ const EquipesMensal = (() => {
       { label: 'SAIs', render: d => d.qtd_sais },
       { label: 'Meta', render: () => '\u2265 80' }
     ];
-    if (id.startsWith('gerar-sai')) return [
-      { label: 'Media (d.u.)', render: d => d.media_dias },
-      { label: '% prazo', render: d => d.pct + '%' },
-      { label: 'Dentro/Total', render: d => d.dentro_prazo + '/' + d.total },
-      { label: 'Meta', render: () => 'Media \u2264 3 d.u.' }
-    ];
+    if (id.startsWith('gerar-sai')) {
+      const maxDias = id.includes('-7d') ? 7 : id.includes('-5d') ? 5 : 3;
+      return [
+        { label: 'Media (d.u.)', render: d => d.media_dias },
+        { label: '% prazo', render: d => d.pct + '%' },
+        { label: 'Dentro/Total', render: d => d.dentro_prazo + '/' + d.total },
+        { label: 'Meta', render: () => 'Media \u2264 ' + maxDias + ' d.u.' }
+      ];
+    }
     if (id === 'respostas-ss-3d') return [
       { label: '% em 3d', render: d => d.pct + '%' },
       { label: 'Dentro/Total', render: d => d.dentro_3d + '/' + d.total },
       { label: 'Media dias', render: d => d.media_dias + 'd' },
       { label: 'Meta', render: () => '100%' }
     ];
+    if (id.startsWith('indice-retornos')) {
+      const metaVal = id === 'indice-retornos-sal' ? '1,00' : '1,50';
+      return [
+        { label: 'Indice', render: d => fmtDecimal(d.indice) },
+        { label: 'PSAIs', render: d => d.total_psais },
+        { label: 'Retornos', render: d => d.total_retornos },
+        { label: 'Meta', render: () => '\u2264 ' + metaVal }
+      ];
+    }
     return [{ label: 'Valor', render: d => JSON.stringify(d) }];
   }
 

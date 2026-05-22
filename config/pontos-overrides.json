@@ -1,0 +1,25 @@
+{
+  "_comentario": "Sobrescritas manuais de nivel e pontos por SAI. Edite este arquivo para corrigir dados gravados incorretamente no SGD.",
+  "_campos": {
+    "i_sai": "ID da SAI no SGD (obrigatorio)",
+    "nivel": "Nivel correto: Baixa | Media | Alta | Extra Alta (obrigatorio)",
+    "conferido": "true = usar este override no calculo (obrigatorio)",
+    "motivo": "Descricao do motivo da correcao (opcional)"
+  },
+  "overrides": [
+    { "i_sai": 99926,  "nivel": "Extra Alta", "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 99627,  "nivel": "Extra Alta", "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 101293, "nivel": "Extra Alta", "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 94735,  "nivel": "Média",  "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 101021, "nivel": "Média",  "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 101804, "nivel": "Alta",   "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 101789, "nivel": "Alta",   "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 94650,  "nivel": "Baixa",  "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 94676,  "nivel": "Média",  "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 99525,  "nivel": "Média",  "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 99650,  "nivel": "Média",  "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 101290, "nivel": "Alta",   "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 100620, "nivel": "Média",  "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" },
+    { "i_sai": 94780,  "nivel": "Média",  "conferido": true, "motivo": "Nivel gravado incorretamente no SGD" }
+  ]
+}
