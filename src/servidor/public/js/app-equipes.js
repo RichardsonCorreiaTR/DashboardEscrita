@@ -18,7 +18,7 @@ const AppEquipes = (() => {
 
     // Exibir nome do usuario no header
     const el = document.getElementById('header-usuario');
-    if (el) el.textContent = me.usuario;
+    if (el) el.textContent = me.usuario.charAt(0).toUpperCase() + me.usuario.slice(1);
 
     // Analistas so podem ver seus proprios dados
     const params = new URLSearchParams(window.location.search);
@@ -37,6 +37,11 @@ const AppEquipes = (() => {
       const main = document.getElementById('equipes-main');
       document.querySelector('.header__title').textContent = 'Metas da Equipe';
       document.querySelector('.header__subtitle').textContent = 'Escrita Fiscal — Painel do Coordenador';
+      // Exibir nome do coordenador visualizado no header
+      const coords = MetasConfig.coordenadores ? MetasConfig.coordenadores() : [];
+      const coordVisto = coords.find(c => c.slug === coordParam);
+      const nomeCoord = coordVisto ? (coordVisto.apelido || coordVisto.nome) : coordParam;
+      if (el) el.textContent = nomeCoord.charAt(0).toUpperCase() + nomeCoord.slice(1);
       EquipesCoordenador.render(coordParam, main);
       return;
     }
@@ -134,7 +139,16 @@ const AppEquipes = (() => {
     document.querySelector('.header__title').innerHTML =
       '<a href="/equipes.html" class="eq-back-link">\u2190 Equipe</a> ' + colab.apelido;
     document.querySelector('.header__subtitle').textContent = colab.cargo + ' - Escrita Fiscal - ' + new Date().getFullYear();
-    if (colab['coordenador-slug']) Nav.filtrarNavEquipes(colab['coordenador-slug']);
+    // Exibir coordenador do colaborador visualizado no header
+    const coordSlug = colab['coordenador-slug'];
+    if (coordSlug) {
+      Nav.filtrarNavEquipes(coordSlug);
+      const coords = MetasConfig.coordenadores ? MetasConfig.coordenadores() : [];
+      const coord = coords.find(c => c.slug === coordSlug);
+      const nomeCoord = coord ? (coord.apelido || coord.nome) : coordSlug;
+      const el = document.getElementById('header-usuario');
+      if (el) el.textContent = nomeCoord.charAt(0).toUpperCase() + nomeCoord.slice(1);
+    }
     const metas = MetasConfig.obterMetas(colab);
     const agrupadas = MetasConfig.agruparMetas(metas);
     const main = document.getElementById('equipes-main');

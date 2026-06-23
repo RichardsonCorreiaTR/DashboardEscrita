@@ -142,12 +142,17 @@ function agruparPontosDbAnalista(rows, cargo) {
   return m;
 }
 
-// Agrega rows de queryPontosGerados (sai.i_usuarios = codigo-sgd) usando cargo do analista
-function agruparPontosGerados(rows, cargo) {
+// Agrega rows de queryPontosGerados (sai.i_usuarios = codigo-sgd)
+// Usa cargo do analista responsavel pela PSAI (resp_psai_sgd) para calcular pontos
+function agruparPontosGerados(rows, cargoFallback, cargoMap) {
   const m = {};
   rows.forEach(r => {
     const chave = r.codigo_sgd || r.i_usuarios, mes = r.mes;
-    const pts = pontosSai(r.tipoSAI, String(r.nivel_alteracao || 1), cargo);
+    // Usar cargo do analista da PSAI, se disponivel; senao fallback do especialista
+    const cargoAnalista = (cargoMap && r.resp_psai_sgd && cargoMap[Number(r.resp_psai_sgd)])
+      || cargoFallback || 'pleno';
+    const nivelChave = resolverNivel(r.i_sai, r.nivel_alteracao);
+    const pts = pontosSai(r.tipoSAI, nivelChave, cargoAnalista);
     if (!m[chave]) m[chave] = {};
     if (!m[chave][mes]) m[chave][mes] = { pontos: 0, qtd_sais: 0 };
     m[chave][mes].pontos += pts;

@@ -325,9 +325,11 @@ const EquipesDetalhe = (() => {
 
   function detTempoSal(rows) {
     if (!rows.length) return '<div class="eq-sem-dados">Nenhuma an\u00e1lise no mes</div>';
-    const isSalBaixa = r => r.tipoSAI === 'SAL' && ['baixa','pequena'].includes((r.nivel||'').toLowerCase());
-    const salBaixa = rows.filter(isSalBaixa);
-    const outros = rows.filter(r => !isSalBaixa(r));
+    const sal  = rows.filter(r => r.tipoSAI === 'SAL');
+    const ne   = rows.filter(r => r.tipoSAI === 'NE');
+    const sail = rows.filter(r => r.tipoSAI === 'SAIL');
+    const sam  = rows.filter(r => r.tipoSAI === 'SAM');
+    const outros = rows.filter(r => !['SAL','NE','SAIL','SAM'].includes(r.tipoSAI));
     const tabelaAnal = (grupo, limite) => {
       if (!grupo.length) return '';
       let t = '<table class="eq-tabela eq-tabela--det"><thead><tr>' +
@@ -344,13 +346,20 @@ const EquipesDetalhe = (() => {
       return t + '</tbody></table>';
     };
     const somaTot = arr => arr.reduce((s, r) => s + (Number(r.total_analise)||0) + (Number(r.total_definicao)||0), 0);
-    const mr = salBaixa.length ? Math.round(somaTot(salBaixa) / salBaixa.length) : 0;
-    return '<div class="eq-det__grupo"><h5>\u2705 SAL Baixa \u2014 contam para meta (' + salBaixa.length + ')</h5>' +
-      tabelaAnal(salBaixa, 800) + '</div>' +
-      (outros.length ? '<div class="eq-det__grupo"><h5>\u2139 Outros tipos/n\u00edveis \u2014 n\u00e3o contam para meta (' + outros.length + ')</h5>' +
-        tabelaAnal(outros) + '</div>' : '') +
-      '<div class="eq-det__formula"><strong>M\u00e9dia SAL Baixa:</strong> ' + fmtMin(mr) +
-      ' | Meta: \u2264 800min</div>';
+    const mediaGrupo = arr => arr.length ? Math.round(somaTot(arr) / arr.length) : null;
+    const mrSal = mediaGrupo(sal);
+    const grupoHtml = (titulo, grupo, limite, ok) => {
+      if (!grupo.length) return '';
+      const icone = ok === true ? '\u2705' : ok === false ? '\u26A0' : '\u2139';
+      return '<div class="eq-det__grupo"><h5>' + icone + ' ' + titulo + ' (' + grupo.length + ')</h5>' +
+        tabelaAnal(grupo, limite) + '</div>';
+    };
+    const salOk = mrSal != null ? mrSal <= 800 : null;
+    return grupoHtml('SAL \u2014 m\u00e9dia: ' + (mrSal != null ? mrSal + ' min' : '-') + ' | Meta \u2264 800min', sal, 800, salOk) +
+      grupoHtml('NE', ne, null, null) +
+      grupoHtml('SAIL', sail, null, null) +
+      grupoHtml('SAM', sam, null, null) +
+      (outros.length ? grupoHtml('Outros', outros, null, null) : '');
   }
 
   function somaMin(rows) { return rows.reduce((s, r) => s + (r.minutos || 0), 0); }

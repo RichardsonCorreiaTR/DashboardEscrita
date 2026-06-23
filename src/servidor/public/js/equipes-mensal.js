@@ -8,6 +8,22 @@
 const EquipesMensal = (() => {
   const { LABELS, EXPLICACOES } = MetasConfig;
   const { MESES, fmtMin, fmtDecimal, corPct } = FormatUtils;
+  const ANO_ATUAL = new Date().getFullYear();
+
+  function diasUteis(mes, ano) {
+    const a = ano || ANO_ATUAL;
+    let count = 0;
+    const total = new Date(a, mes, 0).getDate();
+    for (let d = 1; d <= total; d++) {
+      const dow = new Date(a, mes - 1, d).getDay();
+      if (dow !== 0 && dow !== 6) count++;
+    }
+    return count;
+  }
+
+  function esperadoHoras(mes, ano) {
+    return diasUteis(mes, ano) * 8 * 60; // em minutos
+  }
 
   function renderTotalizador(tot, metas, valorMap) {
     if (!tot || !tot.por_meta) return '<div class="eq-sem-dados">Sem avaliacoes no ano</div>';
@@ -41,10 +57,12 @@ const EquipesMensal = (() => {
   function computeResumoMeta(id, mensal, metaValor) {
     if (!mensal) return null;
     const mesAtual = new Date().getMonth() + 1;
-    const temDados = Object.values(mensal).some(d => d != null);
+    const mesAcum = mesAtual - 1; // apenas meses fechados
+    if (mesAcum < 1) return null;
+    const temDados = Array.from({ length: mesAcum }, (_, i) => mensal[i + 1]).some(d => d != null);
     if (!temDados) return null;
     const zero = { pontos: 0, trabalhoSai: 0, efetivo: 0, total_sais: 0, total_revisoes: 0, total_psais: 0, total_retornos: 0, media_realizado: 0, media: 0, qtd_sais: 0, qtd_psais: 0 };
-    const dados = Array.from({ length: mesAtual }, (_, i) => mensal[i + 1] || zero);
+    const dados = Array.from({ length: mesAcum }, (_, i) => mensal[i + 1] || zero);
     const corOk = 'var(--verde)', corNok = 'var(--vermelho)';
     if (id === 'pontos-definicao') {
       const media = Math.round(dados.reduce((s, d) => s + (d.pontos || 0), 0) / dados.length);
@@ -75,11 +93,11 @@ const EquipesMensal = (() => {
       return { texto: fmtDecimal(idx), cor: idx <= meta ? corOk : corNok };
     }
     if (id === 'tempo-medio-sal') {
-      const c = dados.filter(d => d.qtd_sais > 0);
+      const c = dados.filter(d => d.qtd_sal > 0);
       if (!c.length) return null;
-      const totalSais = c.reduce((s, d) => s + (d.qtd_sais || 0), 0);
-      const somaT = c.reduce((s, d) => s + ((d.media_realizado || 0) * (d.qtd_sais || 0)), 0);
-      const avg = totalSais > 0 ? Math.round(somaT / totalSais) : 0;
+      const totalSal = c.reduce((s, d) => s + (d.qtd_sal || 0), 0);
+      const somaS = c.reduce((s, d) => s + ((d.media_sal || 0) * (d.qtd_sal || 0)), 0);
+      const avg = totalSal > 0 ? Math.round(somaS / totalSal) : 0;
       return { texto: avg + ' min', cor: avg <= 800 ? corOk : corNok };
     }
     if (id === 'pontos-atividade-principal') {
@@ -196,7 +214,8 @@ const EquipesMensal = (() => {
 
   function totalizadorRetornos(metaId, mensal, metaValor) {
     const dados = [];
-    for (let m = 1; m <= 12; m++) { if (mensal[m]) dados.push(mensal[m]); }
+    const _ma = new Date().getMonth(); // meses fechados
+    for (let m = 1; m <= _ma; m++) { if (mensal[m]) dados.push(mensal[m]); }
     if (!dados.length) return '';
     const totalPsais = dados.reduce((s, d) => s + (d.total_psais || 0), 0);
     const totalRet = dados.reduce((s, d) => s + (d.total_retornos || 0), 0);
@@ -220,7 +239,8 @@ const EquipesMensal = (() => {
 
   function totalizadorIndice(metaId, mensal, metaValor) {
     const dados = [];
-    for (let m = 1; m <= 12; m++) { if (mensal[m]) dados.push(mensal[m]); }
+    const _ma = new Date().getMonth();
+    for (let m = 1; m <= _ma; m++) { if (mensal[m]) dados.push(mensal[m]); }
     if (!dados.length) return '';
     const totalSais = dados.reduce((s, d) => s + (d.total_sais || 0), 0);
     const totalRev = dados.reduce((s, d) => s + (d.total_revisoes || 0), 0);
@@ -245,7 +265,8 @@ const EquipesMensal = (() => {
 
   function totalizadorPctDescartes(mensal) {
     const dados = [];
-    for (let m = 1; m <= 12; m++) { if (mensal[m]) dados.push(mensal[m]); }
+    const _ma = new Date().getMonth();
+    for (let m = 1; m <= _ma; m++) { if (mensal[m]) dados.push(mensal[m]); }
     if (!dados.length) return '';
     const totalDesc = dados.reduce((s, d) => s + (d.qtd_descartes || 0), 0);
     const totalSais = dados.reduce((s, d) => s + (d.qtd_sais || 0), 0);
@@ -271,7 +292,8 @@ const EquipesMensal = (() => {
 
   function totalizadorDescartes(mensal) {
     const dados = [];
-    for (let m = 1; m <= 12; m++) { if (mensal[m]) dados.push(mensal[m]); }
+    const _ma = new Date().getMonth();
+    for (let m = 1; m <= _ma; m++) { if (mensal[m]) dados.push(mensal[m]); }
     if (!dados.length) return '';
     const totalPsais = dados.reduce((s, d) => s + (d.qtd_psais || 0), 0);
     const somaTotal = dados.reduce((s, d) => s + ((d.media || 0) * (d.qtd_psais || 0)), 0);
@@ -293,28 +315,32 @@ const EquipesMensal = (() => {
 
   function totalizadorMedioSal(mensal) {
     const dados = [];
-    for (let m = 1; m <= 12; m++) { if (mensal[m] && mensal[m].qtd_sais > 0) dados.push(mensal[m]); }
+    const _ma = new Date().getMonth();
+    for (let m = 1; m <= _ma; m++) { if (mensal[m]) dados.push(mensal[m]); }
     if (!dados.length) return '';
-    const totalSais = dados.reduce((s, d) => s + (d.qtd_sais || 0), 0);
-    const somaTotal = dados.reduce((s, d) => s + ((d.media_realizado || 0) * (d.qtd_sais || 0)), 0);
-    const mediaAcum = totalSais > 0 ? Math.round(somaTotal / totalSais) : 0;
+    const comSal = dados.filter(d => d.qtd_sal > 0);
+    const totalSal = comSal.reduce((s, d) => s + (d.qtd_sal || 0), 0);
+    const somaS = comSal.reduce((s, d) => s + ((d.media_sal || 0) * (d.qtd_sal || 0)), 0);
+    const mediaSal = totalSal > 0 ? Math.round(somaS / totalSal) : null;
     const atingidos = dados.filter(d => d.atingida).length;
-    const ok = mediaAcum <= 800;
+    const ok = mediaSal != null ? mediaSal <= 800 : true;
     const cor = ok ? 'var(--verde)' : 'var(--vermelho)';
     const corAt = atingidos === dados.length ? 'var(--verde)' : atingidos > 0 ? 'var(--amarelo)' : 'var(--vermelho)';
+    const totalNe = dados.reduce((s, d) => s + (d.qtd_ne || 0), 0);
+    const totalSail = dados.reduce((s, d) => s + (d.qtd_sail || 0), 0);
+    const totalSam = dados.reduce((s, d) => s + (d.qtd_sam || 0), 0);
     return '<div class="eq-tot-pontos">' +
       '<h4 class="eq-tot-pontos__titulo">\uD83D\uDCCA Acumulado do Ano</h4>' +
       '<div class="eq-dados-grid">' +
       '<div class="eq-dado"><span class="eq-dado__valor">' + dados.length + '</span><span class="eq-dado__label">Meses com dados</span></div>' +
-      '<div class="eq-dado"><span class="eq-dado__valor">' + totalSais + '</span><span class="eq-dado__label">SALs Baixa</span></div>' +
-      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + mediaAcum + ' min</span><span class="eq-dado__label">M\u00e9dia acumulada</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + (mediaSal != null ? mediaSal + ' min' : '-') + '</span><span class="eq-dado__label">M\u00e9dia SAL (meta \u2264800)</span></div>' +
       '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + corAt + '">' + atingidos + '/' + dados.length + '</span><span class="eq-dado__label">Meses atingidos</span></div>' +
-      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + ';font-size:1.4rem">' + (ok ? '\u2713' : '\u2717') + '</span><span class="eq-dado__label">Meta acumulada (\u2264 800min)</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor">' + totalSal + ' SAL / ' + totalNe + ' NE / ' + totalSail + ' SAIL / ' + totalSam + ' SAM</span><span class="eq-dado__label">Qtd analisadas no ano</span></div>' +
       '</div></div>';
   }
 
   function totalizadorAtivPrincipal(mensal) {
-    const mesAtual = new Date().getMonth() + 1;
+    const mesAtual = new Date().getMonth(); // meses fechados
     const dados = Array.from({ length: mesAtual }, (_, i) => mensal[i + 1]).filter(Boolean);
     if (!dados.length) return '';
     const totalPontos = dados.reduce((s, d) => s + (d.pontos || 0), 0);
@@ -336,7 +362,7 @@ const EquipesMensal = (() => {
   }
 
   function totalizadorPontosGerados(mensal) {
-    const mesAtual = new Date().getMonth() + 1;
+    const mesAtual = new Date().getMonth(); // meses fechados
     const temDados = Object.values(mensal).some(d => d && d.qtd_sais > 0);
     if (!temDados) return '<div class="eq-sem-dados" style="margin-top:0.5rem">Nenhuma SAI gerada por outros analistas no ano</div>';
     const dados = Array.from({ length: mesAtual }, (_, i) => mensal[i + 1] || { pontos: 0, qtd_sais: 0 });
@@ -354,7 +380,8 @@ const EquipesMensal = (() => {
 
   function totalizadorTempo(metaId, mensal, metaValor) {
     const dados = [];
-    for (let m = 1; m <= 12; m++) { if (mensal[m]) dados.push(mensal[m]); }
+    const _ma = new Date().getMonth();
+    for (let m = 1; m <= _ma; m++) { if (mensal[m]) dados.push(mensal[m]); }
     if (!dados.length) return '';
     const totalTrab = dados.reduce((s, d) => s + (d.trabalhoSai || 0), 0);
     const totalGeral = dados.reduce((s, d) => s + (d.total || 0), 0);
@@ -375,11 +402,11 @@ const EquipesMensal = (() => {
   }
 
   function totalizadorPontos(mensal) {
-    const mesAtual = new Date().getMonth() + 1;
+    const mesAtual = new Date().getMonth(); // meses fechados (0-based = meses anteriores)
     // Verifica se ha dados em algum mes (para nao exibir para analistas sem nenhum registro)
     const temDados = Object.values(mensal).some(d => d && (d.pontos > 0 || d.qtd_sais > 0));
     if (!temDados) return '';
-    // Considera todos os meses ate o atual: meses sem SAIs contam como 0 (nao atingido)
+    // Considera apenas meses fechados: meses sem SAIs contam como 0 (nao atingido)
     const dados = [];
     for (let m = 1; m <= mesAtual; m++) {
       dados.push(mensal[m] || { pontos: 0, qtd_sais: 0, atingida: false });
@@ -435,12 +462,21 @@ const EquipesMensal = (() => {
         return '<tr class="eq-tr--ok"><td>' + MESES[m] + '</td><td style="color:var(--verde)">0</td><td>0</td>' +
           '<td class="eq-status">\u2713</td><td></td></tr>';
       }
-      const v = cols.map(() => '<td>-</td>').join('');
+      const v = cols.map(c => c.isEsperado
+        ? '<td style="color:#94a3b8">' + fmtMin(esperadoHoras(m)) + '</td>'
+        : '<td>-</td>'
+      ).join('');
       return '<tr class="eq-tr--vazio"><td>' + MESES[m] + '</td>' + v + '<td>-</td><td>' + btnDetalhe + '</td></tr>';
     }
     const cls = d.atingida ? 'eq-tr--ok' : 'eq-tr--nok';
     const ico = d.atingida ? '\u2713' : '\u2717';
-    const cells = cols.map(c => '<td>' + c.render(d) + '</td>').join('');
+    const cells = cols.map(c => {
+      if (c.isEsperado) {
+        const esp = esperadoHoras(m);
+        return '<td style="color:#94a3b8">' + fmtMin(esp) + '</td>';
+      }
+      return '<td>' + c.render(d) + '</td>';
+    }).join('');
     const statusCol = isGerados ? '' : '<td class="eq-status">' + ico + '</td>';
     return '<tr class="' + cls + '"><td>' + MESES[m] + '</td>' + cells + statusCol +
       '<td>' + btnDetalhe + '</td></tr>';
@@ -455,6 +491,7 @@ const EquipesMensal = (() => {
         { label: '% Atividade', render: d => d.pct + '%' },
         { label: 'Tempo', render: d => fmtMin(d.trabalhoSai) },
         { label: 'Total', render: d => fmtMin(d.total) },
+        { label: 'Esperado', isEsperado: true, render: () => '' },
         { label: 'Meta', render: () => metaLabel }
       ];
     }
@@ -511,10 +548,14 @@ const EquipesMensal = (() => {
       { label: 'Meta', render: () => '\u2264 300min' }
     ];
     if (id === 'tempo-medio-sal') return [
-      { label: 'SALs Baixa', render: d => d.qtd_sais + (d.qtd_total > d.qtd_sais ? ' / ' + d.qtd_total : '') },
-      { label: 'M\u00e9dia (min)', render: d => d.media_realizado + ' min' },
-      { label: 'M\u00e9dia (h)', render: d => fmtMin(d.media_realizado) },
-      { label: 'Meta', render: () => '\u2264 800min' }
+      { label: 'SAL (qtd)', render: d => d.qtd_sal || 0 },
+      { label: 'SAL \u2264800min', render: d => d.media_sal != null ? d.media_sal + ' min' : '-', isMeta: true },
+      { label: 'NE (qtd)', render: d => d.qtd_ne || 0 },
+      { label: 'NE (min)', render: d => d.media_ne != null ? d.media_ne + ' min' : '-' },
+      { label: 'SAIL (qtd)', render: d => d.qtd_sail || 0 },
+      { label: 'SAIL (min)', render: d => d.media_sail != null ? d.media_sail + ' min' : '-' },
+      { label: 'SAM (qtd)', render: d => d.qtd_sam || 0 },
+      { label: 'SAM (min)', render: d => d.media_sam != null ? d.media_sam + ' min' : '-' }
     ];
     if (id.startsWith('indice-retornos')) {
       const metaVal = id === 'indice-retornos-sal' ? '1,00' : '1,50';
@@ -525,6 +566,13 @@ const EquipesMensal = (() => {
         { label: 'Meta', render: () => '\u2264 ' + metaVal }
       ];
     }
+    if (id === 'tempo-gerando-sai') return [
+      { label: '% Atividade', render: d => d.pct + '%' },
+      { label: 'Tempo', render: d => fmtMin(d.trabalhoSai) },
+      { label: 'Total', render: d => fmtMin(d.total) },
+      { label: 'Esperado', isEsperado: true, render: () => '' },
+      { label: 'Meta', render: () => '\u2265 50%' }
+    ];
     return [{ label: 'Valor', render: d => JSON.stringify(d) }];
   }
 

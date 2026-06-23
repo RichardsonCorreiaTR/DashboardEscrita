@@ -8,6 +8,7 @@
 const EquipesCoordenador = (() => {
   const MESES_LABEL = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const MES_ATUAL = new Date().getMonth() + 1;
+  const MES_ACUM = new Date().getMonth(); // apenas meses fechados (< mes atual)
 
   // Colunas informativas que nao devem aparecer no painel
   const EXCLUIR_COLS = new Set(['tempo-medio-sal', 'controle-descartes', 'pct-descartes']);
@@ -25,7 +26,7 @@ const EquipesCoordenador = (() => {
   function indiceAcumulado(mensal, campoNum, campoDen, metaVal) {
     if (!mensal) return null;
     let num = 0, den = 0;
-    for (let m = 1; m <= MES_ATUAL; m++) {
+    for (let m = 1; m <= MES_ACUM; m++) {
       const d = mensal[m];
       if (d && (d[campoDen] || d[campoNum])) {
         num += Number(d[campoNum]) || 0;
@@ -41,7 +42,7 @@ const EquipesCoordenador = (() => {
   function tempoTrabalhoAcum(mensal, metaVal) {
     if (!mensal) return null;
     let tt = 0, te = 0;
-    for (let m = 1; m <= MES_ATUAL; m++) {
+    for (let m = 1; m <= MES_ACUM; m++) {
       const d = mensal[m];
       if (d) { tt += d.trabalhoSai || 0; te += d.efetivo || 0; }
     }
@@ -51,10 +52,10 @@ const EquipesCoordenador = (() => {
   }
 
   function pontosAcum(mensal, metaId) {
-    if (!mensal) return null;
+    if (!mensal || MES_ACUM < 1) return null;
     let soma = 0;
-    for (let m = 1; m <= MES_ATUAL; m++) { soma += (mensal[m] && mensal[m].pontos) || 0; }
-    const media = Math.round(soma / MES_ATUAL);
+    for (let m = 1; m <= MES_ACUM; m++) { soma += (mensal[m] && mensal[m].pontos) || 0; }
+    const media = Math.round(soma / MES_ACUM);
     if (metaId === 'pontos-atividade-principal') {
       let somaMeta = 0, count = 0;
       for (let m = 1; m <= MES_ATUAL; m++) {

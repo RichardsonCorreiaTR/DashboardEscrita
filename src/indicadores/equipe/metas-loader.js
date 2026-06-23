@@ -3,6 +3,8 @@
  * Extraido de metas-equipe.js para manter arquivos abaixo de 200 linhas.
  */
 
+const fs = require('fs');
+const path = require('path');
 const qe = require('../../core/query-executor');
 const queries = require('./consultas-metas');
 const detalhe = require('./consultas-metas-detalhe');
@@ -13,6 +15,15 @@ const retornos = require('./retornos-planilha');
 const pontosCalc = require('./pontos-calculador');
 const tempoSalCalc = require('./tempo-sal-calculador');
 const descartesCalc = require('./descartes-calculador');
+
+function buildCargoMapGlobal() {
+  try {
+    const equipe = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'config', 'equipe.json'), 'utf8'));
+    const m = {};
+    (equipe.analistas || []).forEach(a => { m[a['codigo-sgd']] = a.senioridade; });
+    return m;
+  } catch { return {}; }
+}
 
 const ANO = new Date().getFullYear();
 
@@ -121,7 +132,7 @@ async function buscarDados(analistas) {
   const pontosGeradosMap = {};
   analistas.forEach(a => {
     const sgdRows = pontosGeradosRaw.filter(r => Number(r.codigo_sgd) === a['codigo-sgd']);
-    const grouped = pontosCalc.agruparPontosGerados(sgdRows, a.senioridade);
+    const grouped = pontosCalc.agruparPontosGerados(sgdRows, a.senioridade, cargoMap);
     pontosGeradosMap[a['i-usuarios']] = grouped[a['codigo-sgd']] || {};
   });
   return {
@@ -171,7 +182,7 @@ async function buscarDadosAnalista(a) {
   return {
     revCtrl: { def: anual.agruparControleRevisoes(revDef), ger: anual.agruparControleRevisoes(revGer) },
     pontos: pontosCalc.agruparPontosDbAnalista(pontosRaw, a.senioridade),
-    pontosGerados: { [uid]: pontosCalc.agruparPontosGerados(pontosGeradosRaw, a.senioridade)[sgd] || {} },
+    pontosGerados: { [uid]: pontosCalc.agruparPontosGerados(pontosGeradosRaw, a.senioridade, buildCargoMapGlobal())[sgd] || {} },
     tempoMedioSal: tempoSalCalc.agruparTempoSal(tMedSal),
     descartes: descartesCalc.agruparDescartes(descRaw),
     descartesDataSit: agruparContagem(descSitRaw),

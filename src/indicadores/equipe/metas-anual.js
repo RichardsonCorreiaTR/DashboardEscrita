@@ -129,19 +129,21 @@ const EXCLUIR_DO_TOTAL = new Set(['tempo-medio-sal', 'controle-descartes', 'temp
 
 function totalizador(metasObj) {
   const mesAtual = new Date().getMonth() + 1;
+  const mesAcum = mesAtual - 1; // Somente meses fechados (< mes atual)
   let atingidas = 0, nao = 0;
   const porMeta = {};
   for (const [id, data] of Object.entries(metasObj)) {
     if (!data || !data.mensal) continue;
     const contaNoTotal = !EXCLUIR_DO_TOTAL.has(id);
-    const temDados = Object.values(data.mensal).some(d => d !== null && d !== undefined);
+    const temDados = mesAcum > 0 &&
+      Array.from({ length: mesAcum }, (_, i) => data.mensal[i + 1]).some(d => d !== null && d !== undefined);
     let ma = 0, mn = 0;
     if (!temDados) {
-      // Sem dados = sem violacoes = considera atingida para o totalizador (total=0 para exibir "0" no card)
+      // Sem dados em meses fechados = considera atingida (total=0 para exibir "0" no card)
       ma = 0; mn = 0;
       if (contaNoTotal) atingidas++;
     } else {
-      for (let m = 1; m <= mesAtual; m++) {
+      for (let m = 1; m <= mesAcum; m++) {
         const d = data.mensal[m];
         if (d && d.atingida) { ma++; if (contaNoTotal) atingidas++; }
         else { mn++; if (contaNoTotal) nao++; }
