@@ -51,7 +51,7 @@ app.use(session({
 app.post('/auth/login', (req, res) => {
   const { usuario, senha } = req.body || {};
   const usuarios = lerUsuarios();
-  const u = usuarios.find(x => x.usuario === usuario && x.senha === senha);
+  const u = usuarios.find(x => x.usuario.toLowerCase() === (usuario || '').toLowerCase() && x.senha === senha);
   if (!u) return res.json({ ok: false });
   req.session.usuario = u.usuario;
   req.session.slug = u.slug;
@@ -69,7 +69,7 @@ app.post('/auth/trocar-senha', (req, res) => {
   const { nova_senha } = req.body || {};
   if (!nova_senha || nova_senha.length < 6) return res.json({ ok: false, erro: 'Senha muito curta' });
   const usuarios = lerUsuarios();
-  const idx = usuarios.findIndex(x => x.usuario === req.session.usuario);
+  const idx = usuarios.findIndex(x => x.usuario.toLowerCase() === (req.session.usuario || '').toLowerCase());
   if (idx < 0) return res.json({ ok: false, erro: 'Usuario nao encontrado' });
   usuarios[idx].senha = nova_senha;
   usuarios[idx].trocar_senha = false;

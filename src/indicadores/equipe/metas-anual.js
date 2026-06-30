@@ -125,7 +125,7 @@ function mensalRetornos(mapMes, meta) {
 
 
 // Metas informativas: aparecem nos cards mas NAO entram no total geral
-const EXCLUIR_DO_TOTAL = new Set(['tempo-medio-sal', 'controle-descartes', 'tempo-trabalho-principal', 'pontos-gerados', 'pontos-atividade-principal', 'pct-descartes']);
+const EXCLUIR_DO_TOTAL = new Set(['tempo-medio-sal', 'controle-descartes', 'tempo-trabalho-principal', 'pontos-gerados', 'pontos-atividade-principal', 'pct-descartes', 'sais-definidas-esp']);
 
 function totalizador(metasObj) {
   const mesAtual = new Date().getMonth() + 1;
@@ -179,6 +179,11 @@ function calcularMetas(analista, dados, metaIds) {
     ) },
     'pontos-gerados':   { mensal: (m => {
       const base = mensalPontos(dados.pontosGerados?.[uid], 0);
+      for (let i = 1; i <= 12; i++) { if (!base[i]) base[i] = { pontos: 0, qtd_sais: 0, atingida: true }; }
+      return base;
+    })() },
+    'sais-definidas-esp': { mensal: (m => {
+      const base = mensalPontos(dados.pontos?.[sgd], 0);
       for (let i = 1; i <= 12; i++) { if (!base[i]) base[i] = { pontos: 0, qtd_sais: 0, atingida: true }; }
       return base;
     })() },

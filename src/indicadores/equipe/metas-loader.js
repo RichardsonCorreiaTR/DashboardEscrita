@@ -252,6 +252,22 @@ async function buscarDetalhe(a, metaId, mes) {
       pontuacao: pontosCalc.pontosSai(r.tipoSAI, String(r.nivel_alteracao || 1), a.senioridade)
     }));
   }
+  if (metaId === 'sais-definidas-esp') {
+    const rows = await qe.executar(detalhe.detalhePontos(sgd, ANO, mes));
+    return rows.map(r => {
+      const ov = pontosCalc.getOverrides()[String(r.i_sai)];
+      const nivelChave = ov ? ov.chave : String(r.nivel_alteracao || 1);
+      const pontuacao = pontosCalc.pontosSai(r.tipoSAI, nivelChave, a.senioridade);
+      return {
+        i_sai: r.i_sai, tipoSAI: r.tipoSAI, CadastroSAI: r.CadastroSAI,
+        nivel: ov ? ov.nivel + ' \u270F' : (pontosCalc.nivelDbLabel(r.nivel_alteracao) || 'N\u00e3o definido'),
+        nivel_alteracao: r.nivel_alteracao,
+        nivel_inferido: !r.nivel_alteracao && !ov,
+        pontuacao,
+        override: !!ov
+      };
+    });
+  }
   if (metaId === 'pct-descartes') {
     const [analisadas, descartadas] = await Promise.all([
       qe.executar(detalhe.detalhePctDescartes_Analisadas(sgd, ANO, mes)),
@@ -270,6 +286,20 @@ async function buscarDetalhe(a, metaId, mes) {
   if (metaId.startsWith('tempo-trabalho') || metaId === 'tempo-gerando-sai') return qe.executar(detalhe.detalheAtividades(uid, ANO, mes));
   if (metaId === 'respostas-ss-3d') return qe.executar(detalhe.detalheRespostasSS(uid, ANO, mes));
   if (metaId.startsWith('indice-retornos')) return detalheRetornos(a, metaId, mes);
+  if (metaId === 'pontos-atividade-principal') {
+    const rows = await qe.executar(detalhe.detalhePontos(sgd, ANO, mes));
+    return rows.map(r => {
+      const ov = pontosCalc.getOverrides()[String(r.i_sai)];
+      const nivelChave = ov ? ov.chave : String(r.nivel_alteracao || 1);
+      const pontuacao = pontosCalc.pontosSai(r.tipoSAI, nivelChave, a.senioridade);
+      return {
+        i_sai: r.i_sai, tipoSAI: r.tipoSAI, CadastroSAI: r.CadastroSAI,
+        nivel: ov ? ov.nivel + ' \u270F' : (pontosCalc.nivelDbLabel(r.nivel_alteracao) || 'N\u00e3o definido'),
+        nivel_alteracao: r.nivel_alteracao, nivel_inferido: !r.nivel_alteracao && !ov,
+        pontuacao, override: !!ov
+      };
+    });
+  }
   return [];
 }
 

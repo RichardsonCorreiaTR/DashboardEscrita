@@ -134,7 +134,7 @@ const EquipesMensal = (() => {
     return null;
   }
 
-  const INFO_METAS = new Set(['tempo-medio-sal', 'controle-descartes', 'tempo-trabalho-principal', 'pontos-gerados', 'pontos-atividade-principal', 'pct-descartes']);
+  const INFO_METAS = new Set(['tempo-medio-sal', 'controle-descartes', 'tempo-trabalho-principal', 'pontos-gerados', 'pontos-atividade-principal', 'pct-descartes', 'sais-definidas-esp']);
 
   const LABELS_CURTO = {
     'pontos-definicao': 'Pontos Def.',
@@ -440,7 +440,7 @@ const EquipesMensal = (() => {
     html += '</tbody></table>';
     html += '<div class="eq-detalhe-container" data-detalhe-meta="' + metaId + '"></div>';
     if (metaId === 'pontos-definicao') html += totalizadorPontos(mensal);
-    if (metaId === 'pontos-gerados') html += totalizadorPontosGerados(mensal);
+    if (metaId === 'pontos-gerados' || metaId === 'sais-definidas-esp') html += totalizadorPontosGerados(mensal);
     if (metaId === 'pontos-atividade-principal') html += totalizadorAtivPrincipal(mensal);
     if (metaId.startsWith('tempo-trabalho')) html += totalizadorTempo(metaId, mensal, metaValor);
     if (metaId.startsWith('indice-revisoes')) html += totalizadorIndice(metaId, mensal, metaValor);
@@ -510,7 +510,7 @@ const EquipesMensal = (() => {
       { label: '% Atividade', render: d => d.pct_atividade + '%' },
       { label: 'Meta Ajustada', render: d => '\u2265 ' + d.meta_ajustada }
     ];
-    if (id === 'pontos-gerados') return [
+    if (id === 'pontos-gerados' || id === 'sais-definidas-esp') return [
       { label: 'Pontos', render: d => d.pontos || 0 },
       { label: 'SAIs', render: d => d.qtd_sais || 0 }
     ];

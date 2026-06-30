@@ -14,15 +14,20 @@ function calcularMetaAjustada(pct) {
 }
 
 function mensalPontosAtivPrincipal(pontosMapMes, ativPrincipalMensal) {
+  const mesAtual = new Date().getMonth() + 1;
   const mensal = {};
   for (let m = 1; m <= 12; m++) {
     const row = pontosMapMes ? pontosMapMes[m] : null;
-    if (!row) { mensal[m] = null; continue; }
-    const pontos = Number(row.pontos) || 0;
+    const temAtiv = ativPrincipalMensal?.[m] != null;
+    // Mes futuro sem dados: mostra vazio
+    if (!row && !temAtiv && m >= mesAtual) { mensal[m] = null; continue; }
+    // Mes fechado sem pontos: preenche com 0 usando % atividade do mes (se houver)
+    const pontos = row ? (Number(row.pontos) || 0) : 0;
+    const qtd_sais = row ? (row.qtd_sais || 0) : 0;
     const pct = ativPrincipalMensal?.[m]?.pct || 0;
     const meta = calcularMetaAjustada(pct);
     mensal[m] = {
-      pontos, qtd_sais: row.qtd_sais || 0,
+      pontos, qtd_sais,
       pct_atividade: pct, meta_ajustada: meta,
       atingida: pontos >= meta
     };

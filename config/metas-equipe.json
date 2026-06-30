@@ -42,6 +42,16 @@
       "fonte": "sai-psai"
     },
     {
+      "id": "sais-definidas-esp",
+      "descricao": "Pontos das PSAIs definidas pelo proprio especialista",
+      "detalhes": "PSAIs onde o especialista e o responsavel (psai.i_responsaveis). Pontuacao calculada pela tabela cargo x tipo x nivel do especialista.",
+      "valor-esperado": 0,
+      "unidade": "pontos",
+      "contribui-para": "Informativo",
+      "data-limite": "2026-12-31",
+      "fonte": "sai-psai"
+    },
+    {
       "id": "tempo-trabalho-principal",
       "descricao": "Atingir 70% (analistas) ou 50% (especialistas) no tempo de atividade principal",
       "detalhes": "Analistas: analise/definicao/revisao de SAIs. Especialistas: geracao de SAIs (SAI-Gerando SAI de...)",
@@ -293,7 +303,8 @@
       "diretrizes-95",
       "tempo-trabalho-geracao",
       "tempo-trabalho-principal",
-      "tempo-gerando-sai",
+      "pontos-gerados",
+      "sais-definidas-esp",
       "indice-revisoes-sal",
       "indice-revisoes-ne",
       "indice-revisoes-sail",
