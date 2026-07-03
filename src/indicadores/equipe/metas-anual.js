@@ -160,6 +160,8 @@ function calcularMetas(analista, dados, metaIds) {
   const metaTempoAnalise = 85;
   const metaTempoGeracao = 80;
   const rev = isEsp ? dados.revCtrl.ger : dados.revCtrl.def;
+  // Especialistas: revCtrl.ger e keyed por i-usuarios (uid); analistas: por codigo-sgd
+  const revKey = isEsp ? uid : sgd;
   // Calcular atividade principal separado para uso em pontos-atividade-principal
   const mensalAtivPrincipal = mensalAtividades(dados.ativs[uid], isEsp ? 50 : 70,
     isEsp ? isPrincipalEspecialista : isPrincipalAnalista);
@@ -168,11 +170,11 @@ function calcularMetas(analista, dados, metaIds) {
     'tempo-trabalho-geracao': { mensal: mensalAtividades(dados.ativs[uid], metaTempoGeracao) },
     'tempo-trabalho-principal': { mensal: mensalAtivPrincipal },
     'tempo-gerando-sai':      { mensal: mensalAtividades(dados.ativs[uid], 50, isGerandoSai) },
-    'indice-revisoes-sal':     { mensal: mensalIndice(rev.sal[sgd], 0.50) },
-    'indice-revisoes-ne':      { mensal: mensalIndice(rev.ne[sgd], 0.50) },
-    'indice-revisoes-sail':    { mensal: mensalIndice(rev.sail[sgd], 1.15) },
-    'indice-revisoes-sam-imp': { mensal: mensalIndice(rev.samImp[sgd], 0.80) },
-    'indice-revisoes-sam-esc': { mensal: mensalIndice(rev.samEsc[sgd], 0.50) },
+    'indice-revisoes-sal':     { mensal: mensalIndice(rev.sal[revKey], 0.50) },
+    'indice-revisoes-ne':      { mensal: mensalIndice(rev.ne[revKey], 0.50) },
+    'indice-revisoes-sail':    { mensal: mensalIndice(rev.sail[revKey], 1.15) },
+    'indice-revisoes-sam-imp': { mensal: mensalIndice(rev.samImp[revKey], 0.80) },
+    'indice-revisoes-sam-esc': { mensal: mensalIndice(rev.samEsc[revKey], 0.50) },
     'pontos-definicao': { mensal: mensalPontos(dados.pontos[sgd], 80) },
     'pontos-atividade-principal': { mensal: pontosAtiv.mensalPontosAtivPrincipal(
       dados.pontos[sgd], mensalAtivPrincipal

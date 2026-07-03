@@ -25,7 +25,11 @@ function buildCargoMapGlobal() {
   } catch { return {}; }
 }
 
-const ANO = new Date().getFullYear();
+const ANO_PADRAO = new Date().getFullYear();
+let ANO = ANO_PADRAO; // pode ser sobrescrito via setAno()
+
+function setAno(ano) { ANO = Number(ano) || ANO_PADRAO; }
+function getAno() { return ANO; }
 
 function metasDoAnalista(a, metasJson) {
   const tmpl = metasJson.templates[a.senioridade] || [];
@@ -305,5 +309,6 @@ async function buscarDetalhe(a, metaId, mes) {
 
 module.exports = {
   metasDoAnalista, buscarCruzamentoPlanilha, buscarDados,
-  buscarDadosAnalista, montarResposta, buscarDetalhe
+  buscarDadosAnalista, montarResposta, buscarDetalhe,
+  setAno, getAno, ANO_PADRAO
 };

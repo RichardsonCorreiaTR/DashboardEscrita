@@ -10,11 +10,34 @@ const AppEquipes = (() => {
   const { LABELS } = MetasConfig;
   let slugAtual = '';
   let fonteAtual = 'cache';
+  const ANO_PADRAO = new Date().getFullYear();
+
+  function getAnoSelecionado() {
+    return Number(localStorage.getItem('eq-ano-selecionado')) || ANO_PADRAO;
+  }
+
+  function inicializarSeletorAno() {
+    const sel = document.getElementById('eq-ano-select');
+    if (!sel) return;
+    const anoAtual = ANO_PADRAO;
+    for (let a = anoAtual; a >= anoAtual - 2; a--) {
+      const opt = document.createElement('option');
+      opt.value = a; opt.textContent = a;
+      if (a === getAnoSelecionado()) opt.selected = true;
+      sel.appendChild(opt);
+    }
+    sel.addEventListener('change', () => {
+      localStorage.setItem('eq-ano-selecionado', sel.value);
+      // Recarrega a pagina mantendo os params atuais
+      window.location.reload();
+    });
+  }
 
   async function init() {
     // Verificar sessao
     const me = await fetch('/auth/me').then(r => r.json()).catch(() => ({ logado: false }));
     if (!me.logado) { window.location.href = '/login.html'; return; }
+    inicializarSeletorAno();
 
     // Exibir nome do usuario no header
     const el = document.getElementById('header-usuario');
@@ -190,7 +213,8 @@ const AppEquipes = (() => {
 
   async function carregarDados(slug, metas, container) {
     try {
-      const qs = fonteAtual === 'cache' ? '?fonte=cache' : '';
+      const ano = getAnoSelecionado();
+      const qs = (fonteAtual === 'cache' ? '?fonte=cache' : '?') + '&ano=' + ano;
       const json = await (await fetch('/api/metas-equipe/' + slug + qs)).json();
       mostrarFonte(json);
       const totEl = document.getElementById('eq-totalizador');
@@ -232,10 +256,11 @@ const AppEquipes = (() => {
         if (!det) return;
         det.innerHTML = '<div class="eq-sem-dados">Carregando detalhes...</div>';
         try {
-          const url = '/api/metas-equipe/' + slugAtual + '/detalhe/' + meta + '/' + mes;
+          const ano = getAnoSelecionado();
+          const url = '/api/metas-equipe/' + slugAtual + '/detalhe/' + meta + '/' + mes + '?ano=' + ano;
           // pontos-definicao usa planilha - sempre ao vivo (cache pode ter dados antigos do banco)
           const semCache = meta === 'pontos-definicao';
-          let json = semCache ? { erro: true } : await (await fetch(url + '?fonte=cache')).json();
+          let json = semCache ? { erro: true } : await (await fetch(url + '&fonte=cache')).json();
           if (json.erro || !json.registros) {
             json = await (await fetch(url)).json();
           }

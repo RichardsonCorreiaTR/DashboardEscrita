@@ -154,7 +154,8 @@ const EquipesCoordenador = (() => {
   async function render(coordSlug, container) {
     container.innerHTML = '<div class="eq-sem-dados">Carregando...</div>';
     try {
-      const resp = await fetch('/api/metas-equipe?fonte=cache');
+      const ano = Number(localStorage.getItem('eq-ano-selecionado')) || new Date().getFullYear();
+      const resp = await fetch('/api/metas-equipe?fonte=cache&ano=' + ano);
       const json = await resp.json();
       await MetasConfig.carregar();
       const coords = MetasConfig.coordenadores();

@@ -378,6 +378,23 @@ const EquipesMensal = (() => {
       '</div></div>';
   }
 
+  function totalizadorSaisDefinidas(mensal) {
+    const mesAtual = new Date().getMonth(); // meses fechados
+    const temDados = Object.values(mensal).some(d => d && d.qtd_sais > 0);
+    if (!temDados) return '<div class="eq-sem-dados" style="margin-top:0.5rem">Nenhuma SAI definida no ano</div>';
+    const dados = Array.from({ length: mesAtual }, (_, i) => mensal[i + 1] || { pontos: 0, qtd_sais: 0 });
+    const totalSais = dados.reduce((s, d) => s + (d.qtd_sais || 0), 0);
+    const mediaSais = Math.round(totalSais / (dados.length || 1));
+    const cor = 'var(--cor-primaria)';
+    return '<div class="eq-tot-pontos">' +
+      '<h4 class="eq-tot-pontos__titulo">\uD83D\uDCCA Acumulado do Ano \u2014 SAIs Definidas</h4>' +
+      '<div class="eq-dados-grid">' +
+      '<div class="eq-dado"><span class="eq-dado__valor">' + dados.length + '</span><span class="eq-dado__label">Meses avaliados</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + totalSais + '</span><span class="eq-dado__label">Total de SAIs</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + mediaSais + '</span><span class="eq-dado__label">M\u00e9dia mensal</span></div>' +
+      '</div></div>';
+  }
+
   function totalizadorTempo(metaId, mensal, metaValor) {
     const dados = [];
     const _ma = new Date().getMonth();
@@ -440,7 +457,8 @@ const EquipesMensal = (() => {
     html += '</tbody></table>';
     html += '<div class="eq-detalhe-container" data-detalhe-meta="' + metaId + '"></div>';
     if (metaId === 'pontos-definicao') html += totalizadorPontos(mensal);
-    if (metaId === 'pontos-gerados' || metaId === 'sais-definidas-esp') html += totalizadorPontosGerados(mensal);
+    if (metaId === 'pontos-gerados') html += totalizadorPontosGerados(mensal);
+    if (metaId === 'sais-definidas-esp') html += totalizadorSaisDefinidas(mensal);
     if (metaId === 'pontos-atividade-principal') html += totalizadorAtivPrincipal(mensal);
     if (metaId.startsWith('tempo-trabalho')) html += totalizadorTempo(metaId, mensal, metaValor);
     if (metaId.startsWith('indice-revisoes')) html += totalizadorIndice(metaId, mensal, metaValor);

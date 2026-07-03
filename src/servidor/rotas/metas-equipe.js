@@ -19,9 +19,16 @@ const loader = require('../../indicadores/equipe/metas-loader');
 const CONFIG_DIR = path.join(__dirname, '..', '..', '..', 'config');
 const EQUIP_PATH = path.join(CONFIG_DIR, 'equipe.json');
 const METAS_EQU_PATH = path.join(CONFIG_DIR, 'metas-equipe.json');
-const ANO = new Date().getFullYear();
+const ANO_PADRAO = new Date().getFullYear();
 const CARGO_LABEL = { junior: 'Analista Júnior', pleno: 'Analista Pleno', senior: 'Analista Sênior', especialista: 'Especialista' };
 const router = Router();
+
+// Middleware: aplica o ano da query (?ano=2025) antes de cada request de metas
+router.use('/metas-equipe', (req, _res, next) => {
+  const ano = Number(req.query.ano);
+  loader.setAno(ano && ano >= 2020 && ano <= 2030 ? ano : ANO_PADRAO);
+  next();
+});
 
 function readEquipe() { return JSON.parse(fs.readFileSync(EQUIP_PATH, 'utf8')); }
 function readMetasEquipe() { return JSON.parse(fs.readFileSync(METAS_EQU_PATH, 'utf8')); }
@@ -67,7 +74,7 @@ router.get('/metas-equipe', apenasCoord, async (req, res) => {
   if (fonte === 'cache') {
     const todos = cacheMetas.obterTodos();
     if (!todos) return res.status(404).json({ erro: 'Nenhum cache disponivel', _fonte: 'cache' });
-    return res.json({ analistas: todos, ano: ANO, _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao() });
+    return res.json({ analistas: todos, ano: loader.getAno(), _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao() });
   }
   try {
     const analistas = getAnalistas();
@@ -75,10 +82,10 @@ router.get('/metas-equipe', apenasCoord, async (req, res) => {
     const metasJson = readMetasEquipe();
     const result = analistas.map(a => loader.montarResposta(a, dados, metasJson));
     cacheMetas.salvarTodos(result);
-    res.json({ analistas: result, ano: ANO, _fonte: 'odbc', _atualizado_em: new Date().toISOString() });
+    res.json({ analistas: result, ano: loader.getAno(), _fonte: 'odbc', _atualizado_em: new Date().toISOString() });
   } catch (err) {
     const todos = cacheMetas.obterTodos();
-    if (todos) return res.json({ analistas: todos, ano: ANO, _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao(), _aviso: err.message });
+    if (todos) return res.json({ analistas: todos, ano: loader.getAno(), _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao(), _aviso: err.message });
     res.status(500).json({ erro: err.message });
   }
 });
@@ -90,17 +97,17 @@ router.get('/metas-equipe/:slug', meuSlug, async (req, res) => {
   if (fonte === 'cache') {
     const cached = cacheMetas.obter(a.slug);
     if (!cached) return res.status(404).json({ erro: 'Nenhum cache para ' + a.slug, _fonte: 'cache' });
-    return res.json({ ...cached, ano: ANO, _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao() });
+    return res.json({ ...cached, ano: loader.getAno(), _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao() });
   }
   try {
     const dados = await loader.buscarDadosAnalista(a);
     const metasJson = readMetasEquipe();
     const resp = loader.montarResposta(a, dados, metasJson);
     cacheMetas.salvar(a.slug, resp);
-    res.json({ ...resp, ano: ANO, _fonte: 'odbc', _atualizado_em: new Date().toISOString() });
+    res.json({ ...resp, ano: loader.getAno(), _fonte: 'odbc', _atualizado_em: new Date().toISOString() });
   } catch (err) {
     const cached = cacheMetas.obter(a.slug);
-    if (cached) return res.json({ ...cached, ano: ANO, _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao(), _aviso: err.message });
+    if (cached) return res.json({ ...cached, ano: loader.getAno(), _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao(), _aviso: err.message });
     res.status(500).json({ erro: err.message });
   }
 });
@@ -112,16 +119,16 @@ router.get('/metas-equipe/:slug/detalhe/:metaId/:mes', async (req, res) => {
   const fonte = req.query.fonte;
   if (fonte === 'cache') {
     const cached = cacheMetas.obterDetalhe(a.slug, metaId, mes);
-    if (cached) return res.json({ registros: cached, mes, ano: ANO, _fonte: 'cache' });
+    if (cached) return res.json({ registros: cached, mes, ano: loader.getAno(), _fonte: 'cache' });
     return res.status(404).json({ erro: 'Sem cache detalhe', _fonte: 'cache' });
   }
   try {
     const registros = await loader.buscarDetalhe(a, metaId, mes);
     cacheMetas.salvarDetalhe(a.slug, metaId, mes, registros);
-    res.json({ registros, mes, ano: ANO, _fonte: 'odbc' });
+    res.json({ registros, mes, ano: loader.getAno(), _fonte: 'odbc' });
   } catch (err) {
     const cached = cacheMetas.obterDetalhe(a.slug, metaId, mes);
-    if (cached) return res.json({ registros: cached, mes, ano: ANO, _fonte: 'cache', _aviso: err.message });
+    if (cached) return res.json({ registros: cached, mes, ano: loader.getAno(), _fonte: 'cache', _aviso: err.message });
     res.status(500).json({ erro: err.message });
   }
 });
