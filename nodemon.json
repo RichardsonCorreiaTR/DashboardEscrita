@@ -1,0 +1,8 @@
+{
+  "watch": ["src"],
+  "ext": "js,json",
+  "ignore": [
+    "src/servidor/public/**",
+    "src/servidor/public-v2/**"
+  ]
+}

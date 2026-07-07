@@ -7,7 +7,7 @@
 
 const {
   isAusencia, isGerandoSai, isTrabalhoSai, isOutrasAtividades,
-  isPrincipalAnalista, isPrincipalEspecialista
+  isPrincipalAnalista, isPrincipalEspecialista, isPrincipalQualquer
 } = require('./atividades-classifier');
 const tempoSal = require('./tempo-sal-calculador');
 
@@ -58,7 +58,7 @@ function mensalAtividades(mapMes, meta, filtro) {
       else if (ehRelevante(a.atividade)) trabalhoSai += a.minutos;
     });
     const efetivo = total - ausencia;
-    const pct = total > 0 ? Math.round((trabalhoSai / total) * 10000) / 100 : 0;
+    const pct = efetivo > 0 ? Math.round((trabalhoSai / efetivo) * 10000) / 100 : 0;
     mensal[m] = { pct, total, ausencia, trabalhoSai, efetivo, atingida: pct >= meta };
   }
   return mensal;
@@ -159,12 +159,13 @@ function calcularMetas(analista, dados, metaIds) {
   const isEsp = analista.senioridade === 'especialista';
   const metaTempoAnalise = 85;
   const metaTempoGeracao = 80;
-  const rev = isEsp ? dados.revCtrl.ger : dados.revCtrl.def;
-  // Especialistas: revCtrl.ger e keyed por i-usuarios (uid); analistas: por codigo-sgd
-  const revKey = isEsp ? uid : sgd;
+  // Ambos usam revCtrl.def keyed por codigo-sgd (responsavel do PSAI)
+  const rev = dados.revCtrl.def;
+  const revKey = sgd;
   // Calcular atividade principal separado para uso em pontos-atividade-principal
+  const podeGerar = isEsp || analista.senioridade === 'pleno';
   const mensalAtivPrincipal = mensalAtividades(dados.ativs[uid], isEsp ? 50 : 70,
-    isEsp ? isPrincipalEspecialista : isPrincipalAnalista);
+    podeGerar ? isPrincipalQualquer : isPrincipalAnalista);
   const todas = {
     'tempo-trabalho-analise': { mensal: mensalAtividades(dados.ativs[uid], metaTempoAnalise) },
     'tempo-trabalho-geracao': { mensal: mensalAtividades(dados.ativs[uid], metaTempoGeracao) },

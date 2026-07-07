@@ -69,7 +69,7 @@ function isPrincipalAnalista(nome) {
   if (n.includes('sai') && (n.includes('defin') || n.includes('testes'))) return true;
   if (n.includes('sai - an') && !n.includes('reuni')) return true; // SAI - Analise (335)
   if (n.includes('reuni') && (n.includes('defin') || n.includes('psai'))) return true;
-  return n.includes('ss'); // Respondendo SS
+  return n.includes(' ss') || n.startsWith('ss'); // Respondendo SS
 }
 
 // Atividades PRINCIPAIS para especialistas - meta 50%

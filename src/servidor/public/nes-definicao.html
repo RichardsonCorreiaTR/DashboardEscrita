@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEs com Definição - Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* === Layout === */
+    .ned-page { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 1rem; flex: 1; }
+
+    /* Resumo cards */
+    .ned-resumo-cards { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .ned-card {
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 0.75rem 1rem;
+      display: flex; flex-direction: column; gap: 0.2rem; min-width: 140px;
+    }
+    .ned-card-num { font-size: 1.6rem; font-weight: 800; color: var(--cor-texto); line-height: 1; }
+    .ned-card-label { font-size: 0.72rem; color: var(--cor-texto-sec); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Barra de controles */
+    .ned-controles {
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 0.6rem 1rem;
+    }
+    .ned-controles label { font-size: 0.8rem; font-weight: 600; color: var(--cor-texto-sec); }
+    .ned-controles select { font-size: 0.82rem; padding: 0.3rem 0.6rem; border: 1px solid var(--cor-borda); border-radius: 6px; }
+    .ned-upload-area { display: none; align-items: center; gap: 0.5rem; margin-left: auto; }
+    .ned-input-file { display: none; }
+
+    /* Tabela geral */
+    .ned-tabela { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    .ned-tabela th { background: #1e293b; color: #e2e8f0; padding: 0.45rem 0.6rem; text-align: left; font-size: 0.7rem; white-space: nowrap; }
+    .ned-th-ver { text-align: center; }
+    .ned-tabela td { padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--cor-borda); }
+    .ned-td-nome a { color: var(--cor-primaria); text-decoration: none; font-weight: 600; }
+    .ned-td-nome a:hover { text-decoration: underline; }
+    .ned-td-num { text-align: center; }
+    .ned-td-num--red { color: #ef4444; font-weight: 700; }
+    .ned-td-num--green { color: #94a3b8; }
+    .ned-td-total { text-align: center; font-weight: 700; background: #f8fafc; }
+
+    /* Seção por analista */
+    .ned-analistas { display: flex; flex-direction: column; gap: 1.25rem; }
+    .ned-analista-secao {
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .ned-analista-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1rem; border-bottom: 1px solid var(--cor-borda);
+      background: #f8fafc;
+    }
+    .ned-analista-nome { font-size: 0.95rem; font-weight: 700; margin: 0; }
+    .ned-analista-meta { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; }
+    .ned-total-label { color: var(--cor-texto-sec); }
+    .ned-badge {
+      display: inline-block; padding: 0.2rem 0.55rem; border-radius: 20px;
+      font-size: 0.72rem; font-weight: 700;
+    }
+    .ned-analista-body { display: flex; gap: 0; }
+    .ned-grafico-box {
+      width: 55%; padding: 0.75rem; border-right: 1px solid var(--cor-borda);
+      min-height: 180px;
+    }
+    .ned-grafico-box canvas { width: 100% !important; }
+    .ned-nes-lista {
+      flex: 1; padding: 0.6rem 0.75rem; overflow-y: auto; max-height: 220px;
+      font-size: 0.78rem;
+    }
+    .ned-ne-item {
+      display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: flex-start;
+      padding: 0.4rem 0; border-bottom: 1px solid var(--cor-borda); line-height: 1.4;
+    }
+    .ned-ne-item:last-child { border-bottom: none; }
+    .ned-ne-item--grave { background: #fef2f2; margin: 0 -0.75rem; padding: 0.4rem 0.75rem; }
+    .ned-ne-ver { font-size: 0.67rem; color: var(--cor-texto-sec); min-width: 80px; white-space: nowrap; }
+    .ned-ne-num { font-weight: 700; color: var(--cor-texto); min-width: 65px; }
+    .ned-ne-grave { font-size: 0.67rem; color: #ef4444; font-weight: 700; }
+    .ned-ne-analise { color: var(--cor-texto-sec); font-size: 0.74rem; flex: 1; min-width: 100%; }
+
+    /* Estados */
+    .ned-loading { text-align: center; padding: 2rem; color: var(--cor-texto-sec); }
+    .ned-erro { background: var(--vermelho-bg); border: 1px solid var(--vermelho-borda);
+      border-radius: var(--radius-sm); padding: 0.75rem 1rem; color: var(--vermelho);
+      font-size: 0.85rem; display: none; }
+    .ned-vazio { color: var(--cor-texto-sec); font-style: italic; font-size: 0.83rem; }
+
+    /* Panel wrapper */
+    .ned-panel {
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 0.75rem 1rem;
+    }
+    .ned-panel-titulo {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--cor-texto-sec); margin-bottom: 0.75rem;
+    }
+  </style>
+</head>
+<body class="com-sidebar">
+  <nav id="nav-container"></nav>
+
+  <div class="pagina">
+    <header class="header">
+      <div class="header__info">
+        <h1 class="header__title">NEs com Definição</h1>
+        <span class="header__subtitle">Levantamento por versão — Escrita Fiscal</span>
+      </div>
+      <div class="header__acoes">
+        <span id="header-usuario" style="font-size:0.8rem;color:#94a3b8;margin-right:0.75rem"></span>
+        <a href="/auth/logout" class="btn btn--outline" style="font-size:0.8rem">Sair</a>
+      </div>
+    </header>
+
+    <div class="ned-page">
+      <!-- Erro -->
+      <div id="ned-erro" class="ned-erro"></div>
+
+      <!-- Loading -->
+      <div id="ned-loading" class="ned-loading">
+        <div class="loading__spinner"></div>
+        <span>Carregando dados da planilha...</span>
+      </div>
+
+      <!-- Resumo -->
+      <div id="ned-resumo"></div>
+
+      <!-- Controles -->
+      <div class="ned-controles">
+        <label for="ned-filtro-ano">Período:</label>
+        <select id="ned-filtro-ano"></select>
+        <div class="ned-upload-area" id="ned-upload-area">
+          <label for="ned-input-arquivo" class="btn btn--outline" style="font-size:0.8rem;cursor:pointer">
+            ↑ Enviar nova planilha
+          </label>
+          <input type="file" id="ned-input-arquivo" class="ned-input-file" accept=".xlsx,.xls">
+          <button id="ned-btn-atualizar" class="btn btn--outline" style="font-size:0.8rem">⟳ Reprocessar</button>
+        </div>
+      </div>
+
+      <!-- Tabela geral resumo -->
+      <div class="ned-panel">
+        <div class="ned-panel-titulo">Resumo por analista (últimas 10 versões)</div>
+        <div id="ned-tabela-geral"></div>
+      </div>
+
+      <!-- Seções individuais -->
+      <div class="ned-panel">
+        <div class="ned-panel-titulo">Detalhamento por analista/especialista — tendência de melhora ou piora</div>
+        <div id="ned-analistas" class="ned-analistas"></div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <span>Dashboard Escrita Fiscal v0.2.0</span>
+      <span>Coord. Richardson Picinini Correia</span>
+    </footer>
+  </div>
+
+  <script src="/js/nav.js?v=8"></script>
+  <script src="/js/nes-definicao-grafico.js?v=1"></script>
+  <script src="/js/nes-definicao-tabela.js?v=1"></script>
+  <script src="/js/app-nes-definicao.js?v=2"></script>
+</body>
+</html>

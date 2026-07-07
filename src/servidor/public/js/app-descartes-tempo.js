@@ -13,7 +13,8 @@
   const CORES = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
   const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
-  let chartRef = null;
+  let chartQtd = null;
+  let chartTempo = null;
 
   $btn.addEventListener('click', carregar);
   carregar();
@@ -46,8 +47,18 @@
       </div>
       <div class="dt-cards">${renderCards(resumo)}</div>
       <div class="card" style="margin-bottom:16px">
-        <h2 style="margin:0 0 12px;font-size:1rem">Descartes por Mes - ${ano}</h2>
-        <canvas id="chart-mensal" height="240"></canvas>
+        <h2 style="margin:0 0 12px;font-size:1rem">Descartes por Mês — Quantidade - ${ano}</h2>
+        <canvas id="chart-qtd" height="220"></canvas>
+        <p style="margin:8px 0 0;font-size:0.75rem;color:#64748b;border-top:1px solid #e2e8f0;padding-top:6px">
+          Total de PSAIs descartadas por mês, empilhadas por analista. Passe o mouse para ver o detalhe.
+        </p>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <h2 style="margin:0 0 12px;font-size:1rem">Descartes por Mês — Tempo Lançado (h) - ${ano}</h2>
+        <canvas id="chart-tempo" height="220"></canvas>
+        <p style="margin:8px 0 0;font-size:0.75rem;color:#64748b;border-top:1px solid #e2e8f0;padding-top:6px">
+          Soma do tempo lançado (análise + definição) nas PSAIs descartadas, em horas, por mês e analista.
+        </p>
       </div>
       <div class="card">
         <h2 style="margin:0 0 10px;font-size:1rem">Detalhe por PSAI</h2>
@@ -59,7 +70,7 @@
       </div>
     `;
 
-    renderChart(registros);
+    renderCharts(registros);
     iniciarFiltros(registros);
   }
 
@@ -84,26 +95,26 @@
     }).join('');
   }
 
-  function renderChart(registros) {
-    const canvas = document.getElementById('chart-mensal');
+  function renderChartBarras(canvasId, registros, acumular, eixoY, chartHolder, setChart) {
+    const canvas = document.getElementById(canvasId);
     if (!canvas) return;
-    if (chartRef) chartRef.destroy();
+    if (chartHolder.ref) chartHolder.ref.destroy();
 
     const porAnalista = {};
     registros.forEach(r => {
       if (!porAnalista[r.nome]) porAnalista[r.nome] = {};
-      porAnalista[r.nome][r.mes] = (porAnalista[r.nome][r.mes] || 0) + 1;
+      porAnalista[r.nome][r.mes] = (porAnalista[r.nome][r.mes] || 0) + acumular(r);
     });
 
     const datasets = Object.entries(porAnalista).map(([nome, meses], i) => ({
       label: nome,
-      data: Array.from({ length: 12 }, (_, m) => meses[m + 1] || 0),
+      data: Array.from({ length: 12 }, (_, m) => +(meses[m + 1] || 0).toFixed(1)),
       backgroundColor: CORES[i % CORES.length] + '99',
       borderColor: CORES[i % CORES.length],
       borderWidth: 1
     }));
 
-    chartRef = new Chart(canvas, {
+    chartHolder.ref = new Chart(canvas, {
       type: 'bar',
       data: { labels: MESES, datasets },
       options: {
@@ -111,20 +122,25 @@
         plugins: { legend: { position: 'top' } },
         scales: {
           x: { stacked: true },
-          y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Qtd descartes' } }
+          y: { stacked: true, beginAtZero: true, title: { display: true, text: eixoY } }
         }
       }
     });
+    setChart(chartHolder.ref);
+  }
+
+  function renderCharts(registros) {
+    renderChartBarras('chart-qtd',   registros, () => 1,                          'Qtd descartes', { ref: chartQtd },   c => { chartQtd   = c; });
+    renderChartBarras('chart-tempo', registros, r => r.minutos_lancados / 60,     'Horas',         { ref: chartTempo }, c => { chartTempo = c; });
   }
 
   function renderTabela(registros) {
     if (!registros.length) return '<p style="color:#64748b">Nenhum descarte encontrado.</p>';
     const linhas = registros.map(r => {
       const semSai = !r.i_sai || r.i_sai === 0;
-      const semTempo = !semSai && r.minutos_lancados === 0;
-      const tdTempo = semSai
-        ? '<td class="sem-sai">sem SAI</td>'
-        : `<td class="${semTempo ? 'sem-tempo' : ''}">${r.minutos_lancados} min</td>`;
+      const semTempo = r.minutos_lancados === 0;
+      const notaSai = semSai ? ' <span class="sem-sai" title="PSAI sem SAI vinculada">*</span>' : '';
+      const tdTempo = `<td class="${semTempo ? 'sem-tempo' : ''}">${r.minutos_lancados} min${notaSai}</td>`;
       const data = r.data_descarte ? new Date(r.data_descarte).toLocaleDateString('pt-BR') : '-';
       return `<tr data-analista="${r.nome}" data-motivo="${r.motivo_nome}">
         <td>${r.nome}</td><td>${r.i_psai}</td><td>${r.i_sai || '-'}</td>
@@ -154,11 +170,19 @@
     const filtrar = () => {
       const fa = $analista.value;
       const fm = $motivo.value;
+
+      const filtrados = registros.filter(r =>
+        (!fa || r.nome === fa) && (!fm || r.motivo_nome === fm)
+      );
+
       document.querySelectorAll('.dt-tabela tbody tr').forEach(tr => {
         const ok = (!fa || tr.dataset.analista === fa) && (!fm || tr.dataset.motivo === fm);
         tr.style.display = ok ? '' : 'none';
       });
+
+      renderCharts(filtrados);
     };
+
     $analista.addEventListener('change', filtrar);
     $motivo.addEventListener('change', filtrar);
   }

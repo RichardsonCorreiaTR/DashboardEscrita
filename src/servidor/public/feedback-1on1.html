@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback 1:1 - Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <style>
+    /* === Layout da pagina de feedback === */
+    .fb-layout { display: flex; gap: 1.25rem; padding: 1rem 1.25rem; flex: 1; min-height: 0; }
+
+    /* Lista de colaboradores (esquerda) */
+    .fb-lista-panel {
+      width: 200px; flex-shrink: 0;
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 0.5rem 0; overflow-y: auto;
+    }
+    .fb-lista-panel ul { list-style: none; }
+    .fb-grupo-titulo {
+      padding: 0.5rem 0.85rem 0.25rem;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--cor-texto-sec);
+    }
+    .fb-colab-item {
+      display: flex; flex-direction: column; gap: 0.1rem;
+      padding: 0.45rem 0.85rem; cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background var(--transicao);
+    }
+    .fb-colab-item:hover { background: var(--cor-fundo); }
+    .fb-colab-item--ativo { background: var(--info-bg); border-left-color: var(--cor-primaria); }
+    .fb-colab-nome { font-size: 0.83rem; font-weight: 500; color: var(--cor-texto); }
+    .fb-colab-cargo { font-size: 0.7rem; color: var(--cor-texto-sec); }
+
+    /* Painel central */
+    .fb-main { flex: 1; display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+    .fb-main-header {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 0.75rem 1rem;
+    }
+    .fb-colab-titulo-h2 { font-size: 1.1rem; font-weight: 700; color: var(--cor-texto); }
+    .fb-proxima {
+      display: flex; align-items: center; gap: 0.75rem; font-size: 0.83rem;
+    }
+    .fb-proxima-texto { color: var(--cor-texto-sec); }
+
+    /* Linha calendário + histórico */
+    .fb-conteudo { display: flex; gap: 1rem; }
+
+    /* Calendário */
+    .fb-cal-panel {
+      width: 320px; flex-shrink: 0;
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 0.75rem;
+    }
+    .cal-nav-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .cal-mes-titulo { font-size: 0.9rem; font-weight: 700; }
+    .cal-nav-btn {
+      background: none; border: 1px solid var(--cor-borda); border-radius: 6px;
+      cursor: pointer; font-size: 1.2rem; line-height: 1; padding: 0.1rem 0.45rem;
+      color: var(--cor-texto);
+    }
+    .cal-nav-btn:hover { background: var(--cor-fundo); }
+    .cal-grid-header, .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .cal-nome-dia {
+      text-align: center; font-size: 0.65rem; font-weight: 700;
+      color: var(--cor-texto-sec); padding: 0.25rem 0;
+    }
+    .cal-dia {
+      aspect-ratio: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; border-radius: 50%; margin: 2px; position: relative;
+    }
+    .cal-num { font-size: 0.78rem; }
+    .cal-dia--fds { opacity: 0.35; }
+    .cal-dia--vazio { }
+    .cal-dia--clicavel { cursor: pointer; }
+    .cal-dia--clicavel:hover { background: var(--cor-fundo); }
+    .cal-dia--agendado { background: var(--info-bg); color: var(--info); font-weight: 700; }
+    .cal-dia--realizado { background: var(--verde-bg); color: #166534; font-weight: 700; }
+    .cal-ponto {
+      width: 5px; height: 5px; border-radius: 50%; background: currentColor;
+      position: absolute; bottom: 3px;
+    }
+
+    /* Historico */
+    .fb-historico-panel {
+      flex: 1;
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 0.75rem 1rem;
+    }
+    .fb-historico-titulo {
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--cor-texto-sec); margin-bottom: 0.6rem;
+    }
+    .fb-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.5rem 0; border-bottom: 1px solid var(--cor-borda);
+      font-size: 0.82rem;
+    }
+    .fb-item:last-child { border-bottom: none; }
+    .fb-item-data { flex: 1; color: var(--cor-texto); }
+    .fb-item-check { font-size: 0.75rem; color: var(--verde); min-width: 45px; }
+    .fb-vazio { color: var(--cor-texto-sec); font-size: 0.83rem; font-style: italic; }
+
+    /* Badges */
+    .badge { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 20px;
+      font-size: 0.7rem; font-weight: 700; text-transform: lowercase; }
+    .badge--info { background: var(--info-bg); color: var(--info); border: 1px solid var(--info-borda); }
+    .badge--verde { background: var(--verde-bg); color: #166534; border: 1px solid var(--verde-borda); }
+    .badge--cinza { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+
+    /* Botão pequeno */
+    .btn--sm { padding: 0.2rem 0.6rem; font-size: 0.75rem; }
+
+    /* Modal */
+    .fb-modal {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.45); align-items: center; justify-content: center;
+    }
+    .fb-modal--visivel { display: flex; }
+    .fb-modal-box {
+      background: var(--cor-fundo-card); border-radius: var(--radius);
+      width: 680px; max-width: 95vw; max-height: 90vh;
+      overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+    .fb-modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.25rem 0.75rem; border-bottom: 1px solid var(--cor-borda);
+      position: sticky; top: 0; background: var(--cor-fundo-card); z-index: 1;
+    }
+    .fb-modal-header h3 { font-size: 1rem; font-weight: 700; }
+    .fb-modal-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    .fb-modal-footer {
+      display: flex; gap: 0.75rem; justify-content: flex-end;
+      padding: 0.75rem 1.25rem; border-top: 1px solid var(--cor-borda);
+      position: sticky; bottom: 0; background: var(--cor-fundo-card);
+    }
+    .fb-secao { display: flex; flex-direction: column; gap: 0.6rem; }
+    .fb-secao-titulo {
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--cor-primaria); padding-bottom: 0.25rem;
+      border-bottom: 2px solid var(--info-bg);
+    }
+    .fb-campo { display: flex; flex-direction: column; gap: 0.25rem; }
+    .fb-campo label { font-size: 0.78rem; font-weight: 600; color: var(--cor-texto-sec); }
+    .fb-campo textarea, .fb-campo input, .fb-campo select {
+      border: 1px solid var(--cor-borda); border-radius: var(--radius-sm);
+      padding: 0.5rem 0.75rem; font-size: 0.83rem; font-family: inherit;
+      color: var(--cor-texto); background: var(--cor-fundo-card);
+      resize: vertical; transition: border-color var(--transicao);
+    }
+    .fb-campo textarea:focus, .fb-campo input:focus, .fb-campo select:focus {
+      outline: none; border-color: var(--cor-primaria);
+    }
+    .fb-campo textarea { min-height: 80px; }
+    .fb-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+    @media (max-width: 600px) { .fb-row { grid-template-columns: 1fr 1fr; } }
+    .fb-info { font-size: 0.72rem; color: var(--cor-texto-sec); font-style: italic; }
+    .fb-btn-fechar {
+      background: none; border: none; cursor: pointer; font-size: 1.3rem;
+      color: var(--cor-texto-sec); line-height: 1; padding: 0.2rem 0.4rem;
+    }
+    .fb-btn-fechar:hover { color: var(--cor-texto); }
+
+    /* === Visão de equipe === */
+    .fb-visao-equipe {
+      flex: 1; background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 1rem; overflow-y: auto;
+    }
+    .fb-colab-item--equipe { border-bottom: 1px solid var(--cor-borda); margin-bottom: 0.25rem; }
+    .fbev-filtros { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .fbev-select {
+      padding: 0.35rem 0.6rem; border: 1px solid var(--cor-borda); border-radius: 6px;
+      font-size: 0.82rem; font-family: inherit; cursor: pointer;
+    }
+    .fbev-resumo {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; flex-wrap: wrap;
+    }
+    .fbev-resumo-badge {
+      display: inline-block; padding: 0.3rem 0.75rem; border-radius: 20px;
+      font-size: 0.78rem; font-weight: 700;
+    }
+    .fbev-legenda { display: flex; gap: 0.75rem; font-size: 0.72rem; color: var(--cor-texto-sec); }
+    .fbev-grid-header {
+      display: grid; grid-template-columns: 180px 60px 1fr 100px;
+      background: #1e293b; color: #e2e8f0;
+      padding: 0.4rem 0.75rem; font-size: 0.7rem; font-weight: 700;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0; gap: 0.5rem;
+    }
+    .fbev-linha {
+      display: grid; grid-template-columns: 180px 60px 1fr 100px;
+      padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--cor-borda);
+      align-items: center; gap: 0.5rem; transition: background var(--transicao);
+    }
+    .fbev-linha:hover { background: var(--cor-fundo); }
+    .fbev-linha--alerta { background: #fff7ed; }
+    .fbev-linha--alerta:hover { background: #ffedd5; }
+    .fbev-analista-cell { display: flex; align-items: center; gap: 0.4rem; }
+    .fbev-icone { font-size: 1rem; min-width: 1.1rem; }
+    .fbev-nome-btn {
+      background: none; border: none; cursor: pointer; font-size: 0.83rem;
+      font-weight: 600; color: var(--cor-primaria); padding: 0; text-align: left;
+    }
+    .fbev-nome-btn:hover { text-decoration: underline; }
+    .fbev-cargo { font-size: 0.65rem; color: var(--cor-texto-sec); background: var(--cor-fundo);
+      padding: 0.1rem 0.35rem; border-radius: 4px; }
+    .fbev-prog-cell { text-align: center; }
+    .fbev-qtd { font-size: 1.1rem; font-weight: 800; }
+    .fbev-meta { font-size: 0.65rem; color: var(--cor-texto-sec); font-weight: 400; }
+    .fbev-datas-cell { display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
+    .fbev-alerta-cell { font-size: 0.72rem; }
+    .fbev-vazio { font-size: 0.75rem; color: var(--cor-texto-sec); font-style: italic; }
+  </style>
+</head>
+<body class="com-sidebar">
+
+  <nav id="nav-container"></nav>
+
+  <div class="pagina">
+    <header class="header">
+      <div class="header__info">
+        <h1 class="header__title">Feedback 1:1</h1>
+        <span class="header__subtitle">Escrita Fiscal — Thomson Reuters / Betha</span>
+      </div>
+      <div class="header__acoes">
+        <span id="header-usuario" style="font-size:0.8rem;color:#94a3b8;margin-right:0.75rem"></span>
+        <a href="/auth/logout" class="btn btn--outline" style="font-size:0.8rem">Sair</a>
+      </div>
+    </header>
+
+    <div class="fb-layout">
+      <!-- Lista de colaboradores -->
+      <div class="fb-lista-panel">
+        <div id="fb-equipe-titulo" style="padding:0.6rem 0.85rem 0.3rem;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--cor-texto-sec);border-bottom:1px solid var(--cor-borda);margin-bottom:0.25rem"></div>
+        <ul id="fb-lista-colab"></ul>
+      </div>
+
+      <!-- Painel principal -->
+      <div class="fb-main">
+        <div id="fb-main-header" class="fb-main-header">
+          <h2 class="fb-colab-titulo-h2" id="fb-colab-titulo">Selecione um colaborador</h2>
+          <div class="fb-proxima" id="fb-proxima"></div>
+        </div>
+
+        <!-- Visão geral da equipe (oculta por padrão) -->
+        <div id="fb-visao-equipe" class="fb-visao-equipe" style="display:none"></div>
+
+        <div class="fb-conteudo" id="fb-conteudo">
+          <!-- Calendário -->
+          <div class="fb-cal-panel">
+            <div id="cal-container"></div>
+            <p style="font-size:0.68rem;color:var(--cor-texto-sec);margin-top:0.5rem;text-align:center">
+              Clique em uma data para agendar ou abrir uma sessão
+            </p>
+          </div>
+
+          <!-- Histórico -->
+          <div class="fb-historico-panel">
+            <div class="fb-historico-titulo">Sessões registradas em <span id="fb-ano-label"></span></div>
+            <div id="fb-historico"><p class="fb-vazio">Selecione um colaborador.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <span>Dashboard Escrita Fiscal v0.2.0</span>
+      <span>Coord. Richardson Picinini Correia</span>
+    </footer>
+  </div>
+
+  <!-- Modal de feedback -->
+  <div id="fb-modal" class="fb-modal">
+    <div class="fb-modal-box">
+      <div class="fb-modal-header">
+        <h3 id="fb-titulo">Feedback 1:1</h3>
+        <button class="fb-btn-fechar" id="fb-btn-fechar" title="Fechar">&times;</button>
+      </div>
+      <div class="fb-modal-body">
+        <input type="hidden" id="fb-sessao-id">
+        <input type="hidden" id="fb-colab-slug">
+        <input type="hidden" id="fb-coord-slug">
+
+        <div class="fb-row">
+          <div class="fb-campo">
+            <label for="fb-data">Data da sessão</label>
+            <input type="date" id="fb-data">
+          </div>
+          <div class="fb-campo">
+            <label for="fb-horario">Horário</label>
+            <input type="time" id="fb-horario" value="09:00">
+          </div>
+          <div class="fb-campo">
+            <label for="fb-duracao">Duração</label>
+            <select id="fb-duracao">
+              <option value="30">30 min</option>
+              <option value="45">45 min</option>
+              <option value="60" selected>1 hora</option>
+              <option value="90">1h 30min</option>
+            </select>
+          </div>
+          <div class="fb-campo">
+            <label for="fb-status">Status</label>
+            <select id="fb-status">
+              <option value="agendado">Agendado</option>
+              <option value="realizado">Realizado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </div>
+        </div>
+        <p class="fb-alerta-hint" id="fb-alerta-hint" style="font-size:0.72rem;color:var(--cor-texto-sec);background:var(--info-bg);border:1px solid var(--info-borda);border-radius:6px;padding:0.4rem 0.75rem;display:none">
+          ⏰ Alertas configurados: você receberá uma notificação 5 min antes do início e 5 min antes do encerramento.
+        </p>
+        <p class="fb-info" id="fb-info-preenchimento"></p>
+
+        <!-- Seção do colaborador -->
+        <div class="fb-secao" id="fb-secao-colab">
+          <div class="fb-secao-titulo">Pontos do colaborador / especialista</div>
+          <div class="fb-campo">
+            <label for="fb-col-positivos">Pontos positivos (o que está indo bem)</label>
+            <textarea id="fb-col-positivos" placeholder="Descreva os pontos positivos do período..."></textarea>
+          </div>
+          <div class="fb-campo">
+            <label for="fb-col-melhora">Pontos de melhora (o que precisa evoluir)</label>
+            <textarea id="fb-col-melhora" placeholder="Descreva o que pode melhorar..."></textarea>
+          </div>
+          <div class="fb-campo">
+            <label for="fb-col-comentarios">Comentários gerais</label>
+            <textarea id="fb-col-comentarios" placeholder="Comentários, dúvidas, sugestões..."></textarea>
+          </div>
+        </div>
+
+        <!-- Seção do coordenador (oculta para analistas) -->
+        <div class="fb-secao" id="fb-secao-coord">
+          <div class="fb-secao-titulo" style="color:#7c3aed;border-bottom-color:#ede9fe">Pontos do coordenador</div>
+          <div class="fb-campo">
+            <label for="fb-coord-positivos">Pontos positivos observados</label>
+            <textarea id="fb-coord-positivos" placeholder="O que o colaborador está fazendo bem..."></textarea>
+          </div>
+          <div class="fb-campo">
+            <label for="fb-coord-melhora">Pontos de melhora identificados</label>
+            <textarea id="fb-coord-melhora" placeholder="O que o coordenador recomenda melhorar..."></textarea>
+          </div>
+          <div class="fb-campo">
+            <label for="fb-coord-acoes">Ações combinadas / plano de ação</label>
+            <textarea id="fb-coord-acoes" placeholder="Ações que foram combinadas na reunião..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="fb-modal-footer">
+        <button class="btn btn--outline btn--sm" id="fb-btn-excluir" style="margin-right:auto;color:var(--vermelho);border-color:var(--vermelho)">Remover</button>
+        <button class="btn btn--outline btn--sm" id="fb-btn-email" title="Abrir cliente de email com convite pré-preenchido">✉ Enviar convite</button>
+        <button class="btn btn--outline btn--sm" id="fb-btn-fechar2" onclick="document.getElementById('fb-btn-fechar').click()">Cancelar</button>
+        <button class="btn btn--primary btn--sm" id="fb-btn-salvar">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/nav.js?v=8"></script>
+  <script src="/js/feedback-alertas.js?v=1"></script>
+  <script src="/js/feedback-calendario.js?v=1"></script>
+  <script src="/js/feedback-formulario.js?v=2"></script>
+  <script src="/js/feedback-equipe-visao.js?v=2"></script>
+  <script src="/js/app-feedback-1on1.js?v=3"></script>
+  <script>document.getElementById('fb-ano-label').textContent = new Date().getFullYear();</script>
+</body>
+</html>

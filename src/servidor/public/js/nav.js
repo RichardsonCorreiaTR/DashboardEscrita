@@ -15,6 +15,7 @@ const Nav = (() => {
   const PAGINAS = [
     { id: 'inicio', href: '/', titulo: 'Visao Geral', icone: '\u25A3' },
     { id: 'diretrizes', href: '/diretrizes.html', titulo: 'Diretrizes', icone: '\u25C6' },
+    { id: 'feedback-1on1', href: '/feedback-1on1.html', titulo: 'Feedback 1:1', icone: '\u25A1' },
     {
       id: 'equipes', titulo: 'Metas da Equipe', icone: '\u25CF', href: '/equipes.html',
       sub: [
@@ -50,10 +51,17 @@ const Nav = (() => {
       ]
     },
     {
+      id: 'acomp-nes', titulo: 'Acomp. NEs', icone: '\u25C7',
+      sub: [
+        { id: 'nes-definicao', href: '/nes-definicao.html', titulo: 'NEs com Definição' },
+        { id: 'semanal-versao', href: '/estudos.html?view=semanal-versao', titulo: 'Semanal - NE por Versao' },
+        { id: 'semanal-historica', href: '/estudos.html?view=semanal-historica', titulo: 'Semanal - NE Historica' }
+      ]
+    },
+    { id: 'descartes-tempo', href: '/descartes-tempo.html', titulo: 'Descartes x Tempo', icone: '\u25D2' },
+    {
       id: 'estudos', titulo: 'Estudos e Analises', icone: '\u25B2',
       sub: [
-        { id: 'semanal-versao', href: '/estudos.html?view=semanal-versao', titulo: 'Semanal - NE por Versao' },
-        { id: 'semanal-historica', href: '/estudos.html?view=semanal-historica', titulo: 'Semanal - NE Historica' },
         { id: 'isv-ne', href: '/estudos.html?view=isv-ne', titulo: 'ISV - Saude da Versao' },
         { id: 'isv-yoy', href: '/estudos.html?view=isv-yoy', titulo: 'ISV - Year by Year' },
         { id: 'descartes-ne', href: '/estudos.html?view=descartes-ne', titulo: 'Descartes (CsD/Repr/Presc)' },
@@ -71,8 +79,7 @@ const Nav = (() => {
         { id: 'lab-backtest', href: '/laboratorio.html?view=backtest', titulo: 'Backtest' }
       ]
     },
-    { id: 'proposta-metas', href: '/proposta-metas.html', titulo: 'Proposta Metas', icone: '\u2605' },
-    { id: 'descartes-tempo', href: '/descartes-tempo.html', titulo: 'Descartes x Tempo', icone: '\u25D2' }
+    { id: 'proposta-metas', href: '/proposta-metas.html', titulo: 'Proposta Metas', icone: '\u2605' }
   ];
 
   function detectarPagina() {
@@ -83,6 +90,8 @@ const Nav = (() => {
     if (path === '/' || path === '/index.html') return 'inicio';
     if (path === '/proposta-metas.html') return 'proposta-metas';
     if (path === '/descartes-tempo.html') return 'descartes-tempo';
+    if (path === '/feedback-1on1.html') return 'feedback-1on1';
+    if (path === '/nes-definicao.html') return 'nes-definicao';
 
     // Verificar subpaginas de estudos
     if (path === '/estudos.html' && view) return view;

@@ -1374,8 +1374,24 @@ body.com-sidebar .pagina {
   box-shadow: var(--sombra);
   overflow: hidden;
 }
-.eq-abas-container .abas { padding: 0 1rem; }
+.eq-abas-container .abas { padding: 0; flex-wrap: nowrap; width: 100%; }
 .eq-abas-container .aba-conteudo { padding: 0; }
+.eq-abas-container .aba-grupo { flex: 1; }
+.eq-abas-container .aba-grupo__abas { display: flex; width: 100%; }
+.eq-abas-container .aba {
+  flex: 1;
+  padding: 0.4rem 0.25rem;
+  font-size: 0.7rem;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.25;
+  min-width: 0;
+}
+.eq-abas-container .aba-grupo__titulo {
+  padding: 0.18rem 0.5rem;
+  font-size: 0.58rem;
+  text-align: center;
+}
 .eq-meta {
   padding: 1.25rem;
 }

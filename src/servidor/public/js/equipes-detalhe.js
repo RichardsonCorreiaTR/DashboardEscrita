@@ -8,7 +8,7 @@
 
 /* eslint-disable no-unused-vars */
 const EquipesDetalhe = (() => {
-  const { MESES, fmtMin, fmtData, isTrabalho, isOutrasAtividades, isPrincipalQualquer } = FormatUtils;
+  const { MESES, fmtMin, fmtData, isTrabalho, isOutrasAtividades, isPrincipalAnalista, isPrincipalQualquer } = FormatUtils;
   const URL_SAI = 'https://sgsai.dominiosistemas.com.br/sgsai/faces/sai.html?sai=';
   const URL_PSAI = 'https://sgd.dominiosistemas.com.br/sgsa/faces/psai.html?psai=';
   function linkSai(id) { return '<a href="' + URL_SAI + id + '" target="_blank" class="link-sgd">' + id + '</a>'; }
@@ -20,12 +20,12 @@ const EquipesDetalhe = (() => {
       (n.includes('folga') && !n.includes('banco de horas'));
   }
 
-  function render(metaId, mes, registros, planilha) {
+  function render(metaId, mes, registros, planilha, senioridade) {
     if (!registros || registros.length === 0) {
       return '<div class="eq-sem-dados">Nenhum registro encontrado em ' + MESES[mes] + '</div>';
     }
     const t = '<h4 class="eq-det__titulo">Detalhamento - ' + MESES[mes] + ' (' + registros.length + ' registros)</h4>';
-    if (metaId.startsWith('tempo-trabalho')) return t + detAtividades(registros, metaId);
+    if (metaId.startsWith('tempo-trabalho')) return t + detAtividades(registros, metaId, senioridade);
     if (metaId.startsWith('indice-revisoes')) return t + detRevisoes(registros);
     if (metaId.startsWith('indice-retornos')) return t + detRetornos(registros, metaId);
     if (metaId === 'pontos-definicao' || metaId === 'sais-definidas-esp' || metaId === 'pontos-atividade-principal') return t + detPontos(registros);
@@ -40,13 +40,16 @@ const EquipesDetalhe = (() => {
     return t + '<pre>' + JSON.stringify(registros, null, 2) + '</pre>';
   }
 
-  function detAtividades(rows, metaId) {
+  function detAtividades(rows, metaId, senioridade) {
     const isPrincipal = metaId === 'tempo-trabalho-principal';
+    const podeGerar = senioridade === 'especialista' || senioridade === 'pleno';
+    const filtroPrincipal = podeGerar ? isPrincipalQualquer : isPrincipalAnalista;
     const trabalho = [], outras = [], ausencias = [];
     rows.forEach(r => {
       const a = String(r.atividade).trim();
       if (isAusencia(a)) ausencias.push(r);
-      else if (isPrincipal ? isPrincipalQualquer(a) : (!isOutrasAtividades(a) && isTrabalho(a))) trabalho.push(r);
+      else if (isOutrasAtividades(a)) outras.push(r);
+      else if (isPrincipal ? filtroPrincipal(a) : isTrabalho(a)) trabalho.push(r);
       else outras.push(r);
     });
     const sT = somaMin(trabalho), sO = somaMin(outras), sA = somaMin(ausencias);

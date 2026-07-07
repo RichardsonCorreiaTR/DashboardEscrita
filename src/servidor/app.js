@@ -30,6 +30,8 @@ const rotasMetasEquipe = require('./rotas/metas-equipe');
 const rotasLaboratorio = require('./rotas/laboratorio');
 const rotasPropostaMetas = require('./rotas/proposta-metas');
 const rotasDescartesTempo = require('./rotas/descartes-tempo');
+const rotasFeedback = require('./rotas/feedback-1on1');
+const rotasNesDefinicao = require('./rotas/nes-definicao');
 
 const PORT = process.env.PORT || 4000;
 const USUARIOS_PATH = path.join(__dirname, '..', '..', 'config', 'usuarios.json');
@@ -108,6 +110,8 @@ app.use('/api', rotasMetasEquipe);
 app.use('/api', rotasLaboratorio);
 app.use('/api', rotasPropostaMetas);
 app.use('/api', rotasDescartesTempo);
+app.use('/api', rotasFeedback);
+app.use('/api', rotasNesDefinicao);
 
 app.get('/api/saude', (req, res) => {
   res.json({

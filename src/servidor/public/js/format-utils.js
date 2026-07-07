@@ -58,9 +58,8 @@ const FormatUtils = (() => {
     return n.includes('reuni') && (n.includes('rh') || n.includes('apresenta'));
   }
 
-  function isPrincipalQualquer(nome) {
+  function isPrincipalAnalista(nome) {
     const n = nome.toLowerCase();
-    // Analistas: analisar/definir SAL/SAIL/SAM/NE, revisoes, reunioes, SS
     const temTipo = n.includes('sal') || n.includes('sail') || n.includes('sam') ||
       n.includes('ne') || n.includes('importa') || n.includes('testando');
     if (n.includes('analisando') && temTipo) return true;
@@ -69,10 +68,12 @@ const FormatUtils = (() => {
     if (n.includes('sai') && (n.includes('defin') || n.includes('testes'))) return true;
     if (n.includes('sai - an') && !n.includes('reuni')) return true;
     if (n.includes('reuni') && (n.includes('defin') || n.includes('psai'))) return true;
-    if (n.includes('ss')) return true;
-    // Especialistas: gerando SAI
-    return n.includes('gerando') && n.includes('sai');
+    return n.includes(' ss') || n.startsWith('ss');
   }
 
-  return { MESES, fmtMin, fmtDecimal, fmtData, corPct, isTrabalho, isOutrasAtividades, isPrincipalQualquer };
+  function isPrincipalQualquer(nome) {
+    return isPrincipalAnalista(nome) || (nome.toLowerCase().includes('gerando') && nome.toLowerCase().includes('sai'));
+  }
+
+  return { MESES, fmtMin, fmtDecimal, fmtData, corPct, isTrabalho, isOutrasAtividades, isPrincipalAnalista, isPrincipalQualquer };
 })();

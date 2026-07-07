@@ -401,7 +401,7 @@ const EquipesMensal = (() => {
     for (let m = 1; m <= _ma; m++) { if (mensal[m]) dados.push(mensal[m]); }
     if (!dados.length) return '';
     const totalTrab = dados.reduce((s, d) => s + (d.trabalhoSai || 0), 0);
-    const totalGeral = dados.reduce((s, d) => s + (d.total || 0), 0);
+    const totalGeral = dados.reduce((s, d) => s + (d.efetivo || 0), 0);
     const media = totalGeral > 0 ? Math.round((totalTrab / totalGeral) * 10000) / 100 : 0;
     const atingidos = dados.filter(d => d.atingida).length;
     const metaVal = metaId === 'tempo-trabalho-analise' ? 85 : metaId === 'tempo-trabalho-geracao' ? 80 : (metaValor || 70);

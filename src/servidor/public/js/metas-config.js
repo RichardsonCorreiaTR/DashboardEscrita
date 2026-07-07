@@ -111,6 +111,7 @@ const MetasConfig = (() => {
     'tempo-medio-sal':          { grupo: 'Tempos',   label: 'M\u00e9dia An\u00e1lise' },
     'controle-revisoes':        { grupo: 'Controle', label: 'Revis\u00f5es' },
     'controle-retornos':        { grupo: 'Controle', label: 'Retornos' },
+    'ne-definicao':             { grupo: 'Controle', label: 'NE Defini\u00e7\u00e3o' },
     'controle-geracao':         { grupo: 'Controle', label: 'Gerar SAI' },
     'controle-descartes':       { grupo: 'Controle', label: 'Descartes' },
     'pct-descartes':            { grupo: 'Controle', label: '% Descartes' },
@@ -234,6 +235,11 @@ const MetasConfig = (() => {
     let result = _gruparIds(metas, GRUPO_REVISOES_IDS, 'controle-revisoes', 'revisoes');
     result = _gruparIds(result, GRUPO_RETORNOS_IDS, 'controle-retornos', 'retornos');
     result = _gruparIds(result, GRUPO_GERACAO_IDS, 'controle-geracao', 'geracao');
+    // Injetar NE Definicao apos o grupo de retornos
+    const retIdx = result.findIndex(m => m.isGrupo && m.tipo === 'retornos');
+    const neEntry = { id: 'ne-definicao', isGrupo: false, desc: 'NEs com Defini\u00e7\u00e3o', valor: null, un: null, dir: 'menor-melhor', fonte: 'Planilha An\u00e1lise de NEs' };
+    if (retIdx >= 0) result.splice(retIdx + 1, 0, neEntry);
+    else result.push(neEntry);
     return result;
   }
 

@@ -9,7 +9,7 @@
  *           Numerador = TODAS as revisoes (motivos 1,2) da SAI, indiferente do ano.
  */
 
-const FILTRO_AREA = "sp.nomeArea = 'Escrita'";
+const FILTRO_AREA = "sp.nomeArea IN ('Escrita', 'Importacao', 'ONVIO ESCRITA')";
 const MOTIVOS_AC = '(1, 2)'; // Somente Alteracao (1) e Complemento (2) na definicao. Excluindo motivo externo (4,5)
 
 const TIPOS_REV = "('NE', 'SAL', 'SAIL', 'SAM')";

@@ -194,11 +194,14 @@ const AppEquipes = (() => {
             ? MetasConfig.renderConteudoGrupoRetornos(m.subIds)
             : m.isGrupo && m.tipo === 'geracao'
               ? MetasConfig.renderConteudoGrupoGeracao(m.subIds)
+          : m.id === 'ne-definicao'
+            ? EquipesNeDefinicao.renderInfo() + '<div class="eq-meta__dados" data-meta-id="ne-definicao"><div class="eq-sem-dados">Carregando...</div></div>'
           : renderMetaInfo(m) + '<div class="eq-meta__dados" data-meta-id="' + m.id + '"><div class="eq-sem-dados">Carregando...</div></div>')
         + '</div>'
       ).join('') + '</div>';
     ativarAbas(main);
     carregarDados(colab.slug, metas, main);
+    EquipesNeDefinicao.carregar(colab.slug, getAnoSelecionado(), main);
   }
 
   function renderMetaInfo(m) {
@@ -264,7 +267,9 @@ const AppEquipes = (() => {
           if (json.erro || !json.registros) {
             json = await (await fetch(url)).json();
           }
-          det.innerHTML = EquipesDetalhe.render(meta, parseInt(mes, 10), json.registros, json.planilha);
+          const colabAtual = MetasConfig.colaboradores().find(c => c.slug === slugAtual);
+          const sen = colabAtual ? colabAtual.senioridade : '';
+          det.innerHTML = EquipesDetalhe.render(meta, parseInt(mes, 10), json.registros, json.planilha, sen);
         } catch (e) { det.innerHTML = '<div class="eq-sem-dados">Erro ao carregar</div>'; }
       });
     });

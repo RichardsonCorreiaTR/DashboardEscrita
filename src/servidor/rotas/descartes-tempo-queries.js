@@ -1,8 +1,8 @@
 /**
  * descartes-tempo-queries.js - Queries para estudo Descartes x Tempo GA
  *
- * Cruza PSAIs descartadas com tempo lancado no Gerenciador de Atividades.
- * gaGerenciadorAtividades.i_usuarios = CAST(UDUSUARIOS.CODIGO_SGD AS INT)
+ * Cruza PSAIs descartadas com tempo registrado em bethadba.psai_responsaveis
+ * (tempo_analise + tempo_definicao por PSAI). Fonte: tabela de responsaveis da PSAI.
  */
 
 const FILTRO_AREA = "sp.nomeArea = 'Escrita'";
@@ -25,11 +25,9 @@ function queryDescartesTempo(codigoSgdList, ano) {
       sp.Descarte as data_descarte,
       MONTH(sp.Descarte) as mes,
       COALESCE(NULLIF(sp.i_sai_situacoes, 0), sp.i_psai_situacoes) as motivo,
-      CASE WHEN sp.i_sai > 0 THEN
-        COALESCE((SELECT SUM(ga.tempo)
-          FROM bethadba.gaGerenciadorAtividades ga
-          WHERE ga.i_sai = sp.i_sai AND ga.i_usuarios = p.i_responsaveis), 0)
-      ELSE 0 END as minutos_lancados
+      COALESCE((SELECT SUM(COALESCE(pr.tempo_analise, 0) + COALESCE(pr.tempo_definicao, 0))
+        FROM bethadba.psai_responsaveis pr
+        WHERE pr.i_psai = sp.i_psai), 0) as minutos_lancados
     FROM UP.SAI_PSAI sp
     JOIN bethadba.psai p ON sp.i_psai = p.i_psai
     WHERE ${FILTRO_AREA} AND sp.tipoSAI = 'NE'
