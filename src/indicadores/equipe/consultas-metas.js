@@ -149,7 +149,7 @@ function queryTempoMedioSal(ano, sgdList) {
     FROM bethadba.psai_responsaveis pr
     JOIN UP.SAI_PSAI sp ON pr.i_psai = sp.i_psai
     JOIN bethadba.psai p ON sp.i_psai = p.i_psai
-    WHERE sp.nomeArea = 'Escrita'
+    WHERE ${FILTRO_AREA}
       AND sp.tipoSAI IN ('SAL', 'NE', 'SAIL', 'SAM')
       AND COALESCE(p.i_produto_grupo, 1) = 1
       ${filtro}
@@ -162,20 +162,21 @@ const SITS_DESCARTE = '(5, 6, 23, 33)';
 
 function queryControleDescartes(ano, sgdList) {
   const ids = Array.isArray(sgdList) ? sgdList.join(', ') : sgdList;
-  const filtro = ids ? `AND pr.i_usuarios IN (${ids})` : '';
+  const filtro = ids ? `AND p.i_responsaveis IN (${ids})` : '';
   return `
-    SELECT pr.i_usuarios, MONTH(sp.CadastroPSAI) as mes, sp.i_psai,
-      SUM(pr.tempo_analise) as total_analise,
-      SUM(pr.tempo_definicao) as total_definicao
-    FROM bethadba.psai_responsaveis pr
-    JOIN UP.SAI_PSAI sp ON pr.i_psai = sp.i_psai
+    SELECT p.i_responsaveis as i_usuarios, MONTH(sp.CadastroPSAI) as mes, sp.i_psai,
+      COALESCE(SUM(pr.tempo_analise), 0) as total_analise,
+      COALESCE(SUM(pr.tempo_definicao), 0) as total_definicao
+    FROM UP.SAI_PSAI sp
     JOIN bethadba.psai p ON sp.i_psai = p.i_psai
-    WHERE sp.nomeArea = 'Escrita'
+    LEFT JOIN bethadba.psai_responsaveis pr ON pr.i_psai = sp.i_psai
+      AND pr.i_usuarios = p.i_responsaveis
+    WHERE ${FILTRO_AREA}
       AND sp.i_psai_situacoes IN ${SITS_DESCARTE}
       AND COALESCE(p.i_produto_grupo, 1) = 1
       ${filtro}
       AND YEAR(sp.CadastroPSAI) = ${ano}
-    GROUP BY pr.i_usuarios, sp.i_psai, MONTH(sp.CadastroPSAI)
+    GROUP BY p.i_responsaveis, sp.i_psai, MONTH(sp.CadastroPSAI)
   `;
 }
 
@@ -207,7 +208,7 @@ function queryDescartesDataSituacao(ano, sgdList) {
     JOIN bethadba.psai p ON sp.i_psai = p.i_psai
     JOIN bethadba.psai_tramites pt ON pt.i_psai = sp.i_psai
       AND pt.i_situacoes IN (5, 6, 23, 33)
-    WHERE sp.nomeArea = 'Escrita'
+    WHERE ${FILTRO_AREA}
       AND COALESCE(p.i_produto_grupo, 1) = 1
       ${filtro}
       AND YEAR(pt.entrada) = ${ano}
@@ -228,7 +229,7 @@ function queryAnalisesSemSai(ano, sgdList) {
       MONTH(sp.CadastroPSAI) as mes, COUNT(DISTINCT sp.i_psai) as qtd
     FROM UP.SAI_PSAI sp
     JOIN bethadba.psai p ON sp.i_psai = p.i_psai
-    WHERE sp.nomeArea = 'Escrita'
+    WHERE ${FILTRO_AREA}
       AND sp.i_sai = 0
       AND COALESCE(p.i_produto_grupo, 1) = 1
       ${filtro}

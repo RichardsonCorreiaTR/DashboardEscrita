@@ -28,7 +28,7 @@ const EquipesDetalhe = (() => {
     if (metaId.startsWith('tempo-trabalho')) return t + detAtividades(registros, metaId, senioridade);
     if (metaId.startsWith('indice-revisoes')) return t + detRevisoes(registros);
     if (metaId.startsWith('indice-retornos')) return t + detRetornos(registros, metaId);
-    if (metaId === 'pontos-definicao' || metaId === 'sais-definidas-esp' || metaId === 'pontos-atividade-principal') return t + detPontos(registros);
+    if (metaId === 'pontos-definicao' || metaId === 'sais-definidas-esp' || metaId === 'pontos-atividade-principal' || metaId === 'pontos-gerados') return t + detPontos(registros);
     if (metaId.startsWith('gerar-sai')) {
       const maxDias = metaId.includes('-7d') ? 7 : metaId.includes('-5d') ? 5 : 3;
       return t + detGeracao(registros, maxDias);

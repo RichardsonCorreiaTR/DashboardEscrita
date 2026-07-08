@@ -186,5 +186,19 @@ const EquipesCoordenador = (() => {
     }
   }
 
-  return { render };
+  async function atualizarTodosCoord(slugs, ano) {
+    const btn = document.getElementById('btn-atualizar-todos');
+    if (!btn) return;
+    btn.disabled = true;
+    const total = slugs.length;
+    for (let i = 0; i < total; i++) {
+      btn.textContent = '\u21BA ' + (i + 1) + '/' + total + ': ' + slugs[i];
+      try { await fetch('/api/metas-equipe/' + slugs[i] + '?&ano=' + ano); } catch (_) {}
+    }
+    btn.textContent = '\u2713 Conclu\u00eddo!';
+    btn.disabled = false;
+    setTimeout(() => { btn.textContent = '\u21BA Atualizar Todos'; }, 3000);
+  }
+
+  return { render, atualizarTodosCoord };
 })();

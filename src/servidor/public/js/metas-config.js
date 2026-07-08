@@ -109,13 +109,13 @@ const MetasConfig = (() => {
     'tempo-trabalho-principal': { grupo: 'Tempos',   label: 'Atividade Principal' },
     'tempo-gerando-sai':        { grupo: 'Tempos',   label: 'Gerando SAI' },
     'tempo-medio-sal':          { grupo: 'Tempos',   label: 'M\u00e9dia An\u00e1lise' },
-    'controle-revisoes':        { grupo: 'Controle', label: 'Revis\u00f5es' },
-    'controle-retornos':        { grupo: 'Controle', label: 'Retornos' },
-    'ne-definicao':             { grupo: 'Controle', label: 'NE Defini\u00e7\u00e3o' },
-    'controle-geracao':         { grupo: 'Controle', label: 'Gerar SAI' },
-    'controle-descartes':       { grupo: 'Controle', label: 'Descartes' },
-    'pct-descartes':            { grupo: 'Controle', label: '% Descartes' },
-    'respostas-ss-3d':          { grupo: 'Controle', label: 'Respostas SS' },
+    'controle-revisoes':        { grupo: 'Controle',  label: 'Revis\u00f5es' },
+    'controle-retornos':        { grupo: 'Controle',  label: 'Retornos' },
+    'ne-definicao':             { grupo: 'Diversos',  label: 'NE Defini\u00e7\u00e3o' },
+    'controle-geracao':         { grupo: 'Diversos',  label: 'Gerar SAI' },
+    'controle-descartes':       { grupo: 'Diversos',  label: 'Descartes' },
+    'pct-descartes':            { grupo: 'Diversos',  label: '% Descartes' },
+    'respostas-ss-3d':          { grupo: 'Diversos',  label: 'Respostas SS' },
   };
 
   function buildGruposVisuais(agrupadas) {

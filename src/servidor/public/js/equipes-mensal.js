@@ -200,7 +200,11 @@ const EquipesMensal = (() => {
       '</div>';
     const infoHtml = info.length
       ? '<div class="eq-tot-metas eq-tot-metas--info">' +
-        info.map(([id, d]) => renderCard(id, d, metas, valorMap, false)).join('') + '</div>'
+        info.map(([id, d]) => renderCard(id, d, metas, valorMap, false)).join('') +
+        '<div class="eq-tot-meta" id="ne-def-tot-placeholder">' +
+        '<span class="eq-tot-meta__label">NEs Def.</span>' +
+        '<span class="eq-tot-meta__valor" style="color:var(--cor-texto-sec)">...</span></div>' +
+        '</div>'
       : '';
     return metasHtml + infoHtml;
   }
@@ -367,14 +371,18 @@ const EquipesMensal = (() => {
     if (!temDados) return '<div class="eq-sem-dados" style="margin-top:0.5rem">Nenhuma SAI gerada por outros analistas no ano</div>';
     const dados = Array.from({ length: mesAtual }, (_, i) => mensal[i + 1] || { pontos: 0, qtd_sais: 0 });
     const total = dados.reduce((s, d) => s + (d.pontos || 0), 0);
+    const totalSais = dados.reduce((s, d) => s + (d.qtd_sais || 0), 0);
     const media = Math.round(total / dados.length);
+    const mediaSais = Math.round(totalSais / dados.length);
     const cor = 'var(--cor-primaria)';
     return '<div class="eq-tot-pontos">' +
       '<h4 class="eq-tot-pontos__titulo">\uD83D\uDCCA Acumulado do Ano \u2014 SAIs Geradas</h4>' +
       '<div class="eq-dados-grid">' +
       '<div class="eq-dado"><span class="eq-dado__valor">' + dados.length + '</span><span class="eq-dado__label">Meses avaliados</span></div>' +
       '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + total + '</span><span class="eq-dado__label">Total de pontos</span></div>' +
-      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + media + '</span><span class="eq-dado__label">M\u00e9dia mensal</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + media + '</span><span class="eq-dado__label">M\u00e9dia mensal (pts)</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + totalSais + '</span><span class="eq-dado__label">Total de SAIs</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + mediaSais + '</span><span class="eq-dado__label">M\u00e9dia mensal (SAIs)</span></div>' +
       '</div></div>';
   }
 
@@ -479,6 +487,12 @@ const EquipesMensal = (() => {
         // Pontos gerados sem dados = 0, verde, sem Ver
         return '<tr class="eq-tr--ok"><td>' + MESES[m] + '</td><td style="color:var(--verde)">0</td><td>0</td>' +
           '<td class="eq-status">\u2713</td><td></td></tr>';
+      }
+      if (metaId === 'pontos-definicao' && m <= mesAtual) {
+        // Mes passado sem SAIs = 0 pontos, nao atingido
+        return '<tr class="eq-tr--nok"><td>' + MESES[m] + '</td>' +
+          '<td>0</td><td>0</td><td>\u2265 80</td>' +
+          '<td class="eq-status">\u2717</td><td>' + btnDetalhe + '</td></tr>';
       }
       const v = cols.map(c => c.isEsperado
         ? '<td style="color:#94a3b8">' + fmtMin(esperadoHoras(m)) + '</td>'

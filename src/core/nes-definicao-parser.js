@@ -6,13 +6,15 @@ const ExcelJS = require('exceljs');
 
 const NOME_SLUG = {
   'felipi': 'felipi', 'felipi ferreira': 'felipi',
-  'fabio': 'fabio', 'fabio coral': 'fabio',
+  'fabio': 'fabio', 'fabio coral': 'fabio', 'fabio sasso': 'fabio',
   'giovani': 'giovani', 'giovani cunha': 'giovani',
   'jennifer': 'jennifer', 'jennifer rodrigues': 'jennifer',
   'victor': 'victor', 'victor ferreira': 'victor',
-  'barbara melo': 'barbara-melo', 'barbara mello': 'barbara-melo',
-  'carolina': 'carolina', 'daniela': 'daniela',
-  'erick': 'erick', 'flavia': 'flavia', 'flavia cardoso': 'flavia',
+  'barbara melo': 'barbara-melo', 'barbara mello': 'barbara-melo', 'barbara teixeira': 'barbara-melo',
+  'carolina': 'carolina', 'carolina esmeraldino': 'carolina',
+  'daniela': 'daniela', 'daniela stupp': 'daniela', 'daniela ferreira': 'daniela',
+  'erick': 'erick', 'erick vicente': 'erick',
+  'flavia': 'flavia', 'flavia cardoso': 'flavia', 'flavia felipe': 'flavia',
   'mateus': 'mateus', 'mateus alves': 'mateus',
   'bruna': 'bruna', 'bruna ferro': 'bruna',
   'patricia': 'patricia', 'patricia costa': 'patricia',
@@ -20,11 +22,12 @@ const NOME_SLUG = {
   'barbara leite': 'barbara-leite',
   'gabriely': 'gabriely', 'gabriely marques': 'gabriely',
   'juliana': 'juliana', 'juliana kuerten': 'juliana',
-  'lais': 'laysa', 'laysa': 'laysa',
-  'rafaela ribeiro': 'rafaela-ribeiro',
-  'rafaela sampaio': 'rafaela-sampaio',
-  'renan': 'renan', 'sabrine': 'sabrine', 'sabrina': 'sabrine',
-  'vinicyos': 'vinicyos',
+  'lais': 'laysa', 'laysa': 'laysa', 'laysa gabriela': 'laysa',
+  'rafaela ribeiro': 'rafaela-ribeiro', 'rafaela gubert': 'rafaela-ribeiro',
+  'rafaela sampaio': 'rafaela-sampaio', 'rafaela silva': 'rafaela-sampaio',
+  'renan': 'renan', 'renan maiato': 'renan',
+  'sabrine': 'sabrine', 'sabrina': 'sabrine', 'sabrina neves': 'sabrine',
+  'vinicyos': 'vinicyos', 'vinicyos magnus': 'vinicyos',
   'richardson': 'richardson', 'marielli': 'marielli',
 };
 
@@ -95,16 +98,24 @@ function parseAba(ws) {
     // Linha de NE (col1 é numero ou hyperlink de numero)
     const neNum = parseInt(col1);
     if (!neNum || isNaN(neNum)) return;
+    const saiOrigem = cellText(row.getCell(2));
+    const anoSai = cellText(row.getCell(3));
+    const tipoSai = cellText(row.getCell(4));
     const psai = cellText(row.getCell(5));
     const sai = cellText(row.getCell(6));
     const analise = cellText(row.getCell(7));
     const gravidade = cellText(row.getCell(8));
     const slugPsai = nomeParaSlug(psai);
+    const slugSai  = nomeParaSlug(sai);
     nes.push({
       ne: neNum,
+      sai_origem: saiOrigem ? parseInt(saiOrigem) || saiOrigem : null,
+      ano_sai: anoSai ? parseInt(anoSai) || null : null,
+      tipo_sai: tipoSai || null,
       responsavel_psai: psai || null,
       responsavel_psai_slug: slugPsai,
       responsavel_sai: sai || null,
+      responsavel_sai_slug: slugSai,
       analise: analise || null,
       grave: gravidade ? gravidade.toLowerCase().includes('grav') : false,
     });
@@ -113,27 +124,53 @@ function parseAba(ws) {
   return { ...info, nome_aba: ws.name, nes, totais };
 }
 
+function labelDeNomeAba(nomeAba) {
+  // "Janeiro 2026 - Importação " → { label: "Jan/26", ano: 2026 }
+  const m = nomeAba.match(/^(\w+)\s+(\d{4})/);
+  if (!m) return null;
+  const mesNorm = m[1].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const abrev = MESES_ABREV[mesNorm];
+  if (!abrev) return null;
+  const ano = parseInt(m[2]);
+  return { label: `${abrev}/${String(ano).slice(2)}`, ano };
+}
+
 async function parsearExcel(caminhoArquivo) {
   const wb = new ExcelJS.Workbook();
   await wb.xlsx.readFile(caminhoArquivo);
 
   const versoes = [];
   wb.worksheets.forEach(ws => {
-    if (!ws.name.toLowerCase().includes('escrita')) return;
+    const nome = ws.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (!nome.includes('escrita') && !nome.includes('importa')) return;
     const dados = parseAba(ws);
+    // Garante que o label/ano vêm do nome da aba (confiável), não do título da célula
+    const infoNome = labelDeNomeAba(ws.name);
+    if (infoNome) {
+      const versaoStr = dados.versao ? ` (${dados.versao})` : '';
+      dados.label = `${infoNome.label}${versaoStr}`;
+      dados.ano = infoNome.ano;
+    }
     if (dados.versao || dados.nes.length) versoes.push(dados);
   });
 
-  // Agregar por analista
+  // Agregar por analista (PSAI) e por especialista (SAI)
   const porAnalista = {};
+  function adicionarNe(slug, label, ne) {
+    if (!slug) return;
+    if (!porAnalista[slug]) porAnalista[slug] = {};
+    if (!porAnalista[slug][label]) porAnalista[slug][label] = [];
+    porAnalista[slug][label].push(ne);
+  }
   versoes.forEach(v => {
+    const label = v.label || v.nome_aba;
     v.nes.forEach(ne => {
-      const slug = ne.responsavel_psai_slug;
-      if (!slug) return;
-      if (!porAnalista[slug]) porAnalista[slug] = {};
-      const label = v.label || v.nome_aba;
-      if (!porAnalista[slug][label]) porAnalista[slug][label] = [];
-      porAnalista[slug][label].push(ne);
+      // Responsável PSAI (analista que definiu)
+      adicionarNe(ne.responsavel_psai_slug, label, ne);
+      // Responsável SAI (especialista — só adiciona se for diferente do PSAI)
+      if (ne.responsavel_sai_slug && ne.responsavel_sai_slug !== ne.responsavel_psai_slug) {
+        adicionarNe(ne.responsavel_sai_slug, label, ne);
+      }
     });
   });
 

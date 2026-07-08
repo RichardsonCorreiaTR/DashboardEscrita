@@ -56,25 +56,36 @@ const EquipesNeDefinicao = (() => {
     const mesAtual = new Date().getMonth() + 1;
     const anoAtual = new Date().getFullYear();
     let html = '<table class="eq-tabela"><thead><tr>' +
-      '<th>Mês</th><th>Qtd</th><th>NEs</th><th>Status</th></tr></thead><tbody>';
+      '<th>Mês</th><th>Qtd</th><th>NE</th><th>SAI Origem</th><th>Ano</th><th>Tipo</th><th>Status</th></tr></thead><tbody>';
     for (let m = 1; m <= 12; m++) {
       const { qtd, nes } = contagem[m];
       const isFuturo = (parseInt(ano) === anoAtual && m > mesAtual) || parseInt(ano) > anoAtual;
       const cor = isFuturo ? 'var(--cor-texto-sec)' : corQtd(qtd);
       const statusTxt = isFuturo ? '—' : qtd === 0 ? '✓ OK' : qtd >= 3 ? '⚠ Elevado' : '⚡ Atenção';
-      const nesTxt = nes.length
-        ? nes.map(n => 'NE ' + n.ne).join(', ')
-        : (isFuturo ? '—' : 'Nenhuma');
-      html += '<tr' + (isFuturo ? ' style="opacity:.45"' : '') + '>' +
-        '<td><strong>' + NOMES_MES[m - 1] + '</strong></td>' +
-        '<td style="text-align:center;font-weight:700;color:' + cor + '">' + (isFuturo ? '—' : qtd) + '</td>' +
-        '<td style="font-size:0.75rem;color:var(--cor-texto-sec)">' + nesTxt + '</td>' +
-        '<td style="color:' + cor + ';font-size:0.78rem">' + statusTxt + '</td></tr>';
+      if (!nes.length) {
+        html += '<tr' + (isFuturo ? ' style="opacity:.45"' : '') + '>' +
+          '<td><strong>' + NOMES_MES[m - 1] + '</strong></td>' +
+          '<td style="text-align:center;font-weight:700;color:' + cor + '">' + (isFuturo ? '—' : 0) + '</td>' +
+          '<td colspan="4" style="font-size:0.75rem;color:var(--cor-texto-sec)">' + (isFuturo ? '—' : 'Nenhuma') + '</td>' +
+          '<td style="color:' + cor + ';font-size:0.78rem">' + statusTxt + '</td></tr>';
+      } else {
+        nes.forEach((n, i) => {
+          html += '<tr>' +
+            (i === 0 ? '<td rowspan="' + nes.length + '"><strong>' + NOMES_MES[m - 1] + '</strong></td>' +
+              '<td rowspan="' + nes.length + '" style="text-align:center;font-weight:700;color:' + cor + '">' + qtd + '</td>' : '') +
+            '<td style="font-size:0.78rem">NE ' + n.ne + '</td>' +
+            '<td style="font-size:0.75rem;color:var(--cor-texto-sec)">' + (n.sai_origem || '—') + '</td>' +
+            '<td style="font-size:0.75rem;color:var(--cor-texto-sec)">' + (n.ano_sai || '—') + '</td>' +
+            '<td style="font-size:0.75rem">' + (n.tipo_sai || '—') + '</td>' +
+            (i === 0 ? '<td rowspan="' + nes.length + '" style="color:' + cor + ';font-size:0.78rem">' + statusTxt + '</td>' : '') +
+            '</tr>';
+        });
+      }
     }
     const totalAno = Object.values(contagem).reduce((s, c) => s + c.qtd, 0);
     html += '<tfoot><tr><td><strong>Total</strong></td>' +
       '<td style="text-align:center;font-weight:800;color:' + corQtd(Math.round(totalAno / 12)) + '">' + totalAno + '</td>' +
-      '<td colspan="2" style="font-size:0.75rem;color:var(--cor-texto-sec)">Meta: a definir</td></tr></tfoot>';
+      '<td colspan="5" style="font-size:0.75rem;color:var(--cor-texto-sec)">Meta: a definir</td></tr></tfoot>';
     return html + '</table>';
   }
 
@@ -85,6 +96,18 @@ const EquipesNeDefinicao = (() => {
       '<div class="eq-meta__bloco"><span class="eq-meta__bloco-label">Valor esperado</span><span class="eq-meta__bloco-valor">Meta a definir</span></div>' +
       '<div class="eq-meta__bloco"><span class="eq-meta__bloco-label">Fonte</span><span class="eq-meta__bloco-valor">Planilha Análise de NEs</span></div>' +
       '</div></div>';
+  }
+
+  async function injetarTotalizador(slug, ano) {
+    const el = document.getElementById('ne-def-tot-placeholder');
+    if (!el) return;
+    const dados = await obterDados();
+    const valEl = el.querySelector('.eq-tot-meta__valor');
+    if (!dados) { if (valEl) valEl.textContent = '—'; return; }
+    const contagem = contarPorMes(slug, dados, ano);
+    const total = Object.values(contagem).reduce((s, c) => s + c.qtd, 0);
+    const cor = corQtd(Math.round(total / 12));
+    if (valEl) { valEl.textContent = total; valEl.style.color = cor; }
   }
 
   async function carregar(slug, ano, container) {
@@ -99,5 +122,5 @@ const EquipesNeDefinicao = (() => {
     el.innerHTML = renderTabela(slug, dados, ano);
   }
 
-  return { renderInfo, carregar };
+  return { renderInfo, carregar, injetarTotalizador };
 })();

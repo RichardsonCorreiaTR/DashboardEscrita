@@ -11,7 +11,8 @@
     "test-conexao": "node src/core/conexao.js --test",
     "calcular": "node src/indicadores/index.js",
     "screenshot-isv": "node scripts/screenshot-isv.js",
-    "offline": "node src/servidor/app-offline.js"
+    "offline": "node src/servidor/app-offline.js",
+    "sync-overrides": "node scripts/sync-overrides-planilha.js"
   },
   "keywords": [
     "dashboard",

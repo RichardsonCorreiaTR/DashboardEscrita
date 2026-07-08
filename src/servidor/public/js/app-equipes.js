@@ -127,7 +127,8 @@ const AppEquipes = (() => {
       '<button class="eq-coord-btn' + (c.slug === coordSelecionado ? ' eq-coord-btn--ativo' : '') +
       '" data-slug="' + c.slug + '">' + c.nome + '</button>'
     ).join('');
-    return '<div class="eq-coord-bar"><span class="eq-coord-bar__label">Coordenador</span>' + btns + '</div>';
+    return '<div class="eq-coord-bar"><span class="eq-coord-bar__label">Coordenador</span>' + btns +
+      '<button id="btn-atualizar-todos" class="btn btn--outline" style="margin-left:auto;font-size:0.78rem;padding:0.28rem 0.7rem">\u21BA Atualizar Todos</button></div>';
   }
 
   function renderCards() {
@@ -154,6 +155,10 @@ const AppEquipes = (() => {
         '<div class="hub-grid__row">' + cards(arr) + '</div></div>'
       : '';
     grid.innerHTML = secao('Especialistas', especialistas) + secao('Analistas', analistas);
+    const btnTodos = document.getElementById('btn-atualizar-todos');
+    if (btnTodos) {
+      btnTodos.onclick = () => EquipesCoordenador.atualizarTodosCoord(colabs.map(c => c.slug), getAnoSelecionado());
+    }
   }
 
   function renderColaborador(colab) {
@@ -232,6 +237,7 @@ const AppEquipes = (() => {
           : '<div class="eq-sem-dados">Fonte de dados a definir</div>';
       });
       ativarBotoesDetalhe(container);
+      EquipesNeDefinicao.injetarTotalizador(slug, ano);
     } catch (err) { console.warn('[equipes] Erro:', err.message); }
   }
 
