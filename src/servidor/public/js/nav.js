@@ -201,10 +201,10 @@ const Nav = (() => {
           <ul class="sidebar__submenu" role="group">
             ${p.sub.map(s => {
               if (s.tipo === 'header') return `<li class="sidebar__subheader">${s.titulo}</li>`;
-              if (s.tipo === 'coord-header') return `<li class="sidebar__subheader sidebar__subheader--coord">\u25B6 ${s.titulo}</li>`;
+              if (s.tipo === 'coord-header') return `<li class="sidebar__subheader sidebar__subheader--coord" data-coord="${s.coord}">\u25B6 ${s.titulo}</li>`;
               const isCoordItem = s.tipo === 'coord-item';
               return `
-                <li${!isCoordItem && s.coord ? ` data-coord="${s.coord}"` : ''}>
+                <li${s.coord ? ` data-coord="${s.coord}"` : ''}>
                   <a href="${s.href}"
                      class="sidebar__subitem${s.id === atual ? ' sidebar__subitem--ativo' : ''}${isCoordItem ? ' sidebar__subitem--coord-item' : ''}"
                      ${s.id === atual ? 'aria-current="page"' : ''}>
@@ -233,10 +233,12 @@ const Nav = (() => {
 
   function filtrarNavEquipes(coordSlug) {
     if (!coordSlug) return;
+    // 1. Filtrar todos os itens com data-coord (coord-header, coord-item, analistas)
     document.querySelectorAll('li[data-coord]').forEach(li => {
       li.style.display = li.dataset.coord === coordSlug ? '' : 'none';
     });
-    document.querySelectorAll('.sidebar__subheader').forEach(h => {
+    // 2. Ocultar headers de secao sem itens visiveis (somente headers SEM data-coord)
+    document.querySelectorAll('.sidebar__subheader:not([data-coord])').forEach(h => {
       let next = h.nextElementSibling, visible = false;
       while (next && !next.classList.contains('sidebar__subheader')) {
         if (next.style.display !== 'none') visible = true;

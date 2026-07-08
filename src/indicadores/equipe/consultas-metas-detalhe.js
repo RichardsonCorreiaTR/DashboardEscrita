@@ -171,7 +171,6 @@ function detalhePontosGerados(iUsuarios, codigoSgd, ano, mes) {
     JOIN bethadba.psai p ON sp.i_psai = p.i_psai
     WHERE sp.nomeArea IN ('Escrita', 'Importacao', 'ONVIO ESCRITA')
       AND s.i_usuarios = ${codigoSgd}
-      AND p.i_responsaveis <> ${codigoSgd}
       AND MONTH(sp.CadastroSAI) = ${mes} AND YEAR(sp.CadastroSAI) = ${ano}
     ORDER BY p.nivel_alteracao DESC, sp.CadastroSAI
   `;

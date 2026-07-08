@@ -117,23 +117,33 @@ const AppEquipes = (() => {
         main.querySelectorAll('.eq-coord-btn').forEach(b => b.classList.remove('eq-coord-btn--ativo'));
         btn.classList.add('eq-coord-btn--ativo');
         renderCards();
-        Nav.filtrarNavEquipes(coordSelecionado);
+        if (coordSelecionado !== '__gerente__') Nav.filtrarNavEquipes(coordSelecionado);
       });
     });
   }
 
   function renderSeletorCoord(coords) {
+    const gerenteAtivo = coordSelecionado === '__gerente__';
+    const gerenteBar = '<div class="eq-coord-bar" style="border-bottom:1px solid var(--cor-borda);margin-bottom:0.4rem;padding-bottom:0.4rem">' +
+      '<span class="eq-coord-bar__label" style="color:#be185d">Gerente</span>' +
+      '<button class="eq-coord-btn' + (gerenteAtivo ? ' eq-coord-btn--ativo' : '') +
+      '" data-slug="__gerente__">Mariana Sartori</button></div>';
     const btns = coords.map(c =>
       '<button class="eq-coord-btn' + (c.slug === coordSelecionado ? ' eq-coord-btn--ativo' : '') +
       '" data-slug="' + c.slug + '">' + c.nome + '</button>'
     ).join('');
-    return '<div class="eq-coord-bar"><span class="eq-coord-bar__label">Coordenador</span>' + btns +
+    return gerenteBar +
+      '<div class="eq-coord-bar"><span class="eq-coord-bar__label">Coordenador</span>' + btns +
       '<button id="btn-atualizar-todos" class="btn btn--outline" style="margin-left:auto;font-size:0.78rem;padding:0.28rem 0.7rem">\u21BA Atualizar Todos</button></div>';
   }
 
   function renderCards() {
     const grid = document.getElementById('hub-grid');
     if (!grid) return;
+    if (coordSelecionado === '__gerente__') {
+      EquipesCoordenador.render('__gerente__', grid);
+      return;
+    }
     const colabs = MetasConfig.colaboradores().filter(c => c['coordenador-slug'] === coordSelecionado);
     if (!colabs.length) {
       grid.innerHTML = '<p class="eq-sem-dados">Nenhum colaborador nesta equipe.</p>';

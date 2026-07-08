@@ -181,7 +181,7 @@ function queryControleDescartes(ano, sgdList) {
 }
 
 // SAIs geradas pelo analista (sai.i_usuarios = codigo-sgd)
-// onde ele NAO e o responsavel da PSAI (p.i_responsaveis != codigo-sgd)
+// Inclui tambem SAIs onde ele e o responsavel da PSAI (pode aparecer em ambas as abas)
 function queryPontosGerados(ano, sgd) {
   return `
     SELECT s.i_usuarios as codigo_sgd, MONTH(sp.CadastroSAI) as mes,
@@ -192,7 +192,6 @@ function queryPontosGerados(ano, sgd) {
     JOIN bethadba.psai p ON sp.i_psai = p.i_psai
     WHERE sp.nomeArea IN ('Escrita', 'Importacao', 'ONVIO ESCRITA')
       AND s.i_usuarios = ${sgd}
-      AND p.i_responsaveis <> ${sgd}
       AND YEAR(sp.CadastroSAI) = ${ano}
   `;
 }

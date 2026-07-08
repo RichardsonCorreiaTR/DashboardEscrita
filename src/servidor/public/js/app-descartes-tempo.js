@@ -46,19 +46,21 @@
         <strong>${semSai}</strong> sem SAI (tempo indisponivel no GA)
       </div>
       <div class="dt-cards">${renderCards(resumo)}</div>
-      <div class="card" style="margin-bottom:16px">
-        <h2 style="margin:0 0 12px;font-size:1rem">Descartes por Mês — Quantidade - ${ano}</h2>
-        <canvas id="chart-qtd" height="220"></canvas>
-        <p style="margin:8px 0 0;font-size:0.75rem;color:#64748b;border-top:1px solid #e2e8f0;padding-top:6px">
-          Total de PSAIs descartadas por mês, empilhadas por analista. Passe o mouse para ver o detalhe.
-        </p>
-      </div>
-      <div class="card" style="margin-bottom:16px">
-        <h2 style="margin:0 0 12px;font-size:1rem">Descartes por Mês — Tempo Lançado (h) - ${ano}</h2>
-        <canvas id="chart-tempo" height="220"></canvas>
-        <p style="margin:8px 0 0;font-size:0.75rem;color:#64748b;border-top:1px solid #e2e8f0;padding-top:6px">
-          Soma do tempo lançado (análise + definição) nas PSAIs descartadas, em horas, por mês e analista.
-        </p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+        <div class="card">
+          <h2 style="margin:0 0 10px;font-size:0.92rem">Descartes por Mês — Quantidade - ${ano}</h2>
+          <canvas id="chart-qtd" height="180"></canvas>
+          <p style="margin:6px 0 0;font-size:0.72rem;color:#64748b;border-top:1px solid #e2e8f0;padding-top:5px">
+            PSAIs descartadas por mês, por analista.
+          </p>
+        </div>
+        <div class="card">
+          <h2 style="margin:0 0 10px;font-size:0.92rem">Descartes por Mês — Tempo Lançado (h) - ${ano}</h2>
+          <canvas id="chart-tempo" height="180"></canvas>
+          <p style="margin:6px 0 0;font-size:0.72rem;color:#64748b;border-top:1px solid #e2e8f0;padding-top:5px">
+            Tempo lançado nas PSAIs descartadas, em horas.
+          </p>
+        </div>
       </div>
       <div class="card">
         <h2 style="margin:0 0 10px;font-size:1rem">Detalhe por PSAI</h2>

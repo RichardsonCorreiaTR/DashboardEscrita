@@ -158,14 +158,16 @@ const EquipesCoordenador = (() => {
       const resp = await fetch('/api/metas-equipe?fonte=cache&ano=' + ano);
       const json = await resp.json();
       await MetasConfig.carregar();
-      const coords = MetasConfig.coordenadores();
-      const coord = coords.find(c => c.slug === coordSlug);
       const todos = MetasConfig.colaboradores();
+      const isGerente = coordSlug === '__gerente__';
       const membros = (json.analistas || [])
-        .filter(a => todos.find(t => t.slug === a.slug && t['coordenador-slug'] === coordSlug))
+        .filter(a => {
+          const cfg = todos.find(t => t.slug === a.slug);
+          return cfg && (isGerente || cfg['coordenador-slug'] === coordSlug);
+        })
         .map(a => {
           const cfg = todos.find(t => t.slug === a.slug) || {};
-          return { ...a, apelido: cfg.apelido || cfg.nome || a.slug, cargo: cfg.cargo || cfg.senioridade, senioridade: cfg.senioridade };
+          return { ...a, apelido: cfg.apelido || cfg.nome || a.slug, cargo: cfg.cargo || cfg.senioridade, senioridade: cfg.senioridade, coordSlug: cfg['coordenador-slug'] };
         });
       const esp = membros.filter(m => m.senioridade === 'especialista');
       const ana = membros.filter(m => m.senioridade !== 'especialista');
@@ -173,10 +175,12 @@ const EquipesCoordenador = (() => {
         '<div style="margin-bottom:2rem">' +
           '<h4 style="color:var(--accent);margin-bottom:0.75rem;font-size:0.85rem;text-transform:uppercase">' + titulo + '</h4>' +
           renderTabela(lista) + '</div>';
+      const titulo = isGerente
+        ? '\uD83D\uDCCB Painel da Gerente \u2014 Mariana Sartori'
+        : (() => { const coords = MetasConfig.coordenadores(); const coord = coords.find(c => c.slug === coordSlug); return '\uD83D\uDCCB Painel do Coordenador \u2014 ' + (coord ? coord.apelido || coord.nome : coordSlug); })();
       container.innerHTML =
         '<div style="margin-bottom:1.5rem">' +
-          '<h2 style="font-size:1.1rem;margin:0">\uD83D\uDCCB Painel do Coordenador \u2014 ' +
-          (coord ? coord.apelido || coord.nome : coordSlug) + '</h2>' +
+          '<h2 style="font-size:1.1rem;margin:0">' + titulo + '</h2>' +
           '<p style="font-size:0.8rem;opacity:0.6;margin:4px 0 0">M\u00eas atual: ' +
           MESES_LABEL[MES_ATUAL - 1] + ' / ' + new Date().getFullYear() + ' \u2014 ' +
           membros.length + ' colaboradores</p></div>' +

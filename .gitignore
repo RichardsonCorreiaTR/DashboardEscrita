@@ -1,6 +1,8 @@
 ﻿node_modules/
 data/cache/
 data/historico.jsonl
+data/feedback-1on1.json
+data/nes-definicao-cache.json
 output/arquivo/
 # Prints da auditoria UX externa (binarios). Remova a linha abaixo para versionar os PNGs no Git.
 output/ux-referencia-product-engineering/*.png
