@@ -77,11 +77,25 @@ function parseTitulo(titulo) {
   };
 }
 
+function detectarColunas(ws) {
+  // Linha 3 é o header — detecta posição dinâmica de "Considera" e gravidade
+  const hr = ws.getRow(3);
+  let colConsidera = null, colGravidade = null;
+  for (let c = 1; c <= 12; c++) {
+    const raw = (cellText(hr.getCell(c)) || '').toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    if (raw === 'considera') colConsidera = c;
+    else if (raw.includes('grave') || raw.includes('critic')) colGravidade = c;
+  }
+  return { colConsidera, colGravidade };
+}
+
 function parseAba(ws) {
   const titulo = cellText(ws.getRow(1).getCell(1));
   const info = parseTitulo(titulo);
   const nes = [];
   const totais = { total_liberadas: 0, com_definicao: 0 };
+  const { colConsidera, colGravidade } = detectarColunas(ws);
 
   ws.eachRow((row, n) => {
     if (n < 4) return;
@@ -98,13 +112,22 @@ function parseAba(ws) {
     // Linha de NE (col1 é numero ou hyperlink de numero)
     const neNum = parseInt(col1);
     if (!neNum || isNaN(neNum)) return;
+
+    // Filtrar por "Considera" quando a coluna existir
+    if (colConsidera) {
+      const considera = normalizarNome(cellText(row.getCell(colConsidera)) || '');
+      if (considera === 'nao') return; // excluir NEs marcadas como Não
+    }
+
     const saiOrigem = cellText(row.getCell(2));
-    const anoSai = cellText(row.getCell(3));
-    const tipoSai = cellText(row.getCell(4));
-    const psai = cellText(row.getCell(5));
-    const sai = cellText(row.getCell(6));
-    const analise = cellText(row.getCell(7));
-    const gravidade = cellText(row.getCell(8));
+    const anoSai    = cellText(row.getCell(3));
+    const tipoSai   = cellText(row.getCell(4));
+    const psai      = cellText(row.getCell(5));
+    const sai       = cellText(row.getCell(6));
+    const analise   = cellText(row.getCell(7));
+    // Gravidade: coluna específica se detectada, senão col 8 legado (sem Considera)
+    const colGrav = colGravidade || (colConsidera ? null : 8);
+    const gravidade = colGrav ? cellText(row.getCell(colGrav)) : null;
     const slugPsai = nomeParaSlug(psai);
     const slugSai  = nomeParaSlug(sai);
     nes.push({
