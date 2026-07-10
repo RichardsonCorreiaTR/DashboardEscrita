@@ -1,54 +1,74 @@
 /**
- * acomp-sals-acumulado.js - Visao Acumulado: todos analistas mes a mes
- * Grafico: tempo medio por SAL (min) por mes, uma linha por analista.
+ * acomp-sals-acumulado.js - Acumulado: todos analistas agrupados por mes e nivel
+ * Grafico: uma linha por nivel de SAL (Baixa/Media/Alta/Extra Alta)
+ * Filtro de nivel acima do grafico com atualizacao automatica.
  */
 /* eslint-disable no-unused-vars */
 /* global Chart */
 const AcompSalsAcumulado = (() => {
   const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const CORES = ['#3b82f6','#22c55e','#f97316','#a855f7','#ef4444',
-                 '#14b8a6','#eab308','#ec4899','#6366f1','#0ea5e9','#84cc16','#f43f5e'];
-
+  const NIVEIS = { 1: 'Baixa', 2: 'Média', 3: 'Alta', 4: 'Extra Alta' };
+  const CORES  = { 1: '#22c55e', 2: '#eab308', 3: '#f97316', 4: '#ef4444' };
   let _chart = null;
+  let _agregado = {}; // { nivel: { mes: { tempo, qtd } } }
 
   function destruirChart() {
     if (_chart) { _chart.destroy(); _chart = null; }
   }
 
-  function renderGrafico(analistas, container) {
-    const wrap = document.getElementById('sal-acum-chart-wrap');
-    if (!wrap) return;
-    destruirChart();
-    const canvas = wrap.querySelector('canvas');
-    if (!canvas) return;
-
-    const datasets = analistas
-      .filter(a => Object.keys(a.mensal).length > 0)
-      .map((a, i) => ({
-        label: a.apelido,
-        data: MESES.map((_, m) => {
-          const d = a.mensal[m + 1];
-          return d && d.qtd > 0 ? d.media : null;
-        }),
-        borderColor: CORES[i % CORES.length],
-        backgroundColor: CORES[i % CORES.length] + '22',
-        borderWidth: 2, pointRadius: 4, tension: 0.3,
-        spanGaps: true
-      }));
-
-    // Linha de total (media de todos)
-    const totalPorMes = MESES.map((_, m) => {
-      let somaMedia = 0, count = 0;
-      analistas.forEach(a => {
-        const d = a.mensal[m + 1];
-        if (d && d.qtd > 0) { somaMedia += d.media; count++; }
+  // Agrega todos os analistas: soma tempo e qtd por nivel/mes
+  function agregar(analistas) {
+    _agregado = {};
+    analistas.forEach(a => {
+      Object.entries(a.mensal_nivel || {}).forEach(([nivel, meses]) => {
+        if (!_agregado[nivel]) _agregado[nivel] = {};
+        Object.entries(meses).forEach(([mes, d]) => {
+          if (!_agregado[nivel][mes]) _agregado[nivel][mes] = { tempo: 0, qtd: 0 };
+          _agregado[nivel][mes].tempo += d.tempo || 0;
+          _agregado[nivel][mes].qtd   += d.qtd   || 0;
+        });
       });
-      return count > 0 ? Math.round(somaMedia / count) : null;
+    });
+  }
+
+  function niveisAtivos() {
+    return Array.from(document.querySelectorAll('.sal-acum-cb:checked')).map(el => Number(el.value));
+  }
+
+  function renderGrafico() {
+    destruirChart();
+    const canvas = document.getElementById('sal-acum-canvas');
+    if (!canvas) return;
+    const niveis = niveisAtivos();
+
+    const datasets = niveis.map(n => {
+      const dados = MESES.map((_, i) => {
+        const d = _agregado[n] && _agregado[n][i + 1];
+        return (d && d.qtd > 0) ? Math.round(d.tempo / d.qtd) : null;
+      });
+      return {
+        label: NIVEIS[n],
+        data: dados,
+        borderColor: CORES[n],
+        backgroundColor: CORES[n] + '22',
+        borderWidth: 3, pointRadius: 5, tension: 0.3, spanGaps: true,
+        fill: false
+      };
+    });
+
+    // Linha de média geral (todos os niveis ativos, todos os meses)
+    const mediaGeral = MESES.map((_, i) => {
+      let somaT = 0, somaQ = 0;
+      niveis.forEach(n => {
+        const d = _agregado[n] && _agregado[n][i + 1];
+        if (d) { somaT += d.tempo; somaQ += d.qtd; }
+      });
+      return somaQ > 0 ? Math.round(somaT / somaQ) : null;
     });
     datasets.unshift({
       label: '— Média geral',
-      data: totalPorMes,
-      borderColor: '#1e293b', borderWidth: 3, borderDash: [8, 4],
+      data: mediaGeral,
+      borderColor: '#1e293b', borderWidth: 2, borderDash: [8, 4],
       pointRadius: 3, tension: 0.3, spanGaps: true,
       backgroundColor: 'transparent'
     });
@@ -60,7 +80,15 @@ const AcompSalsAcumulado = (() => {
         responsive: true, maintainAspectRatio: false,
         plugins: {
           legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 14 } },
-          tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y ?? '—'} min` } }
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const v = ctx.parsed.y;
+                if (v == null) return null;
+                return `${ctx.dataset.label}: ${v} min/SAL`;
+              }
+            }
+          }
         },
         scales: {
           y: { beginAtZero: true, title: { display: true, text: 'Minutos por SAL' } },
@@ -70,36 +98,52 @@ const AcompSalsAcumulado = (() => {
     });
   }
 
-  function renderTabela(analistas) {
-    const tEl = document.getElementById('sal-acum-tabela');
-    if (!tEl) return;
-    const colunas = MESES.map((m, i) => {
-      let somaMedia = 0, count = 0;
-      analistas.forEach(a => { const d = a.mensal[i+1]; if (d && d.qtd>0) { somaMedia += d.media; count++; } });
-      return count > 0 ? Math.round(somaMedia / count) : null;
-    });
-    const ths = MESES.map(m => `<th>${m}</th>`).join('');
-    const totalRow = `<tr style="background:#f8fafc;font-weight:700">
-      <td>Média geral</td>
-      ${colunas.map(v => `<td style="text-align:center">${v != null ? v + 'min' : '—'}</td>`).join('')}
-    </tr>`;
-    const analRow = analistas.filter(a => Object.keys(a.mensal).length).map(a =>
-      `<tr><td><strong>${a.apelido}</strong></td>
-        ${MESES.map((_, m) => {
-          const d = a.mensal[m+1];
-          return `<td style="text-align:center">${d && d.qtd > 0 ? d.media + 'min' : '—'}</td>`;
-        }).join('')}
-      </tr>`
-    ).join('');
-    tEl.innerHTML = `<table class="eq-tabela" style="font-size:0.75rem;overflow-x:auto;display:block">
-      <thead><tr><th>Analista</th>${ths}</tr></thead>
-      <tbody>${totalRow}${analRow}</tbody>
-    </table>`;
+  function renderTabela() {
+    const el = document.getElementById('sal-acum-tabela');
+    if (!el) return;
+    const niveis = niveisAtivos();
+    const ths = ['Nível / Mês', ...MESES].map(h => `<th>${h}</th>`).join('');
+    const linhas = niveis.map(n => {
+      const tds = MESES.map((_, i) => {
+        const d = _agregado[n] && _agregado[n][i + 1];
+        if (!d || d.qtd === 0) return `<td style="text-align:center;opacity:.35">—</td>`;
+        const media = Math.round(d.tempo / d.qtd);
+        return `<td style="text-align:center"><strong style="color:${CORES[n]}">${media}min</strong><br><span style="font-size:.65rem;color:var(--cor-texto-sec)">${d.qtd} SALs</span></td>`;
+      }).join('');
+      return `<tr><td><span style="color:${CORES[n]};font-weight:700">${NIVEIS[n]}</span></td>${tds}</tr>`;
+    }).join('');
+    el.innerHTML = `<div style="overflow-x:auto;margin-top:.75rem">
+      <table class="eq-tabela" style="font-size:.75rem;min-width:600px">
+        <thead><tr>${ths}</tr></thead>
+        <tbody>${linhas}</tbody>
+      </table>
+    </div>`;
+  }
+
+  function atualizar() {
+    renderGrafico();
+    renderTabela();
+  }
+
+  function renderFiltros(container) {
+    const wrap = document.createElement('div');
+    wrap.className = 'sal-acum-filtros';
+    wrap.innerHTML = `
+      <span class="sal-acum-filtros__label">Filtrar nível:</span>
+      ${Object.entries(NIVEIS).map(([n, label]) => `
+        <label class="sal-nivel-opt">
+          <input type="checkbox" class="sal-acum-cb" value="${n}" checked>
+          <span style="color:${CORES[n]};font-weight:700">${label}</span>
+        </label>`).join('')}`;
+    const chartWrap = document.getElementById('sal-acum-chart-wrap');
+    if (chartWrap && chartWrap.parentNode) chartWrap.parentNode.insertBefore(wrap, chartWrap);
+    wrap.querySelectorAll('.sal-acum-cb').forEach(cb => cb.addEventListener('change', atualizar));
   }
 
   function renderizar(analistas) {
-    renderGrafico(analistas);
-    renderTabela(analistas);
+    agregar(analistas);
+    renderFiltros();
+    atualizar();
   }
 
   return { renderizar, destruirChart };

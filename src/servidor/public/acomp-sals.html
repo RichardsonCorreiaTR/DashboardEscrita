@@ -54,7 +54,13 @@
     .sal-card__detalhe { margin-top: 0.5rem; }
 
     /* Acumulado */
-    #sal-acum-chart-wrap { height: 340px; margin-bottom: 1.25rem; background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: var(--radius); padding: 1rem; }
+    .sal-acum-filtros {
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 0.6rem 1rem; margin-bottom: 0.75rem;
+    }
+    .sal-acum-filtros__label { font-size: 0.78rem; font-weight: 700; color: var(--cor-texto-sec); }
+    #sal-acum-chart-wrap { height: 360px; margin-bottom: 1.25rem; background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: var(--radius); padding: 1rem; }
 
     /* Por Funcionário */
     .sal-func-controles {
@@ -150,7 +156,7 @@
     </footer>
   </div>
   <script src="/js/nav.js?v=10"></script>
-  <script src="/js/acomp-sals-acumulado.js?v=1"></script>
+  <script src="/js/acomp-sals-acumulado.js?v=2"></script>
   <script src="/js/acomp-sals-funcionario.js?v=1"></script>
   <script src="/js/app-acomp-sals.js?v=2"></script>
 </body>
