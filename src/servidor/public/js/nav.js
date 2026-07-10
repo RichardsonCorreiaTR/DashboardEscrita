@@ -59,6 +59,12 @@ const Nav = (() => {
         { id: 'semanal-historica', href: '/estudos.html?view=semanal-historica', titulo: 'Semanal - NE Historica' }
       ]
     },
+    {
+      id: 'acomp-sals', titulo: 'Acomp. SALs', icone: '\u25A1',
+      sub: [
+        { id: 'sal-tempo-descarte', href: '/acomp-sals.html', titulo: 'Tempo Descarte' }
+      ]
+    },
     { id: 'descartes-tempo', href: '/descartes-tempo.html', titulo: 'Descartes x Tempo', icone: '\u25D2' },
     {
       id: 'estudos', titulo: 'Estudos e Analises', icone: '\u25B2',
@@ -93,6 +99,7 @@ const Nav = (() => {
     if (path === '/descartes-tempo.html') return 'descartes-tempo';
     if (path === '/feedback-1on1.html') return 'feedback-1on1';
     if (path === '/nes-definicao.html') return 'nes-definicao';
+    if (path === '/acomp-sals.html') return 'sal-tempo-descarte';
 
     // Verificar subpaginas de estudos
     if (path === '/estudos.html' && view) return view;

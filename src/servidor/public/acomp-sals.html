@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acomp. SALs - Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <style>
+    main.dashboard { max-width: none; padding: 1rem 1.25rem; }
+
+    .sal-diretriz {
+      background: var(--info-bg); border: 1px solid var(--info-borda);
+      border-radius: var(--radius); padding: 0.75rem 1.25rem;
+      font-size: 0.82rem; color: var(--cor-texto); margin-bottom: 1rem;
+      display: flex; gap: 2rem; flex-wrap: wrap;
+    }
+    .sal-diretriz strong { color: var(--cor-primaria); font-size: 1rem; }
+
+    .sal-controles {
+      display: flex; gap: 0.75rem; align-items: center;
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 0.6rem 1rem; margin-bottom: 1rem;
+    }
+    .sal-controles select { padding: 0.3rem 0.6rem; border: 1px solid var(--cor-borda); border-radius: 6px; font-size: 0.82rem; }
+
+    .sal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1rem; }
+
+    .sal-card {
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 1rem; border-left: 4px solid var(--vermelho);
+    }
+    .sal-card--ok { border-left-color: var(--verde); }
+    .sal-card__header {
+      display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--cor-borda);
+    }
+    .sal-card__nome { font-weight: 700; font-size: 0.95rem; flex: 1; }
+    .sal-card__cargo { font-size: 0.68rem; color: var(--cor-texto-sec); background: var(--cor-fundo);
+      padding: 0.1rem 0.35rem; border-radius: 4px; }
+    .sal-card__psais { font-size: 0.7rem; color: var(--cor-texto-sec); margin-left: auto; }
+
+    .sal-metrica { margin-bottom: 0.75rem; padding: 0.5rem 0.75rem;
+      background: var(--cor-fundo); border-radius: var(--radius-sm); }
+    .sal-metrica__label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--cor-texto-sec); margin-bottom: 0.2rem; }
+    .sal-metrica__valor { font-size: 1.3rem; font-weight: 800; line-height: 1; }
+    .sal-metrica__base { font-size: 0.7rem; color: var(--cor-texto-sec); margin-top: 0.15rem; }
+    .sal-metrica__status { font-size: 0.75rem; font-weight: 600; margin-top: 0.2rem; }
+
+    .sal-card__detalhe { margin-top: 0.5rem; }
+    .sal-tabela { margin-top: 0.5rem; }
+  </style>
+</head>
+<body class="com-sidebar">
+  <nav id="nav-container"></nav>
+  <div class="pagina">
+    <header class="header">
+      <div class="header__info">
+        <h1 class="header__title">Acomp. SALs — Tempo Descarte</h1>
+        <span class="header__subtitle">Escrita Fiscal · Diretriz: −20% tempo médio SAL | −30% tempo em SALs descartadas</span>
+      </div>
+      <div class="header__acoes">
+        <a href="/auth/logout" class="btn btn--outline" style="font-size:0.8rem">Sair</a>
+      </div>
+    </header>
+
+    <main id="equipes-main" class="dashboard">
+      <div class="sal-diretriz">
+        <div>
+          <strong>−20%</strong><br>
+          Tempo médio por PSAI SAL<br>
+          <span style="font-size:0.75rem;opacity:.7">Comparado ao ano anterior</span>
+        </div>
+        <div>
+          <strong>−30%</strong><br>
+          Tempo em PSAIs SAL descartadas<br>
+          <span style="font-size:0.75rem;opacity:.7">Comparado ao ano anterior</span>
+        </div>
+        <div style="margin-left:auto;font-size:0.75rem;color:var(--cor-texto-sec);align-self:center">
+          Baseline: ano anterior · Dados: psai_responsaveis (tempo_analise + tempo_definicao)
+        </div>
+      </div>
+
+      <div class="sal-controles">
+        <label for="sal-ano" style="font-size:0.82rem;font-weight:600">Ano:</label>
+        <select id="sal-ano">
+          <option value="2026" selected>2026</option>
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
+        </select>
+        <button id="sal-btn-consultar" class="btn btn--outline" style="font-size:0.8rem">Consultar</button>
+      </div>
+
+      <div id="sal-conteudo" class="sal-grid">
+        <div class="loading">
+          <div class="loading__spinner"></div>
+          <span>Carregando...</span>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>Dashboard Escrita Fiscal v0.2.0</span>
+      <span>Coord. Richardson Picinini Correia</span>
+    </footer>
+  </div>
+  <script src="/js/nav.js?v=10"></script>
+  <script src="/js/app-acomp-sals.js?v=1"></script>
+</body>
+</html>
