@@ -27,6 +27,7 @@ const Nav = (() => {
         { tipo: 'header', titulo: 'Especialistas' },
         { id: 'eq-giovani', href: '/equipes.html?colaborador=giovani', titulo: 'Giovani', coord: 'richardson' },
         { id: 'eq-jennifer', href: '/equipes.html?colaborador=jennifer', titulo: 'Jennifer', coord: 'richardson' },
+        { id: 'eq-lais', href: '/equipes.html?colaborador=lais', titulo: 'Lais', coord: 'richardson' },
         { id: 'eq-victor', href: '/equipes.html?colaborador=victor', titulo: 'Victor', coord: 'richardson' },
         { id: 'eq-bruna', href: '/equipes.html?colaborador=bruna', titulo: 'Bruna', coord: 'marielli' },
         { id: 'eq-patricia', href: '/equipes.html?colaborador=patricia', titulo: 'Patricia', coord: 'marielli' },

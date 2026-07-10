@@ -22,7 +22,7 @@ const NOME_SLUG = {
   'barbara leite': 'barbara-leite',
   'gabriely': 'gabriely', 'gabriely marques': 'gabriely',
   'juliana': 'juliana', 'juliana kuerten': 'juliana',
-  'lais': 'laysa', 'laysa': 'laysa', 'laysa gabriela': 'laysa',
+  'lais': 'lais', 'laysa': 'laysa', 'laysa gabriela': 'laysa',
   'rafaela ribeiro': 'rafaela-ribeiro', 'rafaela gubert': 'rafaela-ribeiro',
   'rafaela sampaio': 'rafaela-sampaio', 'rafaela silva': 'rafaela-sampaio',
   'renan': 'renan', 'renan maiato': 'renan',

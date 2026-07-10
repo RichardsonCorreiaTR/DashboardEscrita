@@ -70,6 +70,13 @@
     "trocar_senha": true
   },
   {
+    "usuario": "lais",
+    "senha": "6109861",
+    "slug": "lais",
+    "papel": "analista",
+    "trocar_senha": true
+  },
+  {
     "usuario": "victor",
     "senha": "0181375",
     "slug": "victor",
