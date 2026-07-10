@@ -159,9 +159,10 @@ function calcularMetas(analista, dados, metaIds) {
   const isEsp = analista.senioridade === 'especialista';
   const metaTempoAnalise = 85;
   const metaTempoGeracao = 80;
-  // Ambos usam revCtrl.def keyed por codigo-sgd (responsavel do PSAI)
-  const rev = dados.revCtrl.def;
-  const revKey = sgd;
+  // Especialistas: por sai.i_usuarios (revCtrl.ger, keyed por i-usuarios)
+  // Analistas:     por psai.i_responsaveis (revCtrl.def, keyed por codigo-sgd)
+  const rev = isEsp ? dados.revCtrl.ger : dados.revCtrl.def;
+  const revKey = isEsp ? uid : sgd;
   // Calcular atividade principal separado para uso em pontos-atividade-principal
   const podeGerar = isEsp || analista.senioridade === 'pleno';
   const mensalAtivPrincipal = mensalAtividades(dados.ativs[uid], isEsp ? 50 : 70,

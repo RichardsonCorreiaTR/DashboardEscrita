@@ -222,7 +222,8 @@ async function detalheRetornos(a, metaId, mes) {
 async function buscarDetalhe(a, metaId, mes) {
   const sgd = a['codigo-sgd'], uid = a['i-usuarios'];
   const isEsp = a.senioridade === 'especialista';
-  if (metaId.startsWith('indice-revisoes')) return qe.executar(detalhe.detalheRevisoes(sgd, ANO, mes, isEsp, metaId));
+  // Especialistas: filtrar por sai.i_usuarios (uid), analistas: por psai.i_responsaveis (sgd)
+  if (metaId.startsWith('indice-revisoes')) return qe.executar(detalhe.detalheRevisoes(isEsp ? uid : sgd, ANO, mes, isEsp, metaId));
   if (metaId === 'pontos-definicao') {
     const rows = await qe.executar(detalhe.detalhePontos(sgd, ANO, mes));
     return rows.map(r => {
