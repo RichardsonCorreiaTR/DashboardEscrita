@@ -167,7 +167,7 @@ async function buscarDadosAnalista(a) {
   const sgd = a['codigo-sgd'], uid = a['i-usuarios'];
   const [revDef, revGer, tempoGer, tempoGerSal, tempoGerSailSam, ss, ativs, ret, pontosRaw, tMedSalRaw, nivelMap, descRaw, pontosGeradosRaw, descSitRaw, analSemSaiRaw] = await Promise.all([
     qe.executar(queries.queryControleRevisoes(ANO, sgd)),
-    qe.executar(queries.queryControleRevisoesPorGerador(ANO, uid)),
+    qe.executar(queries.queryControleRevisoesPorGerador(ANO, sgd)), // sai.i_usuarios = codigo-sgd
     qe.executar(queries.queryTramitacoesPsai([sgd], 3, ANO, ['NE'])),
     qe.executar(queries.queryTramitacoesPsai([sgd], 5, ANO, ['SAL'])),
     qe.executar(queries.queryTramitacoesPsai([sgd], 7, ANO, ['SAIL', 'SAM'])),
@@ -222,8 +222,8 @@ async function detalheRetornos(a, metaId, mes) {
 async function buscarDetalhe(a, metaId, mes) {
   const sgd = a['codigo-sgd'], uid = a['i-usuarios'];
   const isEsp = a.senioridade === 'especialista';
-  // Especialistas: filtrar por sai.i_usuarios (uid), analistas: por psai.i_responsaveis (sgd)
-  if (metaId.startsWith('indice-revisoes')) return qe.executar(detalhe.detalheRevisoes(isEsp ? uid : sgd, ANO, mes, isEsp, metaId));
+  // Ambos usam codigo-sgd: psai.i_responsaveis (analista) e sai.i_usuarios (especialista) = codigo-sgd
+  if (metaId.startsWith('indice-revisoes')) return qe.executar(detalhe.detalheRevisoes(sgd, ANO, mes, isEsp, metaId));
   if (metaId === 'pontos-definicao') {
     const rows = await qe.executar(detalhe.detalhePontos(sgd, ANO, mes));
     return rows.map(r => {
