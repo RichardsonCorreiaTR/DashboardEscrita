@@ -211,6 +211,8 @@ const AppEquipes = (() => {
               ? MetasConfig.renderConteudoGrupoGeracao(m.subIds)
           : m.id === 'ne-definicao'
             ? EquipesNeDefinicao.renderInfo() + '<div class="eq-meta__dados" data-meta-id="ne-definicao"><div class="eq-sem-dados">Carregando...</div></div>'
+          : m.id === 'conclusao-pontos'
+            ? EquipesConclusaoPontos.renderInfo() + '<div class="eq-meta__dados" data-meta-id="conclusao-pontos"><div class="eq-sem-dados">Carregando...</div></div>'
           : renderMetaInfo(m) + '<div class="eq-meta__dados" data-meta-id="' + m.id + '"><div class="eq-sem-dados">Carregando...</div></div>')
         + '</div>'
       ).join('') + '</div>';
@@ -248,6 +250,7 @@ const AppEquipes = (() => {
       });
       ativarBotoesDetalhe(container);
       EquipesNeDefinicao.injetarTotalizador(slug, ano);
+      if (typeof EquipesConclusaoPontos !== 'undefined') EquipesConclusaoPontos.renderizar(container, json.metas);
     } catch (err) { console.warn('[equipes] Erro:', err.message); }
   }
 

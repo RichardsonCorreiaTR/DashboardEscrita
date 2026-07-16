@@ -103,7 +103,9 @@ const MetasConfig = (() => {
     'pontos-definicao':             { grupo: 'Pontos', label: 'Defini\u00e7\u00e3o' },
     'pontos-atividade-principal':   { grupo: 'Pontos', label: 'Atividade Principal' },
     'pontos-gerados':               { grupo: 'Pontos', label: 'SAIs Geradas' },
+    'psais-definidas':              { grupo: 'Pontos', label: 'PSAIs Definidas' },
     'sais-definidas-esp':           { grupo: 'Pontos', label: 'SAIs Definidas' },
+    'conclusao-pontos':             { grupo: 'Pontos', label: 'Conclusão' },
     'tempo-trabalho-analise':   { grupo: 'Tempos',   label: 'Atividade Afins' },
     'tempo-trabalho-geracao':   { grupo: 'Tempos',   label: 'Atividade' },
     'tempo-trabalho-principal': { grupo: 'Tempos',   label: 'Atividade Principal' },
@@ -235,6 +237,13 @@ const MetasConfig = (() => {
     let result = _gruparIds(metas, GRUPO_REVISOES_IDS, 'controle-revisoes', 'revisoes');
     result = _gruparIds(result, GRUPO_RETORNOS_IDS, 'controle-retornos', 'retornos');
     result = _gruparIds(result, GRUPO_GERACAO_IDS, 'controle-geracao', 'geracao');
+    // Injetar conclusao-pontos apos sais-definidas-esp (somente para especialistas)
+    const saisDefIdx = result.findIndex(m => !m.isGrupo && m.id === 'sais-definidas-esp');
+    if (saisDefIdx >= 0) {
+      result.splice(saisDefIdx + 1, 0, {
+        id: 'conclusao-pontos', isGrupo: false, desc: 'Conclusão dos Pontos', valor: null, un: null
+      });
+    }
     // Injetar NE Definicao apos o grupo de retornos
     const retIdx = result.findIndex(m => m.isGrupo && m.tipo === 'retornos');
     const neEntry = { id: 'ne-definicao', isGrupo: false, desc: 'NEs com Defini\u00e7\u00e3o', valor: null, un: null, dir: 'menor-melhor', fonte: 'Planilha An\u00e1lise de NEs' };
