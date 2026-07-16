@@ -27,7 +27,7 @@ const EquipesMensal = (() => {
 
   function renderTotalizador(tot, metas, valorMap) {
     if (!tot || !tot.por_meta) return '<div class="eq-sem-dados">Sem avaliacoes no ano</div>';
-    const EXCLUIR_COUNT = new Set(['tempo-medio-sal', 'controle-descartes', 'tempo-trabalho-principal', 'pontos-gerados', 'pontos-atividade-principal', 'pct-descartes']);
+    const EXCLUIR_COUNT = new Set(['tempo-medio-sal', 'controle-descartes', 'tempo-trabalho-principal', 'pontos-gerados', 'pontos-atividade-principal', 'pct-descartes', 'psais-definidas']);
     const pm = tot.por_meta;
     const itens = Object.entries(pm).filter(([id]) => !EXCLUIR_COUNT.has(id));
     if (!itens.length) return '<div class="eq-sem-dados">Sem avaliacoes no ano</div>';
@@ -108,7 +108,7 @@ const EquipesMensal = (() => {
       const ok = mediaPontos >= mediaMeta;
       return { texto: mediaPontos + '/' + mediaMeta, cor: ok ? 'var(--verde)' : 'var(--vermelho)' };
     }
-    if (id === 'pontos-gerados') {
+    if (id === 'pontos-gerados' || id === 'psais-definidas') {
       const total = dados.reduce((s, d) => s + (d.pontos || 0), 0);
       const media = Math.round(total / dados.length);
       return { texto: media + ' pts/m\u00eas', cor: 'var(--verde)' };
@@ -134,16 +134,22 @@ const EquipesMensal = (() => {
     return null;
   }
 
-  const INFO_METAS = new Set(['tempo-medio-sal', 'controle-descartes', 'tempo-trabalho-principal', 'pontos-gerados', 'pontos-atividade-principal', 'pct-descartes', 'sais-definidas-esp']);
-
   const LABELS_CURTO = {
-    'pontos-definicao': 'Pontos Def.',
+    'pontos-definicao': 'Defini\u00e7\u00e3o',
+    'pontos-atividade-principal': 'Atividade Principal',
+    'psais-definidas': 'PSAIs Definidas',
+    'pontos-gerados': 'SAIs Geradas',
+    'sais-definidas-esp': 'SAIs Definidas',
     'tempo-trabalho-analise': 'Tempo Afins',
     'indice-revisoes-sal': 'SAL', 'indice-revisoes-ne': 'NE',
     'indice-revisoes-sail': 'SAIL', 'indice-revisoes-sam-imp': 'SAM Imp',
     'indice-revisoes-sam-esc': 'SAM Esc',
     'indice-retornos-sal': 'SAL', 'indice-retornos-sail-sam': 'SAIL/SAM',
   };
+  const IDS_TOT_PONTOS = ['pontos-definicao', 'pontos-atividade-principal', 'psais-definidas', 'pontos-gerados', 'sais-definidas-esp'];
+  const IDS_TOT_TEMPOS = ['tempo-trabalho-analise', 'tempo-trabalho-principal', 'tempo-trabalho-geracao', 'tempo-gerando-sai'];
+  const IDS_TOT_DESCARTES = ['controle-descartes', 'pct-descartes'];
+  const IDS_TOT_DIVERSOS = ['tempo-medio-sal', 'respostas-ss-3d', 'gerar-sai-ne-sal-3d', 'gerar-sai-sal-5d', 'gerar-sai-sail-sam-7d'];
   const META_LABEL = {
     'indice-revisoes-sal': '\u2264 0,50', 'indice-revisoes-ne': '\u2264 0,50',
     'indice-revisoes-sail': '\u2264 1,15', 'indice-revisoes-sam-imp': '\u2264 0,80',
@@ -176,37 +182,56 @@ const EquipesMensal = (() => {
       '</div>';
   }
 
-  function grupoCards(titulo, itens, metas, valorMap) {
+  function pickTotIds(entries, ids) {
+    return ids.map(id => entries.find(([k]) => k === id)).filter(Boolean);
+  }
+
+  function grupoCards(titulo, itens, metas, valorMap, curto) {
     return '<div class="eq-tot-grupo">' +
       '<span class="eq-tot-grupo__titulo">' + titulo + '</span>' +
       '<div class="eq-tot-grupo__cards">' +
-      itens.map(([id, d]) => renderCard(id, d, metas, valorMap, true)).join('') +
+      itens.map(([id, d]) => renderCard(id, d, metas, valorMap, curto !== false)).join('') +
       '</div></div>';
+  }
+
+  function grupoDiversos(itens, metas, valorMap) {
+    const nePh = '<div class="eq-tot-meta" id="ne-def-tot-placeholder">' +
+      '<span class="eq-tot-meta__label">NEs Def.</span>' +
+      '<span class="eq-tot-meta__valor" style="color:var(--cor-texto-sec)">...</span></div>';
+    return '<div class="eq-tot-grupo">' +
+      '<span class="eq-tot-grupo__titulo">Diversos</span>' +
+      '<div class="eq-tot-grupo__cards">' +
+      itens.map(([id, d]) => renderCard(id, d, metas, valorMap, false)).join('') +
+      nePh + '</div></div>';
   }
 
   function resumoMetas(pm, metas, valorMap) {
     if (!pm) return '';
     const todos = Object.entries(pm);
     if (!todos.length) return '';
-    const contam = todos.filter(([id]) => !INFO_METAS.has(id));
-    const info = todos.filter(([id]) => INFO_METAS.has(id));
-    const sozinhos = contam.filter(([id]) => !id.startsWith('indice-'));
-    const revisoes = contam.filter(([id]) => id.startsWith('indice-revisoes'));
-    const retornos = contam.filter(([id]) => id.startsWith('indice-retornos'));
-    const metasHtml = '<div class="eq-tot-metas">' +
-      sozinhos.map(([id, d]) => renderCard(id, d, metas, valorMap, false)).join('') +
-      (revisoes.length ? grupoCards('Revis\u00f5es', revisoes, metas, valorMap) : '') +
-      (retornos.length ? grupoCards('Retornos', retornos, metas, valorMap) : '') +
-      '</div>';
-    const infoHtml = info.length
-      ? '<div class="eq-tot-metas eq-tot-metas--info">' +
-        info.map(([id, d]) => renderCard(id, d, metas, valorMap, false)).join('') +
-        '<div class="eq-tot-meta" id="ne-def-tot-placeholder">' +
-        '<span class="eq-tot-meta__label">NEs Def.</span>' +
-        '<span class="eq-tot-meta__valor" style="color:var(--cor-texto-sec)">...</span></div>' +
-        '</div>'
-      : '';
-    return metasHtml + infoHtml;
+    const used = new Set([...IDS_TOT_PONTOS, ...IDS_TOT_TEMPOS, ...IDS_TOT_DESCARTES, ...IDS_TOT_DIVERSOS,
+      'indice-revisoes-sal', 'indice-revisoes-ne', 'indice-revisoes-sail', 'indice-revisoes-sam-imp', 'indice-revisoes-sam-esc',
+      'indice-retornos-sal', 'indice-retornos-sail-sam']);
+    const pontos = pickTotIds(todos, IDS_TOT_PONTOS);
+    const revisoes = todos.filter(([id]) => id.startsWith('indice-revisoes'));
+    const retornos = todos.filter(([id]) => id.startsWith('indice-retornos'));
+    const tempos = pickTotIds(todos, IDS_TOT_TEMPOS);
+    const descartes = pickTotIds(todos, IDS_TOT_DESCARTES);
+    const diversos = pickTotIds(todos, IDS_TOT_DIVERSOS)
+      .concat(todos.filter(([id]) => !used.has(id)));
+    const linha1 = [
+      pontos.length ? grupoCards('Pontos', pontos, metas, valorMap, true) : '',
+      revisoes.length ? grupoCards('Revis\u00f5es', revisoes, metas, valorMap, true) : '',
+      retornos.length ? grupoCards('Retornos', retornos, metas, valorMap, true) : ''
+    ].join('');
+    const linha2 = [
+      tempos.length ? grupoCards('Tempos', tempos, metas, valorMap, false) : '',
+      descartes.length ? grupoCards('Descartes', descartes, metas, valorMap, false) : '',
+      grupoDiversos(diversos, metas, valorMap)
+    ].join('');
+    return '<div class="eq-tot-linhas">' +
+      '<div class="eq-tot-linha">' + linha1 + '</div>' +
+      '<div class="eq-tot-linha eq-tot-linha--sec">' + linha2 + '</div></div>';
   }
 
   function renderExplicacao(metaId) {
@@ -365,24 +390,28 @@ const EquipesMensal = (() => {
       '</div></div>';
   }
 
-  function totalizadorPontosGerados(mensal) {
+  function totalizadorPontosGerados(mensal, metaId) {
+    const isPsais = metaId === 'psais-definidas';
     const mesAtual = new Date().getMonth(); // meses fechados
     const temDados = Object.values(mensal).some(d => d && d.qtd_sais > 0);
-    if (!temDados) return '<div class="eq-sem-dados" style="margin-top:0.5rem">Nenhuma SAI gerada por outros analistas no ano</div>';
+    if (!temDados) return '<div class="eq-sem-dados" style="margin-top:0.5rem">' + (isPsais ? 'Nenhuma PSAI sem SAI gerada no ano' : 'Nenhuma SAI gerada por outros analistas no ano') + '</div>';
     const dados = Array.from({ length: mesAtual }, (_, i) => mensal[i + 1] || { pontos: 0, qtd_sais: 0 });
     const total = dados.reduce((s, d) => s + (d.pontos || 0), 0);
     const totalSais = dados.reduce((s, d) => s + (d.qtd_sais || 0), 0);
     const media = Math.round(total / dados.length);
     const mediaSais = Math.round(totalSais / dados.length);
     const cor = 'var(--cor-primaria)';
+    const titulo = isPsais ? 'PSAIs Analisadas sem SAI' : 'SAIs Geradas';
+    const labelQtd = isPsais ? 'Total de PSAIs' : 'Total de SAIs';
+    const labelMedia = isPsais ? 'M\u00e9dia mensal (PSAIs)' : 'M\u00e9dia mensal (SAIs)';
     return '<div class="eq-tot-pontos">' +
-      '<h4 class="eq-tot-pontos__titulo">\uD83D\uDCCA Acumulado do Ano \u2014 SAIs Geradas</h4>' +
+      '<h4 class="eq-tot-pontos__titulo">\uD83D\uDCCA Acumulado do Ano \u2014 ' + titulo + '</h4>' +
       '<div class="eq-dados-grid">' +
       '<div class="eq-dado"><span class="eq-dado__valor">' + dados.length + '</span><span class="eq-dado__label">Meses avaliados</span></div>' +
       '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + total + '</span><span class="eq-dado__label">Total de pontos</span></div>' +
       '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + media + '</span><span class="eq-dado__label">M\u00e9dia mensal (pts)</span></div>' +
-      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + totalSais + '</span><span class="eq-dado__label">Total de SAIs</span></div>' +
-      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + mediaSais + '</span><span class="eq-dado__label">M\u00e9dia mensal (SAIs)</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + totalSais + '</span><span class="eq-dado__label">' + labelQtd + '</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + mediaSais + '</span><span class="eq-dado__label">' + labelMedia + '</span></div>' +
       '</div></div>';
   }
 
@@ -460,12 +489,13 @@ const EquipesMensal = (() => {
     const mesAtual = new Date().getMonth() + 1;
     let html = '<table class="eq-tabela"><thead><tr><th>Mes</th>';
     cols.forEach(c => { html += '<th>' + c.label + '</th>'; });
-    html += (metaId === 'pontos-gerados' ? '' : '<th>Status</th>') + '<th></th></tr></thead><tbody>';
+    html += (metaId === 'pontos-gerados' || metaId === 'psais-definidas' ? '' : '<th>Status</th>') + '<th></th></tr></thead><tbody>';
     for (let m = 1; m <= 12; m++) { html += linhaMes(m, mensal[m], cols, metaId, mesAtual); }
     html += '</tbody></table>';
     html += '<div class="eq-detalhe-container" data-detalhe-meta="' + metaId + '"></div>';
     if (metaId === 'pontos-definicao') html += totalizadorPontos(mensal);
-    if (metaId === 'pontos-gerados') html += totalizadorPontosGerados(mensal);
+    if (metaId === 'pontos-gerados') html += totalizadorPontosGerados(mensal, metaId);
+    if (metaId === 'psais-definidas') html += totalizadorPontosGerados(mensal, metaId);
     if (metaId === 'sais-definidas-esp') html += totalizadorSaisDefinidas(mensal);
     if (metaId === 'pontos-atividade-principal') html += totalizadorAtivPrincipal(mensal);
     if (metaId.startsWith('tempo-trabalho')) html += totalizadorTempo(metaId, mensal, metaValor);
@@ -478,7 +508,7 @@ const EquipesMensal = (() => {
   }
 
   function linhaMes(m, d, cols, metaId, mesAtual) {
-    const isGerados = metaId === 'pontos-gerados';
+    const isGerados = metaId === 'pontos-gerados' || metaId === 'psais-definidas';
     const btnDetalhe = m <= mesAtual && (!isGerados || (d && d.qtd_sais > 0))
       ? '<button class="eq-btn-detalhe" data-meta="' + metaId + '" data-mes="' + m + '">Ver</button>'
       : '';
@@ -542,9 +572,9 @@ const EquipesMensal = (() => {
       { label: '% Atividade', render: d => d.pct_atividade + '%' },
       { label: 'Meta Ajustada', render: d => '\u2265 ' + d.meta_ajustada }
     ];
-    if (id === 'pontos-gerados' || id === 'sais-definidas-esp') return [
+    if (id === 'pontos-gerados' || id === 'sais-definidas-esp' || id === 'psais-definidas') return [
       { label: 'Pontos', render: d => d.pontos || 0 },
-      { label: 'SAIs', render: d => d.qtd_sais || 0 }
+      { label: id === 'psais-definidas' ? 'PSAIs' : 'SAIs', render: d => d.qtd_sais || 0 }
     ];
     if (id === 'pontos-definicao') return [
       { label: 'Pontos', render: d => d.pontos },

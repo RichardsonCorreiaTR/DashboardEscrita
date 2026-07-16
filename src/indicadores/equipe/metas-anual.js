@@ -187,6 +187,11 @@ function calcularMetas(analista, dados, metaIds) {
       for (let i = 1; i <= 12; i++) { if (!base[i]) base[i] = { pontos: 0, qtd_sais: 0, atingida: true }; }
       return base;
     })() },
+    'psais-definidas': { mensal: (m => {
+      const base = mensalPontos(dados.psaisDefinidas?.[sgd], 0);
+      for (let i = 1; i <= 12; i++) { if (!base[i]) base[i] = { pontos: 0, qtd_sais: 0, atingida: true }; }
+      return base;
+    })() },
     'sais-definidas-esp': { mensal: (m => {
       const base = mensalPontos(dados.pontos?.[sgd], 0);
       for (let i = 1; i <= 12; i++) { if (!base[i]) base[i] = { pontos: 0, qtd_sais: 0, atingida: true }; }

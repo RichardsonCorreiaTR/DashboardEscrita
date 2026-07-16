@@ -237,9 +237,30 @@ function queryAnalisesSemSai(ano, sgdList) {
   `;
 }
 
+// PSAIs sem SAI gerada (i_sai=0), agrupadas pela data do último trâmite
+function queryPsaisDefinidas(ano, sgd) {
+  const extra = sgd ? `AND p.i_responsaveis = ${sgd}` : '';
+  return `
+    SELECT p.i_responsaveis as i_usuarios,
+      MONTH(pt_max.max_ent) as mes,
+      sp.i_psai, sp.tipoSAI, p.nivel_alteracao
+    FROM UP.SAI_PSAI sp
+    JOIN bethadba.psai p ON sp.i_psai = p.i_psai
+    JOIN (SELECT i_psai, MAX(entrada) as max_ent
+          FROM bethadba.psai_tramites GROUP BY i_psai) pt_max
+      ON pt_max.i_psai = sp.i_psai
+    WHERE ${FILTRO_AREA}
+      AND sp.i_sai = 0
+      AND COALESCE(p.i_produto_grupo, 1) = 1
+      ${extra}
+      AND YEAR(pt_max.max_ent) = ${ano}
+  `;
+}
+
 module.exports = {
   queryControleRevisoes, queryControleRevisoesPorGerador,
   queryPontosDefinicao, queryPontosGerados, queryTramitacoesPsai,
   queryRespostasSS, queryTempoAtividades, queryTempoMedioSal,
-  queryControleDescartes, queryDescartesDataSituacao, queryAnalisesSemSai
+  queryControleDescartes, queryDescartesDataSituacao, queryAnalisesSemSai,
+  queryPsaisDefinidas
 };

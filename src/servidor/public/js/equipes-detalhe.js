@@ -28,6 +28,7 @@ const EquipesDetalhe = (() => {
     if (metaId.startsWith('tempo-trabalho')) return t + detAtividades(registros, metaId, senioridade);
     if (metaId.startsWith('indice-revisoes')) return t + detRevisoes(registros);
     if (metaId.startsWith('indice-retornos')) return t + detRetornos(registros, metaId);
+    if (metaId === 'psais-definidas') return t + detPontos(registros, true);
     if (metaId === 'pontos-definicao' || metaId === 'sais-definidas-esp' || metaId === 'pontos-atividade-principal' || metaId === 'pontos-gerados') return t + detPontos(registros);
     if (metaId.startsWith('gerar-sai')) {
       const maxDias = metaId.includes('-7d') ? 7 : metaId.includes('-5d') ? 5 : 3;
@@ -145,17 +146,18 @@ const EquipesDetalhe = (() => {
     return html;
   }
 
-  function detPontos(rows) {
+  function detPontos(rows, isPsai) {
     let soma = 0;
     const semNivel = rows.filter(r => r.nivel_inferido);
     let html = '';
     if (semNivel.length > 0) {
       html += '<div class="eq-det__aviso">\u26A0 ' + semNivel.length +
-        ' SAI(s) sem n\u00edvel definido na planilha \u2014 consideradas como <strong>Baixa</strong></div>';
+        (isPsai ? ' PSAI(s)' : ' SAI(s)') + ' sem n\u00edvel definido \u2014 consideradas como <strong>Baixa</strong></div>';
     }
-    html += '<div class="eq-det__grupo"><h5>SAIs (' + rows.length + ')</h5>' +
+    const colLabel = isPsai ? 'PSAI' : 'SAI';
+    html += '<div class="eq-det__grupo"><h5>' + (isPsai ? 'PSAIs' : 'SAIs') + ' (' + rows.length + ')</h5>' +
       '<table class="eq-tabela eq-tabela--det"><thead><tr>' +
-      '<th>SAI</th><th>Tipo</th><th>N\u00edvel</th><th>Pontos</th></tr></thead><tbody>';
+      '<th>' + colLabel + '</th><th>Tipo</th><th>N\u00edvel</th><th>Pontos</th></tr></thead><tbody>';
     rows.forEach(r => {
       const pts = Number(r.pontuacao) || 0;
       soma += pts;
@@ -165,7 +167,8 @@ const EquipesDetalhe = (() => {
       const cls = isOverride ? ' class="eq-det--override"' : (isFallback || isInferido) ? ' class="eq-det--alerta"' : '';
       const nivelLabel = isInferido ? 'Baixa *' : (r.nivel || 'Baixa');
       const ptLabel = isFallback ? pts + ' \u26A0' : pts;
-      html += '<tr' + cls + '><td>' + linkSai(r.i_sai) + '</td><td>' + r.tipoSAI +
+      const idLink = isPsai ? linkPsai(r.i_psai) : linkSai(r.i_sai);
+      html += '<tr' + cls + '><td>' + idLink + '</td><td>' + r.tipoSAI +
         '</td><td>' + nivelLabel + '</td><td>' + ptLabel + '</td></tr>';
     });
     html += '</tbody><tfoot><tr><td colspan="3"><strong>Total</strong></td><td><strong>' +

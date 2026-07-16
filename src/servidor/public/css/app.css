@@ -486,6 +486,11 @@ body.com-sidebar .pagina {
   margin: 0 auto;
   width: 100%;
 }
+/* Equipes: usa largura total disponivel (muitas abas e colunas) */
+#equipes-main.dashboard {
+  max-width: none;
+  margin: 0;
+}
 
 /* === CARDS GRID === */
 .cards-grid {
@@ -1236,26 +1241,27 @@ body.com-sidebar .pagina {
   font-size: 0.62rem; font-weight: 600; background: var(--cor-primaria);
   color: #fff; padding: 0.1rem 0.4rem; border-radius: 3px; opacity: 0.85;
 }
-.eq-tot-metas--info {
-  margin-top: 0.35rem; padding-top: 0.35rem;
-  border-top: 1px dashed var(--cor-borda);
+.eq-tot-linhas {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  margin-top: 0.5rem; padding-top: 0.5rem;
+  border-top: 1px solid var(--cor-borda);
 }
-.eq-tot-metas--info .eq-tot-meta {
-  flex: 1 1 auto; width: auto;
+.eq-tot-linha {
+  display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.75rem 1rem;
 }
-.eq-tot-metas > .eq-tot-meta {
-  flex: 0 0 auto; width: auto; min-width: 110px;
+.eq-tot-linha--sec {
+  padding-top: 0.35rem; border-top: 1px dashed var(--cor-borda);
 }
 .eq-tot-grupo {
-  display: flex; flex-direction: column; gap: 0.1rem; flex: 1 1 auto;
+  display: flex; flex-direction: column; gap: 0.15rem; flex: 0 0 auto;
 }
 .eq-tot-grupo__titulo {
   font-size: 0.58rem; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.05em; color: var(--cor-texto-sec);
   padding: 0 0.25rem; opacity: 0.7;
 }
-.eq-tot-grupo__cards { display: flex; gap: 0.35rem; }
-.eq-tot-grupo__cards .eq-tot-meta { flex: 1 1 auto; width: auto; min-width: 68px; }
+.eq-tot-grupo__cards { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.eq-tot-grupo__cards .eq-tot-meta { flex: 0 0 auto; width: auto; min-width: 72px; }
 .eq-tot-pontos {
   background: var(--cor-fundo-card);
   border-radius: var(--radius);
@@ -1270,18 +1276,11 @@ body.com-sidebar .pagina {
   margin-bottom: 0.75rem;
   color: var(--cor-texto);
 }
-.eq-tot-metas {
-  display: flex; flex-wrap: nowrap; align-items: center; gap: 0.35rem;
-  margin-top: 0.5rem; padding-top: 0.5rem;
-  border-top: 1px solid var(--cor-borda);
-  overflow-x: auto; scrollbar-width: none;
-}
-.eq-tot-metas::-webkit-scrollbar { display: none; }
 .eq-tot-meta {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 0.05rem; flex: 0 0 82px; width: 82px;
+  gap: 0.05rem; flex: 0 0 auto; min-width: 72px; max-width: 120px;
   background: var(--cor-fundo); border-radius: var(--radius-sm);
-  padding: 0.3rem 0.25rem; text-align: center;
+  padding: 0.3rem 0.4rem; text-align: center;
 }
 .eq-tot-meta__label {
   font-size: 0.6rem; font-weight: 700; color: var(--cor-texto-sec);

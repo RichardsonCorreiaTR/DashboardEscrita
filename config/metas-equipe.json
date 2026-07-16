@@ -42,6 +42,16 @@
       "fonte": "sai-psai"
     },
     {
+      "id": "psais-definidas",
+      "descricao": "Pontos das PSAIs analisadas sem SAI gerada",
+      "detalhes": "PSAIs onde o analista e o responsavel (psai.i_responsaveis) e nenhuma SAI foi criada (i_sai=0). Pontuacao calculada pela tabela cargo x tipo x nivel. Agrupado pela data do ultimo tramite da PSAI.",
+      "valor-esperado": 0,
+      "unidade": "pontos",
+      "contribui-para": "Informativo",
+      "data-limite": "2026-12-31",
+      "fonte": "psai-tramites"
+    },
+    {
       "id": "sais-definidas-esp",
       "descricao": "Pontos das PSAIs definidas pelo proprio especialista",
       "detalhes": "PSAIs onde o especialista e o responsavel (psai.i_responsaveis). Pontuacao calculada pela tabela cargo x tipo x nivel do especialista.",
@@ -250,6 +260,7 @@
       "pontos-definicao",
       "pontos-atividade-principal",
       "pontos-gerados",
+      "psais-definidas",
       "tempo-trabalho-analise",
       "tempo-trabalho-principal",
       "tempo-medio-sal",
@@ -268,6 +279,7 @@
       "pontos-definicao",
       "pontos-atividade-principal",
       "pontos-gerados",
+      "psais-definidas",
       "tempo-trabalho-analise",
       "tempo-trabalho-principal",
       "tempo-medio-sal",
@@ -286,6 +298,7 @@
       "pontos-definicao",
       "pontos-atividade-principal",
       "pontos-gerados",
+      "psais-definidas",
       "tempo-trabalho-analise",
       "tempo-trabalho-principal",
       "tempo-medio-sal",

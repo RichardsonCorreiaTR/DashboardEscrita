@@ -115,7 +115,7 @@ async function buscarDados(analistas) {
   // cargoMap por i_usuarios para pontosGerados
   const cargoMapUid = {};
   analistas.forEach(a => { cargoMapUid[a['i-usuarios']] = a.senioridade; });
-  const [revDef, revGer, tempoGer, tempoGerSal, tempoGerSailSam, ss, ativs, ret, pontosRaw, tMedSalRaw, nivelMap, descRaw, pontosGeradosRaw, descSitRaw, analSemSaiRaw] = await Promise.all([
+  const [revDef, revGer, tempoGer, tempoGerSal, tempoGerSailSam, ss, ativs, ret, pontosRaw, tMedSalRaw, nivelMap, descRaw, pontosGeradosRaw, descSitRaw, analSemSaiRaw, psaisDefRaw] = await Promise.all([
     qe.executar(queries.queryControleRevisoes(ANO)),
     qe.executar(queries.queryControleRevisoesPorGerador(ANO)),
     qe.executar(queries.queryTramitacoesPsai(idsSgd, 3, ANO, ['NE'])),
@@ -130,7 +130,8 @@ async function buscarDados(analistas) {
     qe.executar(queries.queryControleDescartes(ANO, idsSgd)),
     Promise.all(analistas.map(a => qe.executar(queries.queryPontosGerados(ANO, a['codigo-sgd'])))).then(r => r.flat()),
     qe.executar(queries.queryDescartesDataSituacao(ANO, idsSgd)),
-    qe.executar(queries.queryAnalisesSemSai(ANO, idsSgd))
+    qe.executar(queries.queryAnalisesSemSai(ANO, idsSgd)),
+    qe.executar(queries.queryPsaisDefinidas(ANO))
   ]);
   const tMedSal = tMedSalRaw.map(r => ({ ...r, nivel: nivelMap[r.i_sai] || null }));
   const pontosGeradosMap = {};
@@ -143,6 +144,7 @@ async function buscarDados(analistas) {
     revCtrl: { def: anual.agruparControleRevisoes(revDef), ger: anual.agruparControleRevisoes(revGer) },
     pontos: pontosCalc.agruparPontosDb(pontosRaw, cargoMap),
     pontosGerados: pontosGeradosMap,
+    psaisDefinidas: pontosCalc.agruparPontosDb(psaisDefRaw, cargoMap),
     tempoGer: anual.agrupar(tempoGer),
     tempoGerSal: anual.agrupar(tempoGerSal), tempoGerSailSam: anual.agrupar(tempoGerSailSam),
     ss: anual.agrupar(ss), ativs: anual.agruparAtividades(ativs), retornos: ret,
@@ -165,9 +167,9 @@ function agruparContagem(rows) {
 
 async function buscarDadosAnalista(a) {
   const sgd = a['codigo-sgd'], uid = a['i-usuarios'];
-  const [revDef, revGer, tempoGer, tempoGerSal, tempoGerSailSam, ss, ativs, ret, pontosRaw, tMedSalRaw, nivelMap, descRaw, pontosGeradosRaw, descSitRaw, analSemSaiRaw] = await Promise.all([
+  const [revDef, revGer, tempoGer, tempoGerSal, tempoGerSailSam, ss, ativs, ret, pontosRaw, tMedSalRaw, nivelMap, descRaw, pontosGeradosRaw, descSitRaw, analSemSaiRaw, psaisDefRaw] = await Promise.all([
     qe.executar(queries.queryControleRevisoes(ANO, sgd)),
-    qe.executar(queries.queryControleRevisoesPorGerador(ANO, sgd)), // sai.i_usuarios = codigo-sgd
+    qe.executar(queries.queryControleRevisoesPorGerador(ANO, sgd)),
     qe.executar(queries.queryTramitacoesPsai([sgd], 3, ANO, ['NE'])),
     qe.executar(queries.queryTramitacoesPsai([sgd], 5, ANO, ['SAL'])),
     qe.executar(queries.queryTramitacoesPsai([sgd], 7, ANO, ['SAIL', 'SAM'])),
@@ -180,13 +182,17 @@ async function buscarDadosAnalista(a) {
     qe.executar(queries.queryControleDescartes(ANO, [sgd])),
     qe.executar(queries.queryPontosGerados(ANO, sgd)),
     qe.executar(queries.queryDescartesDataSituacao(ANO, [sgd])),
-    qe.executar(queries.queryAnalisesSemSai(ANO, [sgd]))
+    qe.executar(queries.queryAnalisesSemSai(ANO, [sgd])),
+    qe.executar(queries.queryPsaisDefinidas(ANO, sgd))
   ]);
   const tMedSal = tMedSalRaw.map(r => ({ ...r, nivel: nivelMap[r.i_sai] || null }));
+  const cargoMapLocal = {};
+  cargoMapLocal[sgd] = a.senioridade;
   return {
     revCtrl: { def: anual.agruparControleRevisoes(revDef), ger: anual.agruparControleRevisoes(revGer) },
     pontos: pontosCalc.agruparPontosDbAnalista(pontosRaw, a.senioridade),
     pontosGerados: { [uid]: pontosCalc.agruparPontosGerados(pontosGeradosRaw, a.senioridade, buildCargoMapGlobal())[sgd] || {} },
+    psaisDefinidas: pontosCalc.agruparPontosDb(psaisDefRaw, cargoMapLocal),
     tempoMedioSal: tempoSalCalc.agruparTempoSal(tMedSal),
     descartes: descartesCalc.agruparDescartes(descRaw),
     descartesDataSit: agruparContagem(descSitRaw),
@@ -252,6 +258,26 @@ async function buscarDetalhe(a, metaId, mes) {
     return rows.map(r => ({
       i_sai: r.i_sai, i_psai: r.i_psai, tipoSAI: r.tipoSAI,
       resp_psai_sgd: r.i_responsaveis,
+      nivel: pontosCalc.nivelDbLabel(r.nivel_alteracao) || 'N\u00e3o definido',
+      nivel_inferido: !r.nivel_alteracao,
+      pontuacao: pontosCalc.pontosSai(r.tipoSAI, String(r.nivel_alteracao || 1), a.senioridade)
+    }));
+  }
+  if (metaId === 'psais-definidas') {
+    const rows = await qe.executar(`
+      SELECT p.i_responsaveis as i_usuarios, sp.i_psai, sp.tipoSAI, p.nivel_alteracao,
+        sp.CadastroPSAI, pt_max.max_ent as data_tramite
+      FROM UP.SAI_PSAI sp
+      JOIN bethadba.psai p ON sp.i_psai = p.i_psai
+      JOIN (SELECT i_psai, MAX(entrada) as max_ent FROM bethadba.psai_tramites GROUP BY i_psai) pt_max
+        ON pt_max.i_psai = sp.i_psai
+      WHERE sp.nomeArea IN ('Escrita', 'Importacao', 'ONVIO ESCRITA')
+        AND sp.i_sai = 0 AND COALESCE(p.i_produto_grupo, 1) = 1
+        AND p.i_responsaveis = ${sgd}
+        AND YEAR(pt_max.max_ent) = ${ANO} AND MONTH(pt_max.max_ent) = ${mes}
+    `);
+    return rows.map(r => ({
+      i_psai: r.i_psai, tipoSAI: r.tipoSAI, CadastroSAI: r.CadastroPSAI,
       nivel: pontosCalc.nivelDbLabel(r.nivel_alteracao) || 'N\u00e3o definido',
       nivel_inferido: !r.nivel_alteracao,
       pontuacao: pontosCalc.pontosSai(r.tipoSAI, String(r.nivel_alteracao || 1), a.senioridade)
