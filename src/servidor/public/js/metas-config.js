@@ -237,8 +237,8 @@ const MetasConfig = (() => {
     let result = _gruparIds(metas, GRUPO_REVISOES_IDS, 'controle-revisoes', 'revisoes');
     result = _gruparIds(result, GRUPO_RETORNOS_IDS, 'controle-retornos', 'retornos');
     result = _gruparIds(result, GRUPO_GERACAO_IDS, 'controle-geracao', 'geracao');
-    // Injetar conclusao-pontos apos sais-definidas-esp (somente para especialistas)
-    const saisDefIdx = result.findIndex(m => !m.isGrupo && m.id === 'sais-definidas-esp');
+    // Injetar conclusao-pontos apos psais-definidas (somente para analistas)
+    const saisDefIdx = result.findIndex(m => !m.isGrupo && m.id === 'psais-definidas');
     if (saisDefIdx >= 0) {
       result.splice(saisDefIdx + 1, 0, {
         id: 'conclusao-pontos', isGrupo: false, desc: 'Conclusão dos Pontos', valor: null, un: null

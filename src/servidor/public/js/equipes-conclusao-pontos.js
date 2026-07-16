@@ -1,5 +1,5 @@
 /**
- * equipes-conclusao-pontos.js - Tab "Conclusao dos Pontos" para especialistas
+ * equipes-conclusao-pontos.js - Tab "Conclusao dos Pontos" para analistas
  *
  * Grupo 1: Definicao + PSAIs Definidas vs meta 80 pts
  * Grupo 2: Atividade Principal + PSAIs Definidas vs meta_ajustada mensal
@@ -82,7 +82,7 @@ const EquipesConclusaoPontos = (() => {
     if (!el || !metas) return;
 
     const def    = (metas['pontos-definicao']          && metas['pontos-definicao'].mensal)      || {};
-    const saisDef = (metas['sais-definidas-esp']        && metas['sais-definidas-esp'].mensal)    || {};
+    const saisDef = (metas['psais-definidas']           && metas['psais-definidas'].mensal)       || {};
     const atv    = (metas['pontos-atividade-principal'] && metas['pontos-atividade-principal'].mensal) || {};
 
     // Grupo 1: Definicao + PSAIs Definidas vs 80 pts
