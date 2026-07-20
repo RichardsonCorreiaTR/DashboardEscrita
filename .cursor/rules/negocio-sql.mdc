@@ -68,6 +68,8 @@ Fallback nas queries: `COALESCE(sit_sai.descricao, sit_psai.descricao)`
 | 24 | Liberado em versoes anteriores | sim |
 | 33 | Sistema Descontinuado | sim |
 | 34 | Liberado antecipadamente | sim |
+| 14 | A aprovar | nao |
+| 17 | **Definida** | nao |
 
 ## Colunas potencialmente pesadas (AVISO)
 DESCRICAO, ANTECIPACOES, CORRECOES, situacao_descricao, comportamento, definicao,

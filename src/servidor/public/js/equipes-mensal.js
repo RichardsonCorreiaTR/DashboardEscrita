@@ -25,6 +25,17 @@ const EquipesMensal = (() => {
     return diasUteis(mes, ano) * 8 * 60; // em minutos
   }
 
+  function anoSelecionado() {
+    return Number(localStorage.getItem('eq-ano-selecionado')) || ANO_ATUAL;
+  }
+
+  function mesFechadoUi(m) {
+    const ano = anoSelecionado();
+    if (ano < ANO_ATUAL) return true;
+    if (ano > ANO_ATUAL) return false;
+    return m < new Date().getMonth() + 1;
+  }
+
   function renderTotalizador(tot, metas, valorMap) {
     if (!tot || !tot.por_meta) return '<div class="eq-sem-dados">Sem avaliacoes no ano</div>';
     const EXCLUIR_COUNT = new Set(['tempo-medio-sal', 'controle-descartes', 'tempo-trabalho-principal', 'pontos-gerados', 'pontos-atividade-principal', 'pct-descartes', 'psais-definidas']);
@@ -56,6 +67,23 @@ const EquipesMensal = (() => {
 
   function computeResumoMeta(id, mensal, metaValor) {
     if (!mensal) return null;
+    const corOk = 'var(--verde)', corNok = 'var(--vermelho)';
+    if (id === 'respostas-ss-3d') {
+      const dados = mesesFechadosLista(mensal, VAZIO_SS);
+      if (!dados.length) return null;
+      const totalTram = dados.reduce((s, d) => s + (d.total || 0), 0);
+      const totalDentro = dados.reduce((s, d) => s + (d.dentro_3d || 0), 0);
+      const pctAno = totalTram > 0 ? Math.round((totalDentro / totalTram) * 10000) / 100 : 100;
+      const meta = metaValor || 95;
+      return { texto: pctAno + '%', cor: pctAno >= meta ? corOk : corNok };
+    }
+    if (id.startsWith('gerar-sai')) {
+      const ac = acumPrazoGerarSai(mensal);
+      if (!ac) return null;
+      const maxD = maxDiasGerarSai(id);
+      const pctAno = ac.total > 0 ? ac.pct : 100;
+      return { texto: pctAno + '%', cor: ac.mediaDu <= maxD ? corOk : corNok };
+    }
     const mesAtual = new Date().getMonth() + 1;
     const mesAcum = mesAtual - 1; // apenas meses fechados
     if (mesAcum < 1) return null;
@@ -63,7 +91,6 @@ const EquipesMensal = (() => {
     if (!temDados) return null;
     const zero = { pontos: 0, trabalhoSai: 0, efetivo: 0, total_sais: 0, total_revisoes: 0, total_psais: 0, total_retornos: 0, media_realizado: 0, media: 0, qtd_sais: 0, qtd_psais: 0 };
     const dados = Array.from({ length: mesAcum }, (_, i) => mensal[i + 1] || zero);
-    const corOk = 'var(--verde)', corNok = 'var(--vermelho)';
     if (id === 'pontos-definicao') {
       const media = Math.round(dados.reduce((s, d) => s + (d.pontos || 0), 0) / dados.length);
       return { texto: media + ' pts/m\u00eas', cor: media >= 80 ? corOk : corNok };
@@ -145,23 +172,33 @@ const EquipesMensal = (() => {
     'indice-revisoes-sail': 'SAIL', 'indice-revisoes-sam-imp': 'SAM Imp',
     'indice-revisoes-sam-esc': 'SAM Esc',
     'indice-retornos-sal': 'SAL', 'indice-retornos-sail-sam': 'SAIL/SAM',
+    'gerar-sai-ne-sal-3d': 'NE',
+    'gerar-sai-sal-5d': 'SAL',
+    'gerar-sai-sail-sam-7d': 'SAIL/SAM',
   };
   const IDS_TOT_PONTOS = ['pontos-definicao', 'pontos-atividade-principal', 'psais-definidas', 'pontos-gerados', 'sais-definidas-esp'];
   const IDS_TOT_TEMPOS = ['tempo-trabalho-analise', 'tempo-trabalho-principal', 'tempo-trabalho-geracao', 'tempo-gerando-sai'];
   const IDS_TOT_DESCARTES = ['controle-descartes', 'pct-descartes'];
-  const IDS_TOT_DIVERSOS = ['tempo-medio-sal', 'respostas-ss-3d', 'gerar-sai-ne-sal-3d', 'gerar-sai-sal-5d', 'gerar-sai-sail-sam-7d'];
+  const IDS_TOT_GERACAO = ['gerar-sai-ne-sal-3d', 'gerar-sai-sal-5d', 'gerar-sai-sail-sam-7d'];
+  const IDS_TOT_DIVERSOS = ['tempo-medio-sal', 'respostas-ss-3d'];
   const META_LABEL = {
     'indice-revisoes-sal': '\u2264 0,50', 'indice-revisoes-ne': '\u2264 0,50',
     'indice-revisoes-sail': '\u2264 1,15', 'indice-revisoes-sam-imp': '\u2264 0,80',
     'indice-revisoes-sam-esc': '\u2264 0,50',
     'indice-retornos-sal': '\u2264 1,00', 'indice-retornos-sail-sam': '\u2264 1,50',
+    'respostas-ss-3d': '\u2265 95%',
+    'gerar-sai-ne-sal-3d': '\u2264 3 d.u.',
+    'gerar-sai-sal-5d': '\u2264 5 d.u.',
+    'gerar-sai-sail-sam-7d': '\u2264 7 d.u.',
   };
 
   const ZERO_DEC_IDS = new Set(['indice-revisoes-sal','indice-revisoes-ne','indice-revisoes-sail',
     'indice-revisoes-sam-imp','indice-revisoes-sam-esc','indice-retornos-sal','indice-retornos-sail-sam']);
 
   function renderCard(id, d, metas, valorMap, curto) {
-    if (!d.total) {
+    const resumo = metas && metas[id]
+      ? computeResumoMeta(id, metas[id].mensal, valorMap && valorMap[id]) : null;
+    if (!d.total && !resumo) {
       const label = curto ? (LABELS_CURTO[id] || LABELS[id] || id) : (LABELS[id] || id);
       const metaLabel = META_LABEL[id] || '';
       const zeroTxt = ZERO_DEC_IDS.has(id) ? '0,00' : '0';
@@ -171,7 +208,6 @@ const EquipesMensal = (() => {
         '</div>';
     }
     const p = Math.round((d.atingidas / d.total) * 100);
-    const resumo = metas && metas[id] ? computeResumoMeta(id, metas[id].mensal, valorMap && valorMap[id]) : null;
     const texto = resumo ? resumo.texto : (d.atingidas + '/' + d.total);
     const cor = resumo ? resumo.cor : corPct(p);
     const label = curto ? (LABELS_CURTO[id] || LABELS[id] || id) : (LABELS[id] || id);
@@ -210,6 +246,7 @@ const EquipesMensal = (() => {
     const todos = Object.entries(pm);
     if (!todos.length) return '';
     const used = new Set([...IDS_TOT_PONTOS, ...IDS_TOT_TEMPOS, ...IDS_TOT_DESCARTES, ...IDS_TOT_DIVERSOS,
+      ...IDS_TOT_GERACAO,
       'indice-revisoes-sal', 'indice-revisoes-ne', 'indice-revisoes-sail', 'indice-revisoes-sam-imp', 'indice-revisoes-sam-esc',
       'indice-retornos-sal', 'indice-retornos-sail-sam']);
     const pontos = pickTotIds(todos, IDS_TOT_PONTOS);
@@ -217,6 +254,7 @@ const EquipesMensal = (() => {
     const retornos = todos.filter(([id]) => id.startsWith('indice-retornos'));
     const tempos = pickTotIds(todos, IDS_TOT_TEMPOS);
     const descartes = pickTotIds(todos, IDS_TOT_DESCARTES);
+    const geracao = pickTotIds(todos, IDS_TOT_GERACAO);
     const diversos = pickTotIds(todos, IDS_TOT_DIVERSOS)
       .concat(todos.filter(([id]) => !used.has(id)));
     const linha1 = [
@@ -226,6 +264,7 @@ const EquipesMensal = (() => {
     ].join('');
     const linha2 = [
       tempos.length ? grupoCards('Tempos', tempos, metas, valorMap, false) : '',
+      geracao.length ? grupoCards('Dias para gerar SAI', geracao, metas, valorMap, true) : '',
       descartes.length ? grupoCards('Descartes', descartes, metas, valorMap, false) : '',
       grupoDiversos(diversos, metas, valorMap)
     ].join('');
@@ -263,6 +302,90 @@ const EquipesMensal = (() => {
       '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + fmtDecimal(indiceAcum) + '</span><span class="eq-dado__label">\u00cdndice acumulado</span></div>' +
       '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + corAt + '">' + atingidos + '/' + dados.length + '</span><span class="eq-dado__label">Meses atingidos</span></div>' +
       '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + ';font-size:1.4rem">' + (ok ? '\u2713' : '\u2717') + '</span><span class="eq-dado__label">Meta acumulada (\u2264 ' + fmtDecimal(metaNum) + ')</span></div>' +
+      '</div></div>';
+  }
+
+  function maxDiasGerarSai(metaId) {
+    return metaId.includes('-7d') ? 7 : metaId.includes('-5d') ? 5 : 3;
+  }
+
+  function mesLimiteAcumulado() {
+    const ano = anoSelecionado();
+    if (ano < ANO_ATUAL) return 12;
+    if (ano > ANO_ATUAL) return 0;
+    return new Date().getMonth() + 1;
+  }
+
+  const VAZIO_GERAR_SAI = () => ({ pct: 0, media_dias: 0, total: 0, dentro_prazo: 0, atingida: true });
+  const VAZIO_SS = () => ({ pct: 0, total: 0, dentro_3d: 0, media_dias: 0, atingida: true });
+
+  function mesesFechadosLista(mensal, criarVazio) {
+    const limite = mesLimiteAcumulado();
+    if (!limite) return [];
+    const out = [];
+    for (let m = 1; m <= limite; m++) {
+      if (mensal[m]) out.push(mensal[m]);
+      else if (mesFechadoUi(m) && criarVazio) out.push(criarVazio());
+    }
+    return out;
+  }
+
+  function acumPrazoGerarSai(mensal) {
+    const dados = mesesFechadosLista(mensal, VAZIO_GERAR_SAI);
+    if (!dados.length) return null;
+    const total = dados.reduce((s, d) => s + (d.total || 0), 0);
+    const dentro = dados.reduce((s, d) => s + (d.dentro_prazo || 0), 0);
+    const pct = total > 0 ? Math.round((dentro / total) * 10000) / 100 : 100;
+    const mediaDu = total > 0
+      ? Math.round(dados.reduce((s, d) => s + (d.media_dias || 0) * (d.total || 0), 0) / total * 100) / 100
+      : 0;
+    return { dados, total, dentro, pct, mediaDu, atingidos: dados.filter(d => d.atingida).length };
+  }
+
+  function totalizadorGerarSai(metaId, mensal) {
+    const ac = acumPrazoGerarSai(mensal);
+    if (!ac) return '';
+    const maxDias = maxDiasGerarSai(metaId);
+    const ok = ac.mediaDu <= maxDias;
+    const cor = ok ? 'var(--verde)' : 'var(--vermelho)';
+    const corAt = ac.atingidos === ac.dados.length ? 'var(--verde)' : ac.atingidos > 0 ? 'var(--amarelo)' : 'var(--vermelho)';
+    return '<div class="eq-tot-pontos">' +
+      '<h4 class="eq-tot-pontos__titulo">\uD83D\uDCCA Acumulado do Ano</h4>' +
+      '<div class="eq-dados-grid">' +
+      '<div class="eq-dado"><span class="eq-dado__valor">' + ac.dados.length + '</span><span class="eq-dado__label">Meses com dados</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor">' + ac.total + '</span><span class="eq-dado__label">Total ciclos</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor">' + ac.dentro + '</span><span class="eq-dado__label">Dentro prazo</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + ac.pct + '%</span><span class="eq-dado__label">% prazo acumulado</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + ac.mediaDu + 'd</span><span class="eq-dado__label">M\u00e9dia D.U.</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + corAt + '">' + ac.atingidos + '/' + ac.dados.length + '</span><span class="eq-dado__label">Meses atingidos</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + ';font-size:1.4rem">' + (ok ? '\u2713' : '\u2717') + '</span><span class="eq-dado__label">Meta acumulada (M\u00e9dia \u2264 ' + maxDias + ' d.u.)</span></div>' +
+      '</div></div>';
+  }
+
+  function totalizadorRespostasSS(mensal, metaValor) {
+    const dados = mesesFechadosLista(mensal, VAZIO_SS);
+    if (!dados.length) return '';
+    const metaNum = metaValor || 95;
+    const totalTram = dados.reduce((s, d) => s + (d.total || 0), 0);
+    const totalDentro = dados.reduce((s, d) => s + (d.dentro_3d || 0), 0);
+    const pctAno = totalTram > 0 ? Math.round((totalDentro / totalTram) * 10000) / 100 : 100;
+    const mediaDu = totalTram > 0
+      ? Math.round(dados.reduce((s, d) => s + (d.media_dias || 0) * (d.total || 0), 0) / totalTram * 10) / 10
+      : 0;
+    const atingidos = dados.filter(d => d.atingida).length;
+    const ok = pctAno >= metaNum;
+    const cor = ok ? 'var(--verde)' : 'var(--vermelho)';
+    const corAt = atingidos === dados.length ? 'var(--verde)' : atingidos > 0 ? 'var(--amarelo)' : 'var(--vermelho)';
+    return '<div class="eq-tot-pontos">' +
+      '<h4 class="eq-tot-pontos__titulo">\uD83D\uDCCA Acumulado do Ano</h4>' +
+      '<div class="eq-dados-grid">' +
+      '<div class="eq-dado"><span class="eq-dado__valor">' + dados.length + '</span><span class="eq-dado__label">Meses com dados</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor">' + totalTram + '</span><span class="eq-dado__label">Total tr\u00e2mites</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor">' + totalDentro + '</span><span class="eq-dado__label">Dentro 3 D.U.</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + pctAno + '%</span><span class="eq-dado__label">% alcan\u00e7ado do ano</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + '">' + mediaDu + 'd</span><span class="eq-dado__label">M\u00e9dia D.U.</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + corAt + '">' + atingidos + '/' + dados.length + '</span><span class="eq-dado__label">Meses atingidos</span></div>' +
+      '<div class="eq-dado"><span class="eq-dado__valor" style="color:' + cor + ';font-size:1.4rem">' + (ok ? '\u2713' : '\u2717') + '</span><span class="eq-dado__label">Meta acumulada (\u2265 ' + metaNum + '%)</span></div>' +
       '</div></div>';
   }
 
@@ -504,12 +627,22 @@ const EquipesMensal = (() => {
     if (metaId === 'controle-descartes') html += totalizadorDescartes(mensal);
     if (metaId === 'pct-descartes') html += totalizadorPctDescartes(mensal);
     if (metaId === 'tempo-medio-sal') html += totalizadorMedioSal(mensal);
+    if (metaId === 'respostas-ss-3d') html += totalizadorRespostasSS(mensal, metaValor);
+    if (metaId.startsWith('gerar-sai')) html += totalizadorGerarSai(metaId, mensal);
     return html;
   }
 
   function linhaMes(m, d, cols, metaId, mesAtual) {
     const isGerados = metaId === 'pontos-gerados' || metaId === 'psais-definidas';
-    const btnDetalhe = m <= mesAtual && (!isGerados || (d && d.qtd_sais > 0))
+    if (!d && mesFechadoUi(m)) {
+      if (metaId === 'respostas-ss-3d') {
+        d = { pct: 0, total: 0, dentro_3d: 0, media_dias: 0, atingida: true };
+      } else if (metaId.startsWith('gerar-sai')) {
+        d = { pct: 0, media_dias: 0, total: 0, dentro_prazo: 0, atingida: true };
+      }
+    }
+    const btnDetalhe = m <= mesAtual && (!isGerados || (d && d.qtd_sais > 0)) &&
+      !(d && d.total === 0 && (metaId === 'respostas-ss-3d' || metaId.startsWith('gerar-sai')))
       ? '<button class="eq-btn-detalhe" data-meta="' + metaId + '" data-mes="' + m + '">Ver</button>'
       : '';
     if (!d) {
@@ -593,8 +726,8 @@ const EquipesMensal = (() => {
     if (id === 'respostas-ss-3d') return [
       { label: '% em 3d', render: d => d.pct + '%' },
       { label: 'Dentro/Total', render: d => d.dentro_3d + '/' + d.total },
-      { label: 'Media dias', render: d => d.media_dias + 'd' },
-      { label: 'Meta', render: () => '100%' }
+      { label: 'Media D.U.', render: d => d.media_dias + 'd' },
+      { label: 'Meta', render: () => metaValor + '%' }
     ];
     if (id === 'pct-descartes') return [
       { label: 'Descartes', render: d => d.qtd_descartes },

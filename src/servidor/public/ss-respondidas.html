@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SS Respondidas - Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <style>
+    main.dashboard { max-width: none; padding: 1rem 1.25rem; }
+    .ss-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .ss-card {
+      background: #fff; border-radius: 8px; padding: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08); border-left: 4px solid #94a3b8;
+    }
+    .ss-card h3 { margin: 0 0 8px; font-size: 0.95rem; }
+    .ss-card small { color: #64748b; font-size: 0.72rem; }
+    .ss-legenda {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+      padding: 10px 14px; margin-bottom: 16px; font-size: 0.82rem; color: #475569; line-height: 1.6;
+    }
+    .ss-tabela { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .ss-tabela th, .ss-tabela td { padding: 6px 10px; text-align: center; border: 1px solid #e2e8f0; }
+    .ss-tabela th { background: #f8fafc; font-weight: 600; color: #475569; font-size: 0.75rem; }
+    .ss-tabela td:first-child, .ss-tabela td:nth-child(2) { text-align: left; }
+    .ss-ok { color: #16a34a; font-weight: 600; }
+    .ss-nok { color: #dc2626; font-weight: 600; }
+    .ss-filtros { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+    .ss-filtros select { padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.85rem; }
+  </style>
+</head>
+<body class="com-sidebar">
+  <nav id="nav-container"></nav>
+  <div class="pagina">
+    <header class="header">
+      <div class="header__info">
+        <h1 class="header__title">SS Respondidas</h1>
+        <span class="header__subtitle">Tramites respondidos em SS onde especialistas/analistas participaram — prazo em dias uteis (meta: ate 3 D.U.)</span>
+      </div>
+      <div class="header__controls">
+        <div class="header__versao">
+          <label for="seletor-ano">Ano:</label>
+          <select id="seletor-ano">
+            <option value="2026" selected>2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+          </select>
+        </div>
+        <button id="btn-carregar" class="btn btn--primario">Consultar</button>
+        <button id="btn-atualizar" class="btn btn--outline">Atualizar</button>
+      </div>
+    </header>
+    <div id="ss-fonte-info" class="fonte-info" hidden></div>
+    <div id="loading" class="loading" hidden>
+      <div class="loading__spinner"></div>
+      <p id="loading-msg">Carregando dados...</p>
+    </div>
+    <main id="conteudo" class="dashboard"></main>
+    <footer class="footer">
+      <span>Dashboard Escrita Fiscal v0.2.0</span>
+      <span>Coord. Vitor Justino</span>
+    </footer>
+  </div>
+  <script src="/js/nav.js?v=11"></script>
+  <script src="/js/app-ss-respondidas.js?v=7"></script>
+</body>
+</html>

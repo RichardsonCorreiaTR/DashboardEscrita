@@ -14,6 +14,13 @@
     "trocar_senha": false
   },
   {
+    "usuario": "mariana",
+    "senha": "0181204",
+    "slug": "mariana",
+    "papel": "coordenador",
+    "trocar_senha": false
+  },
+  {
     "usuario": "fabio",
     "senha": "6108530",
     "slug": "fabio",

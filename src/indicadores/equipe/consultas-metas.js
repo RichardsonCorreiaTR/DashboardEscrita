@@ -63,6 +63,7 @@ function queryPontosDefinicao(ano, sgd) {
 // sit=2 (Analisada) = analista envia; sit 4,11,12 = coordenador responde
 const SIT_ENVIO = 2;
 const SIT_RESPOSTA = '(4, 11, 12)';
+const SIT_DEFINIDA = 17; // psai_situacoes: Definida (PSAIs sem SAI gerada)
 
 // N - (N+DOW-2)/7 - (N+DOW-1)/7 : converte dias corridos em uteis (exclui sab/dom)
 function diasUteisSql(diffExpr, dowExpr) {
@@ -112,8 +113,8 @@ function queryTramitacoesPsai(codigoSgdList, maxDias, ano, tiposSAI) {
   `;
 }
 
-function queryRespostasSS(iUsuariosList, ano) {
-  const ids = iUsuariosList.join(', ');
+function queryRespostasSS(codigoSgdList, ano) {
+  const ids = codigoSgdList.join(', ');
   return `
     SELECT st.i_usuarios, MONTH(st.data_resposta) as mes,
       COUNT(st.i_ss_tramites) as total_respostas,
@@ -237,7 +238,7 @@ function queryAnalisesSemSai(ano, sgdList) {
   `;
 }
 
-// PSAIs sem SAI gerada (i_sai=0), agrupadas pela data do último trâmite
+// PSAIs Definidas sem SAI gerada (sit=17, i_sai=0), agrupadas pela data do ultimo tramite
 function queryPsaisDefinidas(ano, sgd) {
   const extra = sgd ? `AND p.i_responsaveis = ${sgd}` : '';
   return `
@@ -251,6 +252,7 @@ function queryPsaisDefinidas(ano, sgd) {
       ON pt_max.i_psai = sp.i_psai
     WHERE ${FILTRO_AREA}
       AND sp.i_sai = 0
+      AND sp.i_psai_situacoes = ${SIT_DEFINIDA}
       AND COALESCE(p.i_produto_grupo, 1) = 1
       ${extra}
       AND YEAR(pt_max.max_ent) = ${ano}

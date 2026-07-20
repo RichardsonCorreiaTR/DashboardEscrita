@@ -22,6 +22,22 @@ function extrairQtdMes(mapMes) {
 const descartesCalc = require('./descartes-calculador');
 const pontosAtiv = require('./pontos-atividade-calc');
 
+function mesFechado(m, ano) {
+  const ref = ano || new Date().getFullYear();
+  const now = new Date();
+  if (ref < now.getFullYear()) return true;
+  if (ref > now.getFullYear()) return false;
+  return m < now.getMonth() + 1;
+}
+
+function mesSemOcorrencia(metaPct) {
+  return { pct: 0, total: 0, dentro_3d: 0, media_dias: 0, atingida: true, _vazio: true };
+}
+
+function mesSemOcorrenciaTempo() {
+  return { pct: 0, media_dias: 0, total: 0, dentro_prazo: 0, atingida: true, _vazio: true };
+}
+
 function agrupar(rows) {
   const m = {};
   rows.forEach(r => {
@@ -87,12 +103,15 @@ function mensalPontos(mapMes, meta) {
   return mensal;
 }
 
-function mensalTempo(mapMes, maxDias) {
+function mensalTempo(mapMes, maxDias, ano) {
   const limite = maxDias || 3;
   const mensal = {};
   for (let m = 1; m <= 12; m++) {
     const row = mapMes ? mapMes[m] : null;
-    if (!row || !row.total_ciclos) { mensal[m] = null; continue; }
+    if (!row || !row.total_ciclos) {
+      mensal[m] = mesFechado(m, ano) ? mesSemOcorrenciaTempo() : null;
+      continue;
+    }
     const pct = Math.round((row.dentro_prazo / row.total_ciclos) * 10000) / 100;
     const media = Math.round(Number(row.media_dias) * 100) / 100;
     mensal[m] = { pct, media_dias: media, total: row.total_ciclos, dentro_prazo: row.dentro_prazo, atingida: media <= limite };
@@ -100,14 +119,18 @@ function mensalTempo(mapMes, maxDias) {
   return mensal;
 }
 
-function mensalSS(mapMes) {
+function mensalSS(mapMes, metaPct, ano) {
+  const meta = metaPct != null ? metaPct : 95;
   const mensal = {};
   for (let m = 1; m <= 12; m++) {
     const row = mapMes ? mapMes[m] : null;
-    if (!row || !row.total_respostas) { mensal[m] = null; continue; }
+    if (!row || !row.total_respostas) {
+      mensal[m] = mesFechado(m, ano) ? mesSemOcorrencia(meta) : null;
+      continue;
+    }
     const pct = Math.round((row.dentro_3d / row.total_respostas) * 10000) / 100;
     const media = Math.round(Number(row.media_dias) * 10) / 10;
-    mensal[m] = { pct, total: row.total_respostas, dentro_3d: row.dentro_3d, media_dias: media, atingida: pct >= 100 };
+    mensal[m] = { pct, total: row.total_respostas, dentro_3d: row.dentro_3d, media_dias: media, atingida: pct >= meta };
   }
   return mensal;
 }
@@ -125,7 +148,7 @@ function mensalRetornos(mapMes, meta) {
 
 
 // Metas informativas: aparecem nos cards mas NAO entram no total geral
-const EXCLUIR_DO_TOTAL = new Set(['tempo-medio-sal', 'controle-descartes', 'tempo-trabalho-principal', 'pontos-gerados', 'pontos-atividade-principal', 'pct-descartes', 'sais-definidas-esp']);
+const EXCLUIR_DO_TOTAL = new Set(['tempo-medio-sal', 'controle-descartes', 'tempo-trabalho-principal', 'pontos-gerados', 'pontos-atividade-principal', 'pct-descartes', 'psais-definidas', 'sais-definidas-esp']);
 
 function totalizador(metasObj) {
   const mesAtual = new Date().getMonth() + 1;
@@ -154,7 +177,8 @@ function totalizador(metasObj) {
   return { atingidas, nao_atingidas: nao, total: atingidas + nao, por_meta: porMeta };
 }
 
-function calcularMetas(analista, dados, metaIds) {
+function calcularMetas(analista, dados, metaIds, ano) {
+  const anoRef = ano || new Date().getFullYear();
   const sgd = analista['codigo-sgd'], uid = analista['i-usuarios'];
   const isEsp = analista.senioridade === 'especialista';
   const metaTempoAnalise = 85;
@@ -197,10 +221,10 @@ function calcularMetas(analista, dados, metaIds) {
       for (let i = 1; i <= 12; i++) { if (!base[i]) base[i] = { pontos: 0, qtd_sais: 0, atingida: true }; }
       return base;
     })() },
-    'gerar-sai-ne-sal-3d':    { mensal: mensalTempo(dados.tempoGer[sgd], 3) },
-    'gerar-sai-sal-5d':       { mensal: mensalTempo(dados.tempoGerSal?.[sgd], 5) },
-    'gerar-sai-sail-sam-7d':  { mensal: mensalTempo(dados.tempoGerSailSam?.[sgd], 7) },
-    'respostas-ss-3d': { mensal: mensalSS(dados.ss[uid]) },
+    'gerar-sai-ne-sal-3d':    { mensal: mensalTempo(dados.tempoGer[sgd], 3, anoRef) },
+    'gerar-sai-sal-5d':       { mensal: mensalTempo(dados.tempoGerSal?.[sgd], 5, anoRef) },
+    'gerar-sai-sail-sam-7d':  { mensal: mensalTempo(dados.tempoGerSailSam?.[sgd], 7, anoRef) },
+    'respostas-ss-3d': { mensal: mensalSS(dados.ss[sgd], 95, anoRef) },
     'tempo-medio-sal': { mensal: tempoSal.mensalTempoSal(dados.tempoMedioSal?.[sgd]) },
     'controle-descartes': { mensal: descartesCalc.mensalDescartes(dados.descartes?.[sgd]) },
     'pct-descartes': { mensal: descartesCalc.mensalPctDescartes(

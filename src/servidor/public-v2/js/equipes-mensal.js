@@ -100,8 +100,8 @@ const EquipesMensal = (() => {
     if (id === 'respostas-ss-3d') return [
       { label: '% em 3d', render: d => d.pct + '%' },
       { label: 'Dentro/Total', render: d => d.dentro_3d + '/' + d.total },
-      { label: 'Media dias', render: d => d.media_dias + 'd' },
-      { label: 'Meta', render: () => '100%' }
+      { label: 'Media D.U.', render: d => d.media_dias + 'd' },
+      { label: 'Meta', render: () => metaValor + '%' }
     ];
     if (id.startsWith('indice-retornos')) {
       const metaVal = id === 'indice-retornos-sal' ? '1,00' : '1,50';

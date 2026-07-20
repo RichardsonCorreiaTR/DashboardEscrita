@@ -11,8 +11,10 @@ const EquipesDetalhe = (() => {
   const { MESES, fmtMin, fmtData, isTrabalho, isOutrasAtividades, isPrincipalAnalista, isPrincipalQualquer } = FormatUtils;
   const URL_SAI = 'https://sgsai.dominiosistemas.com.br/sgsai/faces/sai.html?sai=';
   const URL_PSAI = 'https://sgd.dominiosistemas.com.br/sgsa/faces/psai.html?psai=';
+  const URL_SS = 'https://sgd.dominiosistemas.com.br/sgsa/faces/ss.html?ss=';
   function linkSai(id) { return '<a href="' + URL_SAI + id + '" target="_blank" class="link-sgd">' + id + '</a>'; }
   function linkPsai(id) { return '<a href="' + URL_PSAI + id + '" target="_blank" class="link-sgd">' + id + '</a>'; }
+  function linkSs(id) { return '<a href="' + URL_SS + id + '" target="_blank" class="link-sgd">' + id + '</a>'; }
 
   function isAusencia(nome) {
     const n = nome.toLowerCase();
@@ -212,26 +214,35 @@ const EquipesDetalhe = (() => {
     return html;
   }
 
-  function detSS(rows) {
-    const dentro = rows.filter(r => (Number(r.dias) || 0) <= 3);
-    const fora = rows.filter(r => (Number(r.dias) || 0) > 3);
-    const pct = rows.length > 0 ? Math.round((dentro.length / rows.length) * 10000) / 100 : 0;
+  function duRegistro(r) {
+    return Number(r.dias_uteis != null ? r.dias_uteis : r.dias) || 0;
+  }
 
-    return grupoSSItens('\u2705 Respondidas em \u2264 3 dias', dentro, '') +
-      grupoSSItens('\u26A0 Respondidas em > 3 dias', fora, 'eq-det--alerta') +
+  function detSS(rows) {
+    const ordenados = [...rows].sort((a, b) => a.i_ss - b.i_ss || (a.i_ss_tramites || 0) - (b.i_ss_tramites || 0));
+    const dentro = ordenados.filter(r => duRegistro(r) <= 3);
+    const fora = ordenados.filter(r => duRegistro(r) > 3);
+    const pct = ordenados.length > 0 ? Math.round((dentro.length / ordenados.length) * 10000) / 100 : 0;
+
+    return grupoSSItens('\u2705 Respondidas em \u2264 3 dias uteis', dentro, '') +
+      grupoSSItens('\u26A0 Respondidas em > 3 dias uteis', fora, 'eq-det--alerta') +
       '<div class="eq-det__formula"><strong>Calculo:</strong> ' +
-      dentro.length + '/' + rows.length + ' em \u2264 3d = <strong>' +
-      pct + '%</strong> [Meta: 100%]</div>';
+      dentro.length + '/' + ordenados.length + ' em \u2264 3 D.U. = <strong>' +
+      pct + '%</strong> [Meta: \u2265 95%]</div>';
   }
 
   function grupoSSItens(titulo, rows, cls) {
     if (rows.length === 0) return '';
     let html = '<div class="eq-det__grupo"><h5>' + titulo + ' (' + rows.length + ')</h5>' +
       '<table class="eq-tabela eq-tabela--det"><thead><tr>' +
-      '<th>SS</th><th>Entrada</th><th>Resposta</th><th>Dias</th></tr></thead><tbody>';
+      '<th>SS</th><th>Tramite</th><th>Entrada</th><th>Resposta</th><th>D.U.</th><th>D.C.</th></tr></thead><tbody>';
     rows.forEach(r => {
-      html += '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + r.i_ss + '</td><td>' +
-        fmtData(r.entrada) + '</td><td>' + fmtData(r.data_resposta) + '</td><td>' + r.dias + '</td></tr>';
+      const du = duRegistro(r);
+      const dc = Number(r.dias_corridos) || 0;
+      html += '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + linkSs(r.i_ss) + '</td><td>' +
+        (r.i_ss_tramites || '-') + '</td><td>' +
+        fmtData(r.entrada) + '</td><td>' + fmtData(r.data_resposta) + '</td><td><strong>' +
+        du + '</strong></td><td class="eq-det--muted">' + dc + '</td></tr>';
     });
     html += '</tbody></table></div>';
     return html;

@@ -76,11 +76,12 @@ const MetasConfig = (() => {
     'indice-revisoes-sam-imp': { formula: 'Indice = Total Revisoes (A/C) / Total SAIs no mes', considerado: ['SAM Importacao (area != Escrita) | Analistas: psai.i_responsaveis | Especialistas: sai.i_usuarios', 'Revisoes: Alteracao (1,4) e Complemento (2,5) | Meta: <= 0,80'] },
     'indice-revisoes-sam-esc': { formula: 'Indice = Total Revisoes (A/C) / Total SAIs no mes', considerado: ['SAM Escrita (area = Escrita) | Analistas: psai.i_responsaveis | Especialistas: sai.i_usuarios', 'Revisoes: Alteracao (1,4) e Complemento (2,5) | Meta: <= 0,50'] },
     'respostas-ss-3d': {
-      formula: '% = (SSs respondidas em ate 3 dias / Total respostas) x 100',
+      formula: '% = (tramites em ate 3 D.U. / Total tramites) x 100',
       considerado: [
-        'Respostas de SS com data_resposta no mes, produto grupo 1',
-        'Prazo: DATEDIFF(day, entrada, data_resposta) <= 3',
-        'Vinculado por ss_tramites.i_usuarios'
+        'Tramite em que o colaborador fecha a pergunta (pergunta.data_resposta = resposta.entrada)',
+        'Respostas intermediarias do mesmo membro ao mesmo analista colapsam na ultima',
+        'Produto grupo 1; prazo em dias uteis (D.U.)',
+        'Mesma base da pagina SS Respondidas',
       ]
     },
     'gerar-sai-ne-sal-3d': {

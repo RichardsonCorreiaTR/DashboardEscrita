@@ -20,6 +20,7 @@ const indicadores = require('../indicadores');
 const conexao = require('../core/conexao');
 const cache = require('../core/cache');
 const cacheMetas = require('../core/cache-metas');
+const cacheSsRespondidas = require('../core/cache-ss-respondidas');
 const agendador = require('../core/agendador');
 const qe = require('../core/query-executor');
 
@@ -30,6 +31,7 @@ const rotasMetasEquipe = require('./rotas/metas-equipe');
 const rotasLaboratorio = require('./rotas/laboratorio');
 const rotasPropostaMetas = require('./rotas/proposta-metas');
 const rotasDescartesTempo = require('./rotas/descartes-tempo');
+const rotasSsRespondidas = require('./rotas/ss-respondidas');
 const rotasFeedback = require('./rotas/feedback-1on1');
 const rotasNesDefinicao = require('./rotas/nes-definicao');
 const rotasAcompSals = require('./rotas/acomp-sals');
@@ -111,6 +113,7 @@ app.use('/api', rotasMetasEquipe);
 app.use('/api', rotasLaboratorio);
 app.use('/api', rotasPropostaMetas);
 app.use('/api', rotasDescartesTempo);
+app.use('/api', rotasSsRespondidas);
 app.use('/api', rotasFeedback);
 app.use('/api', rotasNesDefinicao);
 app.use('/api', rotasAcompSals);
@@ -130,6 +133,7 @@ async function iniciar() {
     // Restaurar cache de disco (antes de tudo)
     cache.restaurarDoDisco();
     cacheMetas.restaurar();
+    cacheSsRespondidas.restaurar();
 
     try {
       await conexao.inicializar();

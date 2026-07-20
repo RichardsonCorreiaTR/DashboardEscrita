@@ -20,8 +20,45 @@ const EquipesCoordenador = (() => {
     'indice-revisoes-sam-esc': 0.50,
     'indice-retornos-sal': 1.00, 'indice-retornos-sail-sam': 1.50,
     'pontos-definicao': 80, 'tempo-trabalho-analise': 85,
-    'tempo-trabalho-principal': 70
+    'tempo-trabalho-principal': 70,
+    'respostas-ss-3d': 95
   };
+
+  function maxDiasGerarSai(metaId) {
+    return metaId.includes('-7d') ? 7 : metaId.includes('-5d') ? 5 : 3;
+  }
+
+  function gerarSaiAcum(mensal) {
+    if (!mensal) return null;
+    let total = 0, dentro = 0, somaDu = 0;
+    for (let m = 1; m <= MES_ACUM; m++) {
+      const d = mensal[m];
+      if (!d) continue;
+      total += d.total || 0;
+      dentro += d.dentro_prazo || 0;
+      somaDu += (d.media_dias || 0) * (d.total || 0);
+    }
+    if (!total && !MES_ACUM) return null;
+    const pct = total > 0 ? Math.round((dentro / total) * 10000) / 100 : 0;
+    const mediaDu = total > 0 ? Math.round(somaDu / total * 100) / 100 : 0;
+    return { pct, mediaDu };
+  }
+
+  function respostasSSAcum(mensal) {
+    if (!mensal || MES_ACUM < 1) return null;
+    let totalTram = 0, totalDentro = 0;
+    for (let m = 1; m <= MES_ACUM; m++) {
+      const d = mensal[m];
+      if (d && d.total > 0) {
+        totalTram += d.total;
+        totalDentro += d.dentro_3d || 0;
+      }
+    }
+    if (!totalTram) return null;
+    const pct = Math.round((totalDentro / totalTram) * 10000) / 100;
+    const meta = META_VALOR['respostas-ss-3d'] || 95;
+    return { txt: pct + '%', cor: pct >= meta ? 'var(--verde)' : 'var(--vermelho)' };
+  }
 
   function indiceAcumulado(mensal, campoNum, campoDen, metaVal) {
     if (!mensal) return null;
@@ -90,16 +127,28 @@ const EquipesCoordenador = (() => {
       const r = pontosAcum(mensal, metaId);
       if (r) return r;
     }
-    if (metaId === 'pontos-gerados') {
+    if (metaId === 'pontos-gerados' || metaId === 'psais-definidas') {
       if (!mensal) return { txt: '0 pts', cor: 'var(--verde)' };
       let soma = 0;
-      for (let m = 1; m <= MES_ATUAL; m++) soma += (mensal[m] && mensal[m].pontos) || 0;
-      const media = Math.round(soma / MES_ATUAL);
+      const limite = metaId === 'psais-definidas' ? MES_ACUM : MES_ATUAL;
+      const divisor = limite || 1;
+      for (let m = 1; m <= limite; m++) soma += (mensal[m] && mensal[m].pontos) || 0;
+      const media = Math.round(soma / divisor);
       return { txt: media + ' pts', cor: 'var(--verde)' };
     }
     if (metaId.startsWith('tempo-trabalho')) {
       const r = tempoTrabalhoAcum(mensal, META_VALOR[metaId] || 70);
       if (r) return r;
+    }
+    if (metaId === 'respostas-ss-3d') {
+      const r = respostasSSAcum(mensal);
+      if (r) return r;
+    }
+    if (metaId.startsWith('gerar-sai')) {
+      const r = gerarSaiAcum(mensal);
+      if (!r) return { txt: '0%', cor: 'var(--verde)' };
+      const maxD = maxDiasGerarSai(metaId);
+      return { txt: r.pct + '%', cor: r.mediaDu <= maxD ? 'var(--verde)' : 'var(--vermelho)' };
     }
 
     const pct = Math.round((d.atingidas / d.total) * 100);

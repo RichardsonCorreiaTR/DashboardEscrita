@@ -97,14 +97,14 @@ router.get('/metas-equipe/:slug', meuSlug, async (req, res) => {
   if (fonte === 'cache') {
     const cached = cacheMetas.obter(a.slug);
     if (!cached) return res.status(404).json({ erro: 'Nenhum cache para ' + a.slug, _fonte: 'cache' });
-    return res.json({ ...cached, ano: loader.getAno(), _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao() });
+    return res.json({ ...loader.enriquecerSsMetas(cached, a), ano: loader.getAno(), _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao() });
   }
   try {
     const dados = await loader.buscarDadosAnalista(a);
     const metasJson = readMetasEquipe();
     const resp = loader.montarResposta(a, dados, metasJson);
     cacheMetas.salvar(a.slug, resp);
-    res.json({ ...resp, ano: loader.getAno(), _fonte: 'odbc', _atualizado_em: new Date().toISOString() });
+    res.json({ ...loader.enriquecerSsMetas(resp, a), ano: loader.getAno(), _fonte: 'odbc', _atualizado_em: new Date().toISOString() });
   } catch (err) {
     const cached = cacheMetas.obter(a.slug);
     if (cached) return res.json({ ...cached, ano: loader.getAno(), _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao(), _aviso: err.message });
@@ -118,6 +118,14 @@ router.get('/metas-equipe/:slug/detalhe/:metaId/:mes', async (req, res) => {
   const metaId = req.params.metaId, mes = parseInt(req.params.mes, 10);
   const fonte = req.query.fonte;
   if (fonte === 'cache') {
+    if (metaId === 'respostas-ss-3d') {
+      try {
+        const registros = await loader.carregarSsDetalhe(a['codigo-sgd'], mes);
+        return res.json({ registros, mes, ano: loader.getAno(), _fonte: 'cache' });
+      } catch (err) {
+        return res.status(404).json({ erro: err.message, _fonte: 'cache' });
+      }
+    }
     const cached = cacheMetas.obterDetalhe(a.slug, metaId, mes);
     if (cached) return res.json({ registros: cached, mes, ano: loader.getAno(), _fonte: 'cache' });
     return res.status(404).json({ erro: 'Sem cache detalhe', _fonte: 'cache' });

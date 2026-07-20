@@ -206,7 +206,7 @@ const EquipesDetalhe = (() => {
       grupoSSItens('\u26A0 Respondidas em > 3 dias', fora, 'eq-det--alerta') +
       '<div class="eq-det__formula"><strong>Calculo:</strong> ' +
       dentro.length + '/' + rows.length + ' em \u2264 3d = <strong>' +
-      pct + '%</strong> [Meta: 100%]</div>';
+      pct + '%</strong> [Meta: \u2265 95%]</div>';
   }
 
   function grupoSSItens(titulo, rows, cls) {

@@ -113,13 +113,13 @@ function detalheAtividades(iUsuarios, ano, mes) {
   `;
 }
 
-function detalheRespostasSS(iUsuarios, ano, mes) {
+function detalheRespostasSS(codigoSgd, ano, mes) {
   return `
     SELECT st.i_ss, st.entrada, st.data_resposta,
       DATEDIFF(day, st.entrada, st.data_resposta) as dias
     FROM bethadba.ss_tramites st
     JOIN bethadba.ss s ON st.i_ss = s.i_ss
-    WHERE st.i_usuarios = ${iUsuarios} AND st.data_resposta IS NOT NULL
+    WHERE st.i_usuarios = ${codigoSgd} AND st.data_resposta IS NOT NULL
       AND MONTH(st.data_resposta) = ${mes} AND YEAR(st.data_resposta) = ${ano}
       AND COALESCE(s.i_produto_grupo, 1) = 1
     ORDER BY st.data_resposta

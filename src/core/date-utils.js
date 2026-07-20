@@ -157,6 +157,24 @@ function eDiaUtil(data) {
   return dow !== 0 && dow !== 6;
 }
 
+/**
+ * Dias uteis entre duas datas — mesma logica SQL das metas gerar-sai (Sybase DOW),
+ * exclui sab/dom e feriados nacionais (config/feriados.json).
+ */
+function diasUteisSybase(inicio, fim) {
+  const { feriadosNoIntervalo } = require('./feriados');
+  const di = parsearData(inicio);
+  const df = parsearData(fim);
+  if (!di || !df || df < di) return 0;
+  const a = new Date(di.getFullYear(), di.getMonth(), di.getDate());
+  const b = new Date(df.getFullYear(), df.getMonth(), df.getDate());
+  const n = Math.round((b - a) / 86400000);
+  const dow = a.getDay() + 1;
+  let du = n - Math.floor((n + dow - 2) / 7) - Math.floor((n + dow - 1) / 7);
+  du -= feriadosNoIntervalo(inicio, fim);
+  return Math.max(0, du);
+}
+
 module.exports = {
   parsearData,
   formatarBR,
@@ -166,5 +184,6 @@ module.exports = {
   estaDentroDoPeriodo,
   mesAtual,
   contarDiasUteis,
-  eDiaUtil
+  eDiaUtil,
+  diasUteisSybase
 };

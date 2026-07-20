@@ -15,6 +15,8 @@ const retornos = require('./retornos-planilha');
 const pontosCalc = require('./pontos-calculador');
 const tempoSalCalc = require('./tempo-sal-calculador');
 const descartesCalc = require('./descartes-calculador');
+const ssShared = require('../../core/ss-respondidas-shared');
+const cacheSs = require('../../core/cache-ss-respondidas');
 
 function buildCargoMapGlobal() {
   try {
@@ -30,6 +32,28 @@ let ANO = ANO_PADRAO; // pode ser sobrescrito via setAno()
 
 function setAno(ano) { ANO = Number(ano) || ANO_PADRAO; }
 function getAno() { return ANO; }
+
+async function carregarSsMap(idsSgd) {
+  const montado = cacheSs.montarAno(ANO);
+  if (montado.registros.length) return ssShared.agruparPorMembroMes(montado.registros);
+  const rows = await qe.executar(ssShared.querySsEnvolvimento(idsSgd, ANO));
+  return ssShared.agruparPorMembroMes(ssShared.mapearLinhas(rows));
+}
+
+async function carregarSsDetalhe(sgd, mes) {
+  const montado = cacheSs.montarAno(ANO);
+  if (montado.registros.length) return ssShared.filtrarMembroMes(montado.registros, sgd, mes);
+  const rows = await qe.executar(ssShared.querySsEnvolvimento([sgd], ANO, mes));
+  return ssShared.mapearLinhas(rows);
+}
+
+function enriquecerSsMetas(resp, a) {
+  const montado = cacheSs.montarAno(ANO);
+  if (!montado.registros.length || !resp.metas || !resp.metas['respostas-ss-3d']) return resp;
+  const map = ssShared.agruparPorMembroMes(montado.registros);
+  resp.metas['respostas-ss-3d'] = { mensal: anual.mensalSS(map[a['codigo-sgd']], 95, ANO) };
+  return resp;
+}
 
 function metasDoAnalista(a, metasJson) {
   const tmpl = metasJson.templates[a.senioridade] || [];
@@ -121,7 +145,7 @@ async function buscarDados(analistas) {
     qe.executar(queries.queryTramitacoesPsai(idsSgd, 3, ANO, ['NE'])),
     qe.executar(queries.queryTramitacoesPsai(idsSgd, 5, ANO, ['SAL'])),
     qe.executar(queries.queryTramitacoesPsai(idsSgd, 7, ANO, ['SAIL', 'SAM'])),
-    qe.executar(queries.queryRespostasSS(idsUsuarios, ANO)),
+    carregarSsMap(idsSgd),
     qe.executar(queries.queryTempoAtividades(idsUsuarios, ANO)),
     retornos.carregarRetornosTodos(analistas),
     qe.executar(queries.queryPontosDefinicao(ANO)),
@@ -147,7 +171,7 @@ async function buscarDados(analistas) {
     psaisDefinidas: pontosCalc.agruparPontosDb(psaisDefRaw, cargoMap),
     tempoGer: anual.agrupar(tempoGer),
     tempoGerSal: anual.agrupar(tempoGerSal), tempoGerSailSam: anual.agrupar(tempoGerSailSam),
-    ss: anual.agrupar(ss), ativs: anual.agruparAtividades(ativs), retornos: ret,
+    ss, ativs: anual.agruparAtividades(ativs), retornos: ret,
     tempoMedioSal: tempoSalCalc.agruparTempoSal(tMedSal),
     descartes: descartesCalc.agruparDescartes(descRaw),
     descartesDataSit: agruparContagem(descSitRaw),
@@ -173,7 +197,7 @@ async function buscarDadosAnalista(a) {
     qe.executar(queries.queryTramitacoesPsai([sgd], 3, ANO, ['NE'])),
     qe.executar(queries.queryTramitacoesPsai([sgd], 5, ANO, ['SAL'])),
     qe.executar(queries.queryTramitacoesPsai([sgd], 7, ANO, ['SAIL', 'SAM'])),
-    qe.executar(queries.queryRespostasSS([uid], ANO)),
+    carregarSsMap([sgd]),
     qe.executar(queries.queryTempoAtividades([uid], ANO)),
     retornos.carregarRetornosAnalista(a),
     qe.executar(queries.queryPontosDefinicao(ANO, sgd)),
@@ -199,14 +223,14 @@ async function buscarDadosAnalista(a) {
     analisesSemSai: anual.agrupar(analSemSaiRaw),
     tempoGer: anual.agrupar(tempoGer),
     tempoGerSal: anual.agrupar(tempoGerSal), tempoGerSailSam: anual.agrupar(tempoGerSailSam),
-    ss: anual.agrupar(ss), ativs: anual.agruparAtividades(ativs),
+    ss, ativs: anual.agruparAtividades(ativs),
     retornos: { [sgd]: ret }
   };
 }
 
 function montarResposta(a, dados, metasJson) {
   const ids = metasDoAnalista(a, metasJson);
-  const calc = anual.calcularMetas(a, dados, ids);
+  const calc = anual.calcularMetas(a, dados, ids, ANO);
   return { slug: a.slug, nome: a.nome, senioridade: a.senioridade, ...calc };
 }
 
@@ -272,7 +296,8 @@ async function buscarDetalhe(a, metaId, mes) {
       JOIN (SELECT i_psai, MAX(entrada) as max_ent FROM bethadba.psai_tramites GROUP BY i_psai) pt_max
         ON pt_max.i_psai = sp.i_psai
       WHERE sp.nomeArea IN ('Escrita', 'Importacao', 'ONVIO ESCRITA')
-        AND sp.i_sai = 0 AND COALESCE(p.i_produto_grupo, 1) = 1
+        AND sp.i_sai = 0 AND sp.i_psai_situacoes = 17
+        AND COALESCE(p.i_produto_grupo, 1) = 1
         AND p.i_responsaveis = ${sgd}
         AND YEAR(pt_max.max_ent) = ${ANO} AND MONTH(pt_max.max_ent) = ${mes}
     `);
@@ -315,7 +340,7 @@ async function buscarDetalhe(a, metaId, mes) {
     return rows.map(r => ({ ...r, nivel: nm[r.i_sai] || null }));
   }
   if (metaId.startsWith('tempo-trabalho') || metaId === 'tempo-gerando-sai') return qe.executar(detalhe.detalheAtividades(uid, ANO, mes));
-  if (metaId === 'respostas-ss-3d') return qe.executar(detalhe.detalheRespostasSS(uid, ANO, mes));
+  if (metaId === 'respostas-ss-3d') return carregarSsDetalhe(sgd, mes);
   if (metaId.startsWith('indice-retornos')) return detalheRetornos(a, metaId, mes);
   if (metaId === 'pontos-atividade-principal') {
     const rows = await qe.executar(detalhe.detalhePontos(sgd, ANO, mes));
@@ -336,6 +361,6 @@ async function buscarDetalhe(a, metaId, mes) {
 
 module.exports = {
   metasDoAnalista, buscarCruzamentoPlanilha, buscarDados,
-  buscarDadosAnalista, montarResposta, buscarDetalhe,
+  buscarDadosAnalista, montarResposta, buscarDetalhe, enriquecerSsMetas, carregarSsDetalhe,
   setAno, getAno, ANO_PADRAO
 };

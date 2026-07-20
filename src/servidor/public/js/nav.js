@@ -66,6 +66,7 @@ const Nav = (() => {
       ]
     },
     { id: 'descartes-tempo', href: '/descartes-tempo.html', titulo: 'Descartes x Tempo', icone: '\u25D2' },
+    { id: 'ss-respondidas', href: '/ss-respondidas.html', titulo: 'SS Respondidas', icone: '\u2709' },
     {
       id: 'estudos', titulo: 'Estudos e Analises', icone: '\u25B2',
       sub: [
@@ -97,6 +98,7 @@ const Nav = (() => {
     if (path === '/' || path === '/index.html') return 'inicio';
     if (path === '/proposta-metas.html') return 'proposta-metas';
     if (path === '/descartes-tempo.html') return 'descartes-tempo';
+    if (path === '/ss-respondidas.html') return 'ss-respondidas';
     if (path === '/feedback-1on1.html') return 'feedback-1on1';
     if (path === '/nes-definicao.html') return 'nes-definicao';
     if (path === '/acomp-sals.html') return 'sal-tempo-descarte';
