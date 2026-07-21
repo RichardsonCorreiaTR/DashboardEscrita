@@ -8,20 +8,80 @@
 /* eslint-disable no-unused-vars */
 const AppISV = (() => {
   const BASE = '/api';
+  const AREAS = [['Escrita', 'Escrita'], ['Importacao', 'Importa\u00e7\u00e3o']];
   let dados = null;
   let charts = {};
+  let areaSel = 'Escrita';
+  let carregando = false;
+  let todasVersoes = [];               // todas as versoes com ISV (historico completo)
+  let anoSel = String(new Date().getFullYear()); // filtro de exibicao (padrao: ano vigente)
 
   async function carregar(force) {
-    const url = `${BASE}/estudos/historico${force ? '?force=1' : ''}`;
-    const resp = await fetch(url, { signal: AbortSignal.timeout(300000) });
-    if (!resp.ok) { const b = await resp.json().catch(() => ({})); throw new Error(b.erro || `HTTP ${resp.status}`); }
-    const raw = await resp.json();
-    dados = extrairISV(raw);
-    renderizar();
+    if (carregando) return; // evita coletas concorrentes (ex.: trocar area + clicar ODBC)
+    carregando = true;
+    renderizarControles();
+    try {
+      const params = new URLSearchParams();
+      if (force) params.set('force', '1');
+      if (areaSel !== 'Escrita') params.set('area', areaSel);
+      const qs = params.toString();
+      const url = `${BASE}/estudos/historico${qs ? '?' + qs : ''}`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(600000) });
+      if (!resp.ok) { const b = await resp.json().catch(() => ({})); throw new Error(b.erro || `HTTP ${resp.status}`); }
+      const raw = await resp.json();
+      todasVersoes = (raw.versoes || []).filter(v => v.isv && !v.isv.insuficiente);
+      ajustarAnoSelecionado();
+      renderizar();
+    } finally {
+      carregando = false;
+    }
   }
 
-  function extrairISV(raw) {
-    const versoes = (raw.versoes || []).filter(v => v.isv && !v.isv.insuficiente);
+  function anosDisponiveis() {
+    return [...new Set(todasVersoes.map(v => v.ano).filter(Boolean))].sort((a, b) => a - b).map(String);
+  }
+
+  function ajustarAnoSelecionado() {
+    const anos = anosDisponiveis();
+    if (anoSel !== 'todos' && !anos.includes(anoSel)) {
+      anoSel = anos.length ? anos[anos.length - 1] : 'todos';
+    }
+  }
+
+  function versoesFiltradas() {
+    if (anoSel === 'todos') return todasVersoes;
+    return todasVersoes.filter(v => String(v.ano) === anoSel);
+  }
+
+  function renderizarControles() {
+    const el = document.getElementById('isv-area-seletor');
+    if (!el) return;
+    const btns = AREAS.map(([val, lbl]) => {
+      const ativo = areaSel === val;
+      const estilo = ativo
+        ? 'background:var(--info,#3b82f6);color:#fff;border-color:var(--info,#3b82f6)'
+        : 'background:transparent;color:var(--cor-texto-sec);border-color:var(--cor-borda,#ccc)';
+      return `<button data-area="${val}" style="${estilo};border:1px solid;border-radius:6px;padding:0.3rem 0.9rem;margin-right:0.4rem;font-size:0.82rem;cursor:pointer">${lbl}</button>`;
+    }).join('');
+    const anos = anosDisponiveis();
+    const opts = ['<option value="todos"' + (anoSel === 'todos' ? ' selected' : '') + '>Todos os anos</option>']
+      .concat(anos.map(a => `<option value="${a}"${a === anoSel ? ' selected' : ''}>${a}</option>`)).join('');
+    el.innerHTML =
+      '<span style="font-size:0.82rem;color:var(--cor-texto-sec);margin-right:0.5rem">\u00c1rea:</span>' + btns +
+      '<span style="font-size:0.82rem;color:var(--cor-texto-sec);margin:0 0.5rem 0 1rem">Ano:</span>' +
+      `<select id="isv-ano-select" style="border:1px solid var(--cor-borda,#ccc);border-radius:6px;padding:0.3rem 0.6rem;font-size:0.82rem;cursor:pointer">${opts}</select>`;
+    el.querySelectorAll('button[data-area]').forEach(b => {
+      b.addEventListener('click', () => {
+        if (areaSel === b.dataset.area) return;
+        areaSel = b.dataset.area;
+        carregar(false);
+      });
+    });
+    const sel = document.getElementById('isv-ano-select');
+    if (sel) sel.addEventListener('change', () => { anoSel = sel.value; renderizar(); });
+  }
+
+  function extrairISV(versoes) {
     const atual = versoes.length > 0 ? versoes[versoes.length - 1] : null;
     const isvs = versoes.map(v => v.isv.total);
     const media = isvs.length > 0 ? r2(isvs.reduce((a, b) => a + b, 0) / isvs.length) : 0;
@@ -34,6 +94,8 @@ const AppISV = (() => {
   }
 
   function renderizar() {
+    renderizarControles();
+    dados = extrairISV(versoesFiltradas());
     renderizarKPIs();
     renderizarGraficos();
     renderizarTabela();
@@ -55,7 +117,7 @@ const AppISV = (() => {
         <div class="estudo-kpi__sub">${classLabel[isv.classificacao] || isv.classificacao}</div>
       </div>
       <div class="estudo-kpi">
-        <div class="estudo-kpi__label">Media Historica</div>
+        <div class="estudo-kpi__label">${anoSel === 'todos' ? 'Media Historica' : 'Media ' + anoSel}</div>
         <div class="estudo-kpi__valor">${dados.media}</div>
         <div class="estudo-kpi__sub">${dados.versoes.length} versoes analisadas</div>
       </div>

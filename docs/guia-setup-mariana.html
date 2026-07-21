@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Guia de Instalação — Dashboard Escrita Fiscal</title>
+  <style>
+    @page { margin: 18mm 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #1a1a1a;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 8px;
+    }
+    h1 {
+      font-size: 20pt;
+      color: #fa6400;
+      border-bottom: 3px solid #fa6400;
+      padding-bottom: 8px;
+      margin-bottom: 4px;
+    }
+    .subtitulo { color: #555; font-size: 11pt; margin-top: 0; }
+    h2 {
+      font-size: 13pt;
+      color: #404040;
+      margin-top: 22px;
+      margin-bottom: 8px;
+      page-break-after: avoid;
+    }
+    h3 { font-size: 11.5pt; margin: 14px 0 6px; page-break-after: avoid; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 16px;
+      font-size: 10pt;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 7px 10px;
+      text-align: left;
+    }
+    th { background: #f5f5f5; font-weight: 600; }
+    pre, code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9.5pt;
+    }
+    pre {
+      background: #f7f7f7;
+      border: 1px solid #ddd;
+      border-left: 4px solid #fa6400;
+      padding: 10px 12px;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+      page-break-inside: avoid;
+    }
+    .alerta {
+      background: #fff8e6;
+      border: 1px solid #f0c040;
+      border-left: 4px solid #fa6400;
+      padding: 10px 12px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+    ul { margin: 6px 0 12px; padding-left: 22px; }
+    li { margin-bottom: 4px; }
+    .rodape {
+      margin-top: 28px;
+      padding-top: 10px;
+      border-top: 1px solid #ddd;
+      font-size: 9pt;
+      color: #666;
+    }
+    .passo-num {
+      display: inline-block;
+      background: #fa6400;
+      color: #fff;
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      text-align: center;
+      border-radius: 50%;
+      font-size: 10pt;
+      font-weight: bold;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dashboard Escrita Fiscal</h1>
+  <p class="subtitulo">Guia de instalação e uso local — Mariana Sartori (Gerente)</p>
+  <p>Documento gerado em julho/2026 · Repositório: github.com/RichardsonCorreiaTR/DashboardEscrita</p>
+
+  <h2>1. Pré-requisitos (máquina TR)</h2>
+  <table>
+    <tr><th>Item</th><th>Observação</th></tr>
+    <tr><td><strong>Node.js 18+</strong></td><td>Baixar em nodejs.org — marcar <em>Add to PATH</em> na instalação</td></tr>
+    <tr><td><strong>Git</strong></td><td>Baixar em git-scm.com (opções padrão)</td></tr>
+    <tr><td><strong>Driver ODBC Sybase ASA 9</strong></td><td>Já instalado nas máquinas com Domínio/SGD</td></tr>
+    <tr><td><strong>DSN ODBC <code>pbcvs9</code></strong></td><td>Painel de Controle → ODBC (64 bits) → DSN de Sistema</td></tr>
+  </table>
+  <div class="alerta">
+    <strong>Importante:</strong> sem o DSN <code>pbcvs9</code>, o dashboard abre, mas não consulta dados do banco SGD.
+  </div>
+
+  <h2>2. Baixar o projeto</h2>
+  <p><span class="passo-num">1</span> Abrir <strong>PowerShell</strong> (usuário normal, sem admin).</p>
+  <p><span class="passo-num">2</span> Executar os comandos abaixo:</p>
+  <pre>cd "C:\1 - A\B\Programas"
+git clone https://github.com/RichardsonCorreiaTR/DashboardEscrita.git
+cd DashboardEscrita</pre>
+  <p>Se o repositório for privado, é necessário convite de acesso no GitHub (falar com Richardson).</p>
+  <p>Pasta alternativa: pode clonar em qualquer diretório; ajuste o caminho nos comandos.</p>
+
+  <h2>3. Instalar dependências</h2>
+  <pre>$env:PATH = "C:\Program Files\nodejs;$env:PATH"
+npm install</pre>
+  <p>Aguardar 1–2 minutos até concluir.</p>
+
+  <h2>4. Iniciar o servidor local</h2>
+  <pre>npm start</pre>
+  <p>Quando aparecer <strong>Dashboard rodando em http://localhost:4000</strong>, o servidor está ativo.</p>
+  <p>Para encerrar: pressionar <strong>Ctrl + C</strong> no terminal.</p>
+  <p><em>O terminal precisa permanecer aberto enquanto usar o dashboard.</em></p>
+
+  <h2>5. Acessar no navegador</h2>
+  <p>Abrir: <strong>http://localhost:4000</strong></p>
+
+  <h2>6. Login da Mariana</h2>
+  <table>
+    <tr><th>Campo</th><th>Valor</th></tr>
+    <tr><td>Usuário</td><td><code>mariana</code></td></tr>
+    <tr><td>Senha</td><td><code>0181204</code></td></tr>
+    <tr><td>Perfil</td><td>Coordenador (acesso completo, igual Richardson e Marielli)</td></tr>
+  </table>
+
+  <h2>7. O que consultar no dashboard</h2>
+  <ul>
+    <li><strong>Metas da Equipe</strong> — visão por colaborador; botões Richardson, Marielli e painel <strong>Mariana Sartori</strong> (visão gerente)</li>
+    <li><strong>SS Respondidas</strong> — prazos de resposta às solicitações de serviço</li>
+    <li><strong>Feedback 1:1</strong>, <strong>NEs Definição</strong>, <strong>Diretrizes</strong> e demais páginas do menu</li>
+  </ul>
+  <p>Para atualizar dados do banco: usar o botão <strong>Atualizar</strong> na página desejada.</p>
+
+  <h2>8. Problemas comuns</h2>
+  <table>
+    <tr><th>Problema</th><th>Solução</th></tr>
+    <tr><td><code>npm</code> não reconhecido</td><td>Reinstalar Node.js com "Add to PATH" ou usar o comando do passo 3</td></tr>
+    <tr><td>Erro de conexão ODBC</td><td>Verificar DSN <code>pbcvs9</code> no ODBC 64 bits</td></tr>
+    <tr><td>Página não abre</td><td>Confirmar que <code>npm start</code> está rodando no terminal</td></tr>
+    <tr><td>Dados desatualizados</td><td>Clicar em <strong>Atualizar</strong> ou reiniciar o servidor</td></tr>
+  </table>
+
+  <h2>9. Verificar DSN ODBC (se necessário)</h2>
+  <ol>
+    <li>Painel de Controle → Ferramentas Administrativas → <strong>Fontes de Dados ODBC (64 bits)</strong></li>
+    <li>Aba <strong>DSN de Sistema</strong> → confirmar entrada <code>pbcvs9</code></li>
+    <li>Se não existir, solicitar configuração ao suporte de TI / Richardson</li>
+  </ol>
+
+  <h2>10. Inicialização automática (opcional)</h2>
+  <ol>
+    <li>Pressionar <strong>Win + R</strong>, digitar <code>shell:startup</code> e Enter</li>
+    <li>Criar atalho para <code>npm start</code> na pasta do projeto (ou editar <code>start-server.bat</code> com o caminho correto)</li>
+  </ol>
+
+  <div class="rodape">
+    Suporte: Richardson Picinini Correia — Coordenador Escrita Fiscal · Thomson Reuters/Betha
+  </div>
+</body>
+</html>

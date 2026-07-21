@@ -112,7 +112,13 @@ gaGerenciadorAtividades.i_usuarios = CAST(UDUSUARIOS.CODIGO_SGD AS INT)
   - **Numerador** (revisoes): contado pela **data da revisao** (`sai_revisoes.entrada`), NAO pela data da SAI
   - **Denominador** (SAIs): contado pela **data de cadastro** (`CadastroSAI`)
   - Queries usam UNION ALL para separar denominador (CadastroSAI) e numerador (sr.entrada)
-- **Respostas SS**: trâmite em que o membro **fecha a pergunta** (`pergunta.data_resposta = entrada da resposta`); respostas intermediarias ao mesmo analista colapsam na ultima (ex.: T10+T12 vira T12 contando desde T7); prazo = `pergunta.entrada` ate `resposta.entrada` em **D.U.**; meta >= 95%.
+- **Respostas SS**: par por **situacao** em `ss_tramites.situacao`:
+  - pergunta = **situacao 6** (Aguardando Resposta Gerencia de Produtos) -> data inicial
+  - resposta = **situacao 7** (Respondido Gerencia de Produtos) -> data final + responsavel (`i_usuarios`)
+  - ligacao: `pergunta.data_resposta = resposta.entrada`
+  - **cada ciclo pergunta->resposta = 1 linha** (ex.: T3->T5 e T6->T8 = 2 linhas). So mescla respostas que se sobrepoem (analista repergunta antes de o membro responder)
+  - prazo = `pergunta.entrada` ate `resposta.entrada` em **D.U.**; meta >= 95%
+  - situacoes "Em Analise" (10 GP, 29 GP interna) sao intermediarias e NAO contam
 - **Gerar SAI / Retornar PSAI**: `bethadba.psai_tramites` por `i_usuarios` = `codigo-sgd`
   - Ciclo: analista envia (sit=2 Analisada) -> coordenador responde (sit 4, 11 ou 12)
   - Tempo = dias uteis (exclui sab/dom) entre data_envio_sit2 e data_resposta_coordenador <= 3

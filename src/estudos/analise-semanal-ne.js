@@ -15,18 +15,18 @@ const versao = require('../core/versao');
 const { parsearData } = require('../core/date-utils');
 const { dividirEmSemanas, identificarSemana } = require('./semanas');
 const { calcularContagens } = require('./isv-gravidade');
-const { FILTRO_PRODUTO_ENTRADA, querySSCsVinculadas } = require('../core/consultas-ne');
+const { FILTRO_PRODUTO_ENTRADA, querySSCsVinculadas, condAreaNE } = require('../core/consultas-ne');
 
 /**
  * Query: todas as entradas de NE no periodo com data
  */
-function queryEntradasComData(nomeVersao) {
+function queryEntradasComData(nomeVersao, area) {
   const inicio = versao.sqlInicioVersao(nomeVersao);
   const fim = versao.sqlFimVersao(nomeVersao);
   return `
     SELECT sai_psai.i_psai, sai_psai.CadastroPSAI, sai_psai.gravidade_ne
     FROM UP.SAI_PSAI sai_psai
-    WHERE sai_psai.nomeArea = 'Escrita'
+    WHERE ${condAreaNE(area)}
       AND sai_psai.tipoSAI = 'NE'
       AND sai_psai.CadastroPSAI > ${inicio}
       AND sai_psai.CadastroPSAI <= ${fim}
@@ -37,13 +37,13 @@ function queryEntradasComData(nomeVersao) {
 /**
  * Query: todos os descartes de NE no periodo com data
  */
-function queryDescartesComData(nomeVersao) {
+function queryDescartesComData(nomeVersao, area) {
   const inicio = versao.sqlInicioVersao(nomeVersao);
   const fim = versao.sqlFimVersao(nomeVersao);
   return `
     SELECT sai_psai.Descarte
     FROM UP.SAI_PSAI sai_psai
-    WHERE sai_psai.nomeArea = 'Escrita'
+    WHERE ${condAreaNE(area)}
       AND sai_psai.tipoSAI = 'NE'
       AND sai_psai.Descarte > ${inicio}
       AND sai_psai.Descarte <= ${fim}
@@ -80,7 +80,7 @@ function agruparPorSemana(registros, campoData, semanas) {
  * @param {string} nomeVersao - Ex: '10.6A-02'
  * @returns {Promise<Object>} Resultado com semanas, totais, medias
  */
-async function calcular(executor, nomeVersao) {
+async function calcular(executor, nomeVersao, area = 'Escrita') {
   // 1. Obter datas da versao
   const datas = await versao.obterDatas(executor, nomeVersao);
   if (!datas || !datas.inicio || !datas.fim) {
@@ -92,8 +92,8 @@ async function calcular(executor, nomeVersao) {
 
   // 3. Buscar entradas e descartes
   const [entradas, descartes] = await Promise.all([
-    executor.executar(queryEntradasComData(nomeVersao)),
-    executor.executar(queryDescartesComData(nomeVersao))
+    executor.executar(queryEntradasComData(nomeVersao, area)),
+    executor.executar(queryDescartesComData(nomeVersao, area))
   ]);
 
   // 4. Agrupar por semana + gravidade + SSC
@@ -192,6 +192,7 @@ async function calcular(executor, nomeVersao) {
 
   return {
     versao: nomeVersao,
+    area,
     mes: parsed ? parsed.mes : null,
     ano: parsed ? parsed.ano : null,
     periodo: {

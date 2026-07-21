@@ -4,20 +4,29 @@
  * Usado pela pagina SS Respondidas e pela meta respostas-ss-3d.
  * ss_tramites.i_usuarios = codigo-sgd.
  *
- * Regra: conta quando o membro PUBLICA o trâmite que FECHA a pergunta anterior
- * (pergunta.data_resposta = resposta.entrada). Respostas intermediarias do mesmo
- * membro ao mesmo analista colapsam na ultima (ex.: T10+T12 -> T12 desde T7).
- * Prazo = primeira pergunta.entrada ate resposta.entrada. Exibe nº do trâmite-resposta.
+ * Regra: par pergunta->resposta pela situacao do trâmite:
+ *   - pergunta = situacao 6 (Aguardando Resposta Gerencia de Produtos) -> data inicial
+ *   - resposta = situacao 7 (Respondido Gerencia de Produtos)          -> data final + responsavel
+ * Ligacao entre os dois: pergunta.data_resposta = resposta.entrada.
+ * Cada ciclo pergunta->resposta e UMA linha (ex.: T3->T5 e T6->T8 = 2 linhas).
+ * So mescla respostas que se sobrepoem (analista repergunta antes de responder).
+ * Prazo = pergunta.entrada ate resposta.entrada. Exibe nº do trâmite-resposta.
  */
 
 const { diasUteisSybase } = require('./date-utils');
 
+// Situacoes SS (bethadba.ss_situacoes)
+const SIT_PERGUNTA_GP = 6; // Aguardando Resposta Gerencia de Produtos
+const SIT_RESPOSTA_GP = 7; // Respondido Gerencia de Produtos
+
 const PERGUNTA_JOIN = `JOIN bethadba.ss_tramites perg ON perg.i_ss = st.i_ss
   AND perg.i_usuarios <> st.i_usuarios
+  AND perg.situacao = ${SIT_PERGUNTA_GP}
   AND perg.data_resposta = st.entrada
   AND perg.i_ss_tramites = (
     SELECT MAX(p2.i_ss_tramites) FROM bethadba.ss_tramites p2
     WHERE p2.i_ss = st.i_ss AND p2.i_usuarios <> st.i_usuarios
+      AND p2.situacao = ${SIT_PERGUNTA_GP}
       AND p2.data_resposta = st.entrada
   )`;
 
@@ -60,17 +69,21 @@ function colapsarPorAnalista(rows) {
       cur.i_ss === r.i_ss &&
       cur.membro_sgd === r.membro_sgd &&
       cur.pergunta_sgd === r.pergunta_sgd;
-    const merge = same && (
-      new Date(r.entrada) <= new Date(cur.data_resposta) ||
-      (r.i_ss_tramites - cur.perg_tramite <= 4 && new Date(r.entrada) > new Date(cur.data_resposta))
-    );
+    // Mescla APENAS respostas que se sobrepoem: o analista voltou a perguntar
+    // ANTES de o membro responder (mesma resposta fecha varias perguntas).
+    // Ciclos distintos (pergunta -> resposta -> NOVA pergunta -> resposta)
+    // permanecem como linhas separadas.
+    const merge = same && new Date(r.entrada) <= new Date(cur.data_resposta);
     if (!merge) {
       if (cur) out.push(cur);
-      cur = { ...r, perg_tramite: r.i_ss_tramites };
+      cur = { ...r };
       return;
     }
-    if (new Date(r.entrada) < new Date(cur.entrada)) cur.entrada = r.entrada;
+    // Ao mesclar, a resposta final define pergunta+entrada+resposta
+    // (entrada = pergunta que a resposta final fechou, NAO o minimo do ciclo).
     if (new Date(r.data_resposta) >= new Date(cur.data_resposta)) {
+      cur.entrada = r.entrada;
+      cur.pergunta_sgd = r.pergunta_sgd;
       cur.data_resposta = r.data_resposta;
       cur.i_ss_tramites_resp = r.i_ss_tramites_resp;
       cur.mes = r.mes;
@@ -79,7 +92,6 @@ function colapsarPorAnalista(rows) {
   if (cur) out.push(cur);
   return out.map(r => {
     r.i_ss_tramites = r.i_ss_tramites_resp;
-    delete r.perg_tramite;
     return r;
   });
 }
@@ -101,6 +113,7 @@ function querySsEnvolvimento(codigoSgdList, ano, mes) {
     JOIN bethadba.ss s ON st.i_ss = s.i_ss
     ${PERGUNTA_JOIN}
     WHERE st.i_usuarios IN (${ids})
+      AND st.situacao = ${SIT_RESPOSTA_GP}
       AND YEAR(st.entrada) = ${ano}
       ${filtroMes}
       AND COALESCE(s.i_produto_grupo, 1) = 1

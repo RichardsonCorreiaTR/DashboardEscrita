@@ -60,7 +60,7 @@ const AppNesDefinicao = (() => {
   function labelsFiltrados() {
     if (_anoFiltro === 'todos') return _dados.labels;
     const versoesFiltradas = _dados.versoes.filter(v => String(v.ano) === String(_anoFiltro));
-    return versoesFiltradas.map(v => v.label || v.nome_aba);
+    return [...new Set(versoesFiltradas.map(v => v.label || v.nome_aba))];
   }
 
   function renderizar() {

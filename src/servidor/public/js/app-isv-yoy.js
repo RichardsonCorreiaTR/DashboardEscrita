@@ -10,16 +10,50 @@
 const AppISVYoY = (() => {
   const BASE = '/api';
   const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const AREAS = [['Escrita', 'Escrita'], ['Importacao', 'Importa\u00e7\u00e3o']];
   let dados = null;
   let charts = {};
+  let areaSel = 'Escrita';
+  let carregando = false;
 
   async function carregar(force) {
-    const url = `${BASE}/estudos/historico${force ? '?force=1' : ''}`;
-    const resp = await fetch(url, { signal: AbortSignal.timeout(300000) });
-    if (!resp.ok) throw new Error((await resp.json().catch(() => ({}))).erro || `HTTP ${resp.status}`);
-    const raw = await resp.json();
-    dados = agrupar(raw);
-    renderizar();
+    if (carregando) return;
+    carregando = true;
+    renderizarSeletorArea();
+    try {
+      const params = new URLSearchParams();
+      if (force) params.set('force', '1');
+      if (areaSel !== 'Escrita') params.set('area', areaSel);
+      const qs = params.toString();
+      const url = `${BASE}/estudos/historico${qs ? '?' + qs : ''}`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(600000) });
+      if (!resp.ok) throw new Error((await resp.json().catch(() => ({}))).erro || `HTTP ${resp.status}`);
+      const raw = await resp.json();
+      dados = agrupar(raw);
+      renderizar();
+    } finally {
+      carregando = false;
+    }
+  }
+
+  function renderizarSeletorArea() {
+    const el = document.getElementById('isv-yoy-area-seletor');
+    if (!el) return;
+    el.innerHTML = '<span style="font-size:0.82rem;color:var(--cor-texto-sec);margin-right:0.5rem">\u00c1rea:</span>' +
+      AREAS.map(([val, lbl]) => {
+        const ativo = areaSel === val;
+        const estilo = ativo
+          ? 'background:var(--info,#3b82f6);color:#fff;border-color:var(--info,#3b82f6)'
+          : 'background:transparent;color:var(--cor-texto-sec);border-color:var(--cor-borda,#ccc)';
+        return `<button data-area="${val}" style="${estilo};border:1px solid;border-radius:6px;padding:0.3rem 0.9rem;margin-right:0.4rem;font-size:0.82rem;cursor:pointer">${lbl}</button>`;
+      }).join('');
+    el.querySelectorAll('button[data-area]').forEach(b => {
+      b.addEventListener('click', () => {
+        if (areaSel === b.dataset.area) return;
+        areaSel = b.dataset.area;
+        carregar(false);
+      });
+    });
   }
 
   function agrupar(raw) {
@@ -77,6 +111,7 @@ const AppISVYoY = (() => {
   }
 
   function renderizar() {
+    renderizarSeletorArea();
     if (!dados) return;
     renderizarKPIs();
     renderizarGraficoLinhas();

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tempo por SAL - Escrita Fiscal</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    main.dashboard { max-width: none; padding: 1rem 1.25rem; }
+    .salt-filtros {
+      display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 0.75rem 1rem; margin-bottom: 1rem;
+    }
+    .salt-filtros label { font-size: 0.75rem; font-weight: 700; color: var(--cor-texto-sec); display: block; margin-bottom: 0.25rem; }
+    .salt-filtros select { padding: 0.35rem 0.6rem; border: 1px solid var(--cor-borda); border-radius: 6px; font-size: 0.83rem; min-width: 160px; }
+    .salt-tabela { width: 100%; border-collapse: collapse; font-size: 0.82rem; background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: var(--radius); overflow: hidden; }
+    .salt-tabela th, .salt-tabela td { padding: 0.5rem 0.7rem; text-align: left; border-bottom: 1px solid var(--cor-borda); }
+    .salt-tabela th { background: var(--cor-fundo); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--cor-texto-sec); }
+    .salt-tabela td.num, .salt-tabela th.num { text-align: right; }
+    .salt-mes-row { cursor: pointer; font-weight: 600; }
+    .salt-mes-row:hover { background: var(--info-bg); }
+    .salt-detalhe-wrap { padding: 0 !important; }
+    .salt-detalhe { width: 100%; border-collapse: collapse; font-size: 0.76rem; background: var(--cor-fundo); }
+    .salt-detalhe th, .salt-detalhe td { padding: 0.35rem 0.6rem; border-bottom: 1px solid var(--cor-borda); text-align: left; }
+    .salt-detalhe td.num { text-align: right; }
+    .salt-total-row { font-weight: 800; background: var(--cor-fundo); }
+    #salt-chart-wrap { height: 320px; margin-top: 1.5rem; background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: var(--radius); padding: 1rem; }
+    .salt-badge { display: inline-block; padding: 0.1rem 0.45rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; }
+    #salt-situacoes {
+      display: none; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center;
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 0.6rem 1rem; margin-bottom: 1rem;
+    }
+    .salt-sit-label { font-size: 0.75rem; font-weight: 700; color: var(--cor-texto-sec); text-transform: uppercase; letter-spacing: 0.03em; }
+    .salt-sit-opt { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; cursor: pointer; }
+  </style>
+</head>
+<body class="com-sidebar">
+  <nav id="nav-container"></nav>
+  <div class="pagina">
+    <header class="header">
+      <div class="header__info">
+        <h1 class="header__title">Acomp. SALs — Tempo por SAL</h1>
+        <span class="header__subtitle">Tempo de análise/definição por SAL, acumulado por mês · Fonte: psai_responsaveis</span>
+      </div>
+      <div class="header__acoes">
+        <a href="/auth/logout" class="btn btn--outline" style="font-size:0.8rem">Sair</a>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <div class="salt-filtros">
+        <div>
+          <label for="salt-analista">Analista</label>
+          <select id="salt-analista"><option value="todos">Todos os analistas</option></select>
+        </div>
+        <div>
+          <label for="salt-nivel">Nível da análise</label>
+          <select id="salt-nivel">
+            <option value="todos" selected>Todos os níveis</option>
+            <option value="1">Baixa</option>
+            <option value="2">Média</option>
+            <option value="3">Alta</option>
+            <option value="4">Extra Alta</option>
+          </select>
+        </div>
+        <div>
+          <label for="salt-ano">Ano</label>
+          <select id="salt-ano"></select>
+        </div>
+        <button id="salt-consultar" class="btn btn--primario" style="font-size:0.82rem">Consultar</button>
+      </div>
+
+      <div id="salt-situacoes"></div>
+
+      <div id="salt-conteudo">
+        <p class="eq-sem-dados">Selecione os filtros e clique em Consultar.</p>
+      </div>
+
+      <div id="salt-chart-wrap" style="display:none">
+        <h3 style="font-size:.85rem;margin:0 0 .5rem;color:var(--cor-texto-sec)">Tempo médio de análise por SAL (min) — tendência mensal</h3>
+        <canvas id="salt-canvas" style="width:100%;height:calc(100% - 30px)"></canvas>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>Dashboard Escrita Fiscal v0.2.0</span>
+      <span>Coord. Richardson Picinini Correia</span>
+    </footer>
+  </div>
+  <script src="/js/nav.js?v=12"></script>
+  <script src="/js/app-acomp-sals-tempo.js?v=3"></script>
+</body>
+</html>

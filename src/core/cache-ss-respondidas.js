@@ -10,7 +10,7 @@ const fs = require('fs');
 
 const CACHE_DIR = path.join(__dirname, '..', '..', 'data', 'cache');
 const CACHE_FILE = path.join(CACHE_DIR, 'ss-respondidas.json');
-const CACHE_LOGIC_VERSION = 4; // v4: colapsa respostas intermediarias (T10+T12 -> T12 desde T7)
+const CACHE_LOGIC_VERSION = 7; // v7: par por situacao 6 (pergunta GP) -> 7 (resposta GP)
 
 let disco = { _meta: { atualizado_em: null, versao_logica: CACHE_LOGIC_VERSION }, anos: {} };
 

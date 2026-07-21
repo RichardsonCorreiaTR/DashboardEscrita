@@ -100,16 +100,18 @@ router.get('/estudos/semanal/:versao', async (req, res) => {
   }
 });
 
-/** GET /api/estudos/historico?force=1 */
+/** GET /api/estudos/historico?force=1&area=Escrita|Importacao */
 router.get('/estudos/historico', async (req, res) => {
   try {
     const force = req.query.force === '1';
+    const area = req.query.area === 'Importacao' ? 'Importacao' : 'Escrita';
     const resultado = await analiseHistorica.calcularHistorico(qe, {
       forceAtual: true,
-      forceTodas: force
+      forceTodas: force,
+      area
     });
 
-    res.json(resultado);
+    res.json({ ...resultado, area });
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }
@@ -145,16 +147,18 @@ router.get('/estudos/liberacoes-sa-v2', async (req, res) => {
   }
 });
 
-/** GET /api/estudos/descartes-ne?force=1 */
+/** GET /api/estudos/descartes-ne?force=1&area=Escrita|Importacao */
 router.get('/estudos/descartes-ne', async (req, res) => {
   try {
     const force = req.query.force === '1';
+    const area = req.query.area === 'Importacao' ? 'Importacao' : 'Escrita';
     const resultado = await descartesNE.calcularDescartes(qe, {
       forceAtual: true,
-      forceTodas: force
+      forceTodas: force,
+      area
     });
 
-    res.json(resultado);
+    res.json({ ...resultado, area });
   } catch (err) {
     res.status(500).json({ erro: err.message });
   }

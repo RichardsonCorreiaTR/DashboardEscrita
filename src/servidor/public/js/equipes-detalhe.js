@@ -350,15 +350,15 @@ const EquipesDetalhe = (() => {
     const tabelaAnal = (grupo, limite) => {
       if (!grupo.length) return '';
       let t = '<table class="eq-tabela eq-tabela--det"><thead><tr>' +
-        '<th>PSAI</th><th>SAI</th><th>Tipo</th><th>N\u00edvel</th><th>An\u00e1lise</th><th>Defini\u00e7\u00e3o</th><th>Total</th>' +
+        '<th>PSAI</th><th>SAI</th><th>Tipo</th><th>N\u00edvel</th><th>An\u00e1lise (min)</th><th>Defini\u00e7\u00e3o (min)</th><th>Total (min)</th>' +
         '</tr></thead><tbody>';
       grupo.forEach(r => {
         const anal = Number(r.total_analise)||0, def = Number(r.total_definicao)||0, tot = anal+def;
         const rowCls = limite && tot > limite ? ' class="eq-det--alerta"' : '';
         t += '<tr' + rowCls + '><td>' + linkPsai(r.i_psai) + '</td><td>' + linkSai(r.i_sai) +
           '</td><td>' + r.tipoSAI + '</td><td>' + (r.nivel||'N/D') +
-          '</td><td>' + fmtMin(anal) + '</td><td>' + fmtMin(def) +
-          '</td><td><strong>' + fmtMin(tot) + '</strong></td></tr>';
+          '</td><td>' + anal + '</td><td>' + def +
+          '</td><td><strong>' + tot + '</strong></td></tr>';
       });
       return t + '</tbody></table>';
     };

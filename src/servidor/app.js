@@ -35,6 +35,8 @@ const rotasSsRespondidas = require('./rotas/ss-respondidas');
 const rotasFeedback = require('./rotas/feedback-1on1');
 const rotasNesDefinicao = require('./rotas/nes-definicao');
 const rotasAcompSals = require('./rotas/acomp-sals');
+const rotasAcompSalsTempo = require('./rotas/acomp-sals-tempo');
+const rotasAcompNesTempo = require('./rotas/acomp-nes-tempo');
 
 const PORT = process.env.PORT || 4000;
 const USUARIOS_PATH = path.join(__dirname, '..', '..', 'config', 'usuarios.json');
@@ -117,6 +119,8 @@ app.use('/api', rotasSsRespondidas);
 app.use('/api', rotasFeedback);
 app.use('/api', rotasNesDefinicao);
 app.use('/api', rotasAcompSals);
+app.use('/api', rotasAcompSalsTempo);
+app.use('/api', rotasAcompNesTempo);
 
 app.get('/api/saude', (req, res) => {
   res.json({

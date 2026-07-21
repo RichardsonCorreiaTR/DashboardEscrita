@@ -47,11 +47,24 @@ async function carregarSsDetalhe(sgd, mes) {
   return ssShared.mapearLinhas(rows);
 }
 
+function templateIncluiSs(a) {
+  try {
+    const mj = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'config', 'metas-equipe.json'), 'utf8'));
+    const tmpl = mj.templates[a.senioridade] || [];
+    const extras = (mj.overrides[a.slug] || {})['metas-adicionais'] || [];
+    return [...tmpl, ...extras].includes('respostas-ss-3d');
+  } catch { return false; }
+}
+
 function enriquecerSsMetas(resp, a) {
+  if (!resp.metas || !templateIncluiSs(a)) return resp;
   const montado = cacheSs.montarAno(ANO);
-  if (!montado.registros.length || !resp.metas || !resp.metas['respostas-ss-3d']) return resp;
+  if (!montado.registros.length) return resp;
   const map = ssShared.agruparPorMembroMes(montado.registros);
+  const jaTinha = !!resp.metas['respostas-ss-3d'];
   resp.metas['respostas-ss-3d'] = { mensal: anual.mensalSS(map[a['codigo-sgd']], 95, ANO) };
+  // Cache antigo (sem a meta): recalcula o totalizador anual para incluir Respostas SS
+  if (!jaTinha) resp.totalizador = anual.totalizador(resp.metas);
   return resp;
 }
 

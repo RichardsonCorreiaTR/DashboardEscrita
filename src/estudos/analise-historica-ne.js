@@ -27,6 +27,14 @@ const VERSAO_INICIO = { ano: 2022, mes: 2 };
 
 let cacheHistorico = { _meta: { atualizado_em: null }, versoes: {} };
 
+/**
+ * Chave de cache por area. Escrita mantem a chave original (compat retro);
+ * demais areas ganham prefixo (ex.: "Importacao::10.6A-05").
+ */
+function chaveCache(area, nomeVersao) {
+  return area && area !== 'Escrita' ? `${area}::${nomeVersao}` : nomeVersao;
+}
+
 function garantirDiretorio() {
   if (!fs.existsSync(CACHE_DIR)) {
     fs.mkdirSync(CACHE_DIR, { recursive: true });
@@ -91,18 +99,19 @@ function listarVersoesEsperadas() {
 /**
  * Coleta analise semanal de uma versao (ODBC ou cache)
  */
-async function coletarVersao(executor, nomeVersao, forceOdbc) {
-  if (!forceOdbc && cacheHistorico.versoes[nomeVersao]) {
-    return cacheHistorico.versoes[nomeVersao];
+async function coletarVersao(executor, nomeVersao, forceOdbc, area = 'Escrita') {
+  const chave = chaveCache(area, nomeVersao);
+  if (!forceOdbc && cacheHistorico.versoes[chave]) {
+    return cacheHistorico.versoes[chave];
   }
 
   try {
-    const dados = await analiseSemanal.calcular(executor, nomeVersao);
-    cacheHistorico.versoes[nomeVersao] = dados;
+    const dados = await analiseSemanal.calcular(executor, nomeVersao, area);
+    cacheHistorico.versoes[chave] = dados;
     return dados;
   } catch (err) {
-    console.warn('[historico-ne] Erro em %s: %s', nomeVersao, err.message);
-    return cacheHistorico.versoes[nomeVersao] || null;
+    console.warn('[historico-ne] Erro em %s (%s): %s', nomeVersao, area, err.message);
+    return cacheHistorico.versoes[chave] || null;
   }
 }
 
@@ -114,6 +123,7 @@ async function coletarVersao(executor, nomeVersao, forceOdbc) {
  */
 async function coletarHistorico(executor, opts = {}) {
   restaurarCache();
+  const area = opts.area || 'Escrita';
   const nomes = listarVersoesEsperadas();
   const versaoAtual = await detectarAtual(executor);
   const resultados = [];
@@ -121,7 +131,7 @@ async function coletarHistorico(executor, opts = {}) {
   for (const nome of nomes) {
     const ehAtual = nome === versaoAtual;
     const force = opts.forceTodas || (ehAtual && opts.forceAtual !== false);
-    const dados = await coletarVersao(executor, nome, force);
+    const dados = await coletarVersao(executor, nome, force, area);
     if (dados && dados.totais) resultados.push(dados);
   }
 
@@ -147,8 +157,10 @@ async function detectarAtual(executor) {
  * @returns {Promise<Object>} Historico completo com estatisticas e ISV
  */
 async function calcularHistorico(executor, opts = {}) {
+  const area = opts.area || 'Escrita';
   const versoes = await coletarHistorico(executor, opts);
-  enriquecerSSC(versoes);
+  // Fallback de SSC pre-calculado so existe para Escrita
+  if (area === 'Escrita') enriquecerSSC(versoes);
   const completas = versoes.filter(v => !v.versaoEmAndamento && (v.semanasConcluidas !== undefined ? v.semanasConcluidas : 4) === 4);
   const stats = calcularEstatisticas(versoes);
 

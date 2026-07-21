@@ -91,7 +91,7 @@ const EquipesNeDefinicao = (() => {
 
   function renderInfo() {
     return '<div class="eq-meta"><h3 class="eq-meta__titulo">NEs com Definição</h3>' +
-      '<p class="eq-meta__detalhe">Quantidade de NEs com falha de definição atribuídas ao analista/especialista como Responsável PSAI, por mês. Quanto menos, melhor.</p>' +
+      '<p class="eq-meta__detalhe">Quantidade de NEs com falha de definição atribuídas ao analista/especialista — como Responsável PSAI (quem definiu) ou Responsável SAI (quem gerou), por mês. Quanto menos, melhor.</p>' +
       '<div class="eq-meta__info">' +
       '<div class="eq-meta__bloco"><span class="eq-meta__bloco-label">Valor esperado</span><span class="eq-meta__bloco-valor">Meta a definir</span></div>' +
       '<div class="eq-meta__bloco"><span class="eq-meta__bloco-label">Fonte</span><span class="eq-meta__bloco-valor">Planilha Análise de NEs</span></div>' +

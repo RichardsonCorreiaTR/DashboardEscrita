@@ -10,18 +10,80 @@
 /* eslint-disable no-unused-vars */
 const AppDescartes = (() => {
   const BASE = '/api';
+  const AREAS = [['Escrita', 'Escrita'], ['Importacao', 'Importa\u00e7\u00e3o']];
   let dados = null;
   let charts = {};
+  let areaSel = 'Escrita';
+  let anoSel = String(new Date().getFullYear());
+  let carregando = false;
 
   async function carregar(force) {
-    const url = `${BASE}/estudos/descartes-ne${force ? '?force=1' : ''}`;
-    const resp = await fetch(url, { signal: AbortSignal.timeout(300000) });
-    if (!resp.ok) { const b = await resp.json().catch(() => ({})); throw new Error(b.erro || `HTTP ${resp.status}`); }
-    dados = await resp.json();
-    renderizar();
+    if (carregando) return;
+    carregando = true;
+    renderizarControles();
+    try {
+      const params = new URLSearchParams();
+      if (force) params.set('force', '1');
+      if (areaSel !== 'Escrita') params.set('area', areaSel);
+      const qs = params.toString();
+      const url = `${BASE}/estudos/descartes-ne${qs ? '?' + qs : ''}`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(600000) });
+      if (!resp.ok) { const b = await resp.json().catch(() => ({})); throw new Error(b.erro || `HTTP ${resp.status}`); }
+      dados = await resp.json();
+      ajustarAno();
+      renderizar();
+    } finally {
+      carregando = false;
+    }
+  }
+
+  function anoDaVersao(v) { const m = (v || '').match(/^10\.(\d+)A-\d{2}/); return m ? 2020 + parseInt(m[1], 10) : null; }
+  function anosDisponiveis() {
+    return [...new Set(((dados && dados.versoes) || []).map(v => anoDaVersao(v.versao)).filter(Boolean))].sort((a, b) => a - b).map(String);
+  }
+  function ajustarAno() {
+    const anos = anosDisponiveis();
+    if (anoSel !== 'todos' && !anos.includes(anoSel)) anoSel = anos.length ? anos[anos.length - 1] : 'todos';
+  }
+  function versoesFiltradas() {
+    const vs = (dados && dados.versoes) || [];
+    const serie = (dados && dados.estatisticas && dados.estatisticas.serieEWMA) || [];
+    if (anoSel === 'todos') return { versoes: vs, serie };
+    const idx = [];
+    vs.forEach((v, i) => { if (String(anoDaVersao(v.versao)) === anoSel) idx.push(i); });
+    return { versoes: idx.map(i => vs[i]), serie: idx.map(i => serie[i]) };
+  }
+
+  function renderizarControles() {
+    const el = document.getElementById('descartes-area-seletor');
+    if (!el) return;
+    const btns = AREAS.map(([val, lbl]) => {
+      const ativo = areaSel === val;
+      const estilo = ativo
+        ? 'background:var(--info,#3b82f6);color:#fff;border-color:var(--info,#3b82f6)'
+        : 'background:transparent;color:var(--cor-texto-sec);border-color:var(--cor-borda,#ccc)';
+      return `<button data-area="${val}" style="${estilo};border:1px solid;border-radius:6px;padding:0.3rem 0.9rem;margin-right:0.4rem;font-size:0.82rem;cursor:pointer">${lbl}</button>`;
+    }).join('');
+    const anos = anosDisponiveis();
+    const opts = ['<option value="todos"' + (anoSel === 'todos' ? ' selected' : '') + '>Todos os anos</option>']
+      .concat(anos.map(a => `<option value="${a}"${a === anoSel ? ' selected' : ''}>${a}</option>`)).join('');
+    el.innerHTML =
+      '<span style="font-size:0.82rem;color:var(--cor-texto-sec);margin-right:0.5rem">\u00c1rea:</span>' + btns +
+      '<span style="font-size:0.82rem;color:var(--cor-texto-sec);margin:0 0.5rem 0 1rem">Ano:</span>' +
+      `<select id="descartes-ano-select" style="border:1px solid var(--cor-borda,#ccc);border-radius:6px;padding:0.3rem 0.6rem;font-size:0.82rem;cursor:pointer">${opts}</select>`;
+    el.querySelectorAll('button[data-area]').forEach(b => {
+      b.addEventListener('click', () => {
+        if (areaSel === b.dataset.area) return;
+        areaSel = b.dataset.area;
+        carregar(false);
+      });
+    });
+    const sel = document.getElementById('descartes-ano-select');
+    if (sel) sel.addEventListener('change', () => { anoSel = sel.value; renderizar(); });
   }
 
   function renderizar() {
+    renderizarControles();
     renderizarKPIs();
     renderizarDiagnostico();
     renderizarGraficos();
@@ -161,9 +223,9 @@ const AppDescartes = (() => {
     if (!dados || !dados.versoes) return;
     destruir('chartDescPct'); destruir('chartDescMotivo');
 
-    const v = dados.versoes;
+    const { versoes: v, serie } = versoesFiltradas();
+    if (!v.length) return;
     const labels = v.map(x => x.versao);
-    const serie = dados.estatisticas.serieEWMA || [];
 
     const ctx1 = document.getElementById('chart-descartes-pct');
     if (ctx1) {
@@ -204,12 +266,12 @@ const AppDescartes = (() => {
     if (!el || !dados) return;
     const thead = el.querySelector('thead');
     const tbody = el.querySelector('tbody');
-    const s = dados.estatisticas;
+    const { versoes, serie } = versoesFiltradas();
 
     thead.innerHTML = `<tr><th>Versao</th><th>Entradas</th><th>CsD (5)</th><th>Repr (6)</th><th>Presc (23)</th><th>Total Foco</th><th>% Descarte</th><th>EWMA</th><th>Status</th></tr>`;
 
-    tbody.innerHTML = dados.versoes.map((v, i) => {
-      const ewma = s.serieEWMA[i];
+    tbody.innerHTML = versoes.map((v, i) => {
+      const ewma = serie[i];
       const pct = v.percentual;
       const fn = ewma ? ewma.faixaNormal : 999;
       const fa = ewma ? ewma.faixaAtencao : 999;
@@ -228,9 +290,15 @@ const AppDescartes = (() => {
       </tr>`;
     }).join('');
 
+    const tot = versoes.reduce((t, v) => ({
+      entradas: t.entradas + v.entradas, csd: t.csd + (v.conclSemDev || 0),
+      repr: t.repr + v.reprovadas, presc: t.presc + v.prescritas, foco: t.foco + v.totalDescartesFoco
+    }), { entradas: 0, csd: 0, repr: 0, presc: 0, foco: 0 });
+    const pctTot = tot.entradas ? Math.round((tot.foco / tot.entradas) * 10000) / 100 : 0;
+    const rotuloTot = anoSel === 'todos' ? 'Total' : 'Total ' + anoSel;
     tbody.innerHTML += `<tr style="font-weight:700;background:var(--cor-fundo)">
-      <td>Total</td><td>${s.totais.entradas}</td><td>${s.totais.conclSemDev}</td><td>${s.totais.reprovadas}</td><td>${s.totais.prescritas}</td>
-      <td>${s.totais.foco}</td><td>${s.totais.pctGlobal}%</td><td>-</td><td>-</td>
+      <td>${rotuloTot}</td><td>${tot.entradas}</td><td>${tot.csd}</td><td>${tot.repr}</td><td>${tot.presc}</td>
+      <td>${tot.foco}</td><td>${pctTot}%</td><td>-</td><td>-</td>
     </tr>`;
   }
 

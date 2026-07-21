@@ -55,6 +55,7 @@ const Nav = (() => {
       id: 'acomp-nes', titulo: 'Acomp. NEs', icone: '\u25C7',
       sub: [
         { id: 'nes-definicao', href: '/nes-definicao.html', titulo: 'NEs com Definição' },
+        { id: 'nes-tempo-detalhe', href: '/acomp-nes-tempo.html', titulo: 'Tempo por NE' },
         { id: 'semanal-versao', href: '/estudos.html?view=semanal-versao', titulo: 'Semanal - NE por Versao' },
         { id: 'semanal-historica', href: '/estudos.html?view=semanal-historica', titulo: 'Semanal - NE Historica' }
       ]
@@ -62,7 +63,8 @@ const Nav = (() => {
     {
       id: 'acomp-sals', titulo: 'Acomp. SALs', icone: '\u25A1',
       sub: [
-        { id: 'sal-tempo-descarte', href: '/acomp-sals.html', titulo: 'Tempo Descarte' }
+        { id: 'sal-tempo-descarte', href: '/acomp-sals.html', titulo: 'Tempo Descarte' },
+        { id: 'sal-tempo-detalhe', href: '/acomp-sals-tempo.html', titulo: 'Tempo por SAL' }
       ]
     },
     { id: 'descartes-tempo', href: '/descartes-tempo.html', titulo: 'Descartes x Tempo', icone: '\u25D2' },
@@ -102,6 +104,8 @@ const Nav = (() => {
     if (path === '/feedback-1on1.html') return 'feedback-1on1';
     if (path === '/nes-definicao.html') return 'nes-definicao';
     if (path === '/acomp-sals.html') return 'sal-tempo-descarte';
+    if (path === '/acomp-sals-tempo.html') return 'sal-tempo-detalhe';
+    if (path === '/acomp-nes-tempo.html') return 'nes-tempo-detalhe';
 
     // Verificar subpaginas de estudos
     if (path === '/estudos.html' && view) return view;

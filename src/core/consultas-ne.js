@@ -30,6 +30,21 @@ const FILTRO_PRODUTO_ENTRADA = `
       )`;
 
 /**
+ * Condicao SQL de filtro por area para NEs.
+ * Escrita usa igualdade; demais usam LIKE por prefixo para evitar problemas
+ * de acento (ex.: "Importacao"/"Importação").
+ * @param {string} area - 'Escrita' (padrao) ou 'Importacao'
+ * @param {string} alias - alias da tabela SAI_PSAI (padrao 'sai_psai')
+ */
+function condAreaNE(area, alias = 'sai_psai') {
+  if (area && area !== 'Escrita') {
+    const pref = area === 'Importacao' ? 'Importa' : area;
+    return `${alias}.nomeArea LIKE '${pref}%'`;
+  }
+  return `${alias}.nomeArea = 'Escrita'`;
+}
+
+/**
  * NEs que entraram no periodo com detalhamento completo:
  * situacao atual, origem (interna/externa), status de versao (nomeVersao/i_versoes).
  */
@@ -337,6 +352,7 @@ function classificarArea(descricao) {
 
 module.exports = {
   FILTRO_PRODUTO_ENTRADA,
+  condAreaNE,
   queryEntradasDetalhe,
   queryEntradas,
   queryDescartes,

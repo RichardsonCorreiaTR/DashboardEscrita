@@ -149,7 +149,8 @@ function parseAba(ws) {
 
 function labelDeNomeAba(nomeAba) {
   // "Janeiro 2026 - Importação " → { label: "Jan/26", ano: 2026 }
-  const m = nomeAba.match(/^(\w+)\s+(\d{4})/);
+  // \S+ (nao \w+) para casar meses acentuados como "Março"
+  const m = nomeAba.match(/^(\S+)\s+(\d{4})/);
   if (!m) return null;
   const mesNorm = m[1].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const abrev = MESES_ABREV[mesNorm];
@@ -167,11 +168,11 @@ async function parsearExcel(caminhoArquivo) {
     const nome = ws.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     if (!nome.includes('escrita') && !nome.includes('importa')) return;
     const dados = parseAba(ws);
-    // Garante que o label/ano vêm do nome da aba (confiável), não do título da célula
+    // Label = mes/ano (uma coluna por mes; abas Escrita+Importacao do mesmo mes
+    // combinam). A versao continua em dados.versao para referencia.
     const infoNome = labelDeNomeAba(ws.name);
     if (infoNome) {
-      const versaoStr = dados.versao ? ` (${dados.versao})` : '';
-      dados.label = `${infoNome.label}${versaoStr}`;
+      dados.label = infoNome.label;
       dados.ano = infoNome.ano;
     }
     if (dados.versao || dados.nes.length) versoes.push(dados);
@@ -183,7 +184,10 @@ async function parsearExcel(caminhoArquivo) {
     if (!slug) return;
     if (!porAnalista[slug]) porAnalista[slug] = {};
     if (!porAnalista[slug][label]) porAnalista[slug][label] = [];
-    porAnalista[slug][label].push(ne);
+    const bucket = porAnalista[slug][label];
+    // Nao duplicar a mesma NE no mesmo mes (evita dupla contagem Escrita+Importacao)
+    if (bucket.some(x => x.ne === ne.ne)) return;
+    bucket.push(ne);
   }
   versoes.forEach(v => {
     const label = v.label || v.nome_aba;
@@ -200,7 +204,7 @@ async function parsearExcel(caminhoArquivo) {
   return {
     versoes,
     por_analista: porAnalista,
-    labels: versoes.map(v => v.label || v.nome_aba),
+    labels: [...new Set(versoes.map(v => v.label || v.nome_aba))],
     gerado_em: new Date().toISOString()
   };
 }

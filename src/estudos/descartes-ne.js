@@ -10,6 +10,12 @@ const fs = require('fs');
 
 const versao = require('../core/versao');
 const { calcularEstatisticasDescartes } = require('./descartes-estatisticas');
+const { condAreaNE } = require('../core/consultas-ne');
+
+/** Chave de cache por area (Escrita = chave original; demais com prefixo). */
+function chaveCache(area, nomeVersao) {
+  return area && area !== 'Escrita' ? `${area}::${nomeVersao}` : nomeVersao;
+}
 
 const CACHE_DIR = path.join(__dirname, '..', '..', 'data', 'cache');
 const CACHE_FILE = path.join(CACHE_DIR, 'estudos-descartes-ne.json');
@@ -39,21 +45,21 @@ function salvarCache() {
 }
 
 /** Total de entradas de NE no periodo da versao */
-function queryEntradas(nomeVersao) {
+function queryEntradas(nomeVersao, area) {
   const inicio = versao.sqlInicioVersao(nomeVersao);
   const fim = versao.sqlFimVersao(nomeVersao);
   return `
     SELECT COUNT(*) as total
     FROM UP.SAI_PSAI sp
     JOIN bethadba.psai p ON sp.i_psai = p.i_psai
-    WHERE sp.nomeArea = 'Escrita' AND sp.tipoSAI = 'NE'
+    WHERE ${condAreaNE(area, 'sp')} AND sp.tipoSAI = 'NE'
       AND sp.CadastroPSAI > ${inicio} AND sp.CadastroPSAI <= ${fim}
       AND COALESCE(p.i_produto_grupo, 1) = 1
   `;
 }
 
 /** Descartes agrupados por motivo (5=CsD, 6=Reprovada, 23=Prescrita) */
-function queryDescartesFoco(nomeVersao) {
+function queryDescartesFoco(nomeVersao, area) {
   const inicio = versao.sqlInicioVersao(nomeVersao);
   const fim = versao.sqlFimVersao(nomeVersao);
   return `
@@ -62,7 +68,7 @@ function queryDescartesFoco(nomeVersao) {
       COUNT(*) as qtd
     FROM UP.SAI_PSAI sp
     JOIN bethadba.psai p ON sp.i_psai = p.i_psai
-    WHERE sp.nomeArea = 'Escrita' AND sp.tipoSAI = 'NE'
+    WHERE ${condAreaNE(area, 'sp')} AND sp.tipoSAI = 'NE'
       AND sp.Descarte > ${inicio} AND sp.Descarte <= ${fim}
       AND COALESCE(p.i_produto_grupo, 1) = 1
       AND COALESCE(NULLIF(sp.i_sai_situacoes, 0), sp.i_psai_situacoes) IN (${MOTIVOS.join(',')})
@@ -71,7 +77,7 @@ function queryDescartesFoco(nomeVersao) {
 }
 
 /** Detalhes dos descartes (motivo 5/6/23) com descricao truncada */
-function queryDetalhesDescartes(nomeVersao) {
+function queryDetalhesDescartes(nomeVersao, area) {
   const inicio = versao.sqlInicioVersao(nomeVersao);
   const fim = versao.sqlFimVersao(nomeVersao);
   return `
@@ -86,7 +92,7 @@ function queryDetalhesDescartes(nomeVersao) {
       ON sp.i_sai_situacoes = sit.i_sai_situacoes AND sit.i_sai_linhas = 1
     LEFT JOIN bethadba.psai_situacoes psit
       ON sp.i_psai_situacoes = psit.i_situacoes
-    WHERE sp.nomeArea = 'Escrita' AND sp.tipoSAI = 'NE'
+    WHERE ${condAreaNE(area, 'sp')} AND sp.tipoSAI = 'NE'
       AND sp.Descarte > ${inicio} AND sp.Descarte <= ${fim}
       AND COALESCE(p.i_produto_grupo, 1) = 1
       AND COALESCE(NULLIF(sp.i_sai_situacoes, 0), sp.i_psai_situacoes) IN (${MOTIVOS.join(',')})
@@ -94,14 +100,15 @@ function queryDetalhesDescartes(nomeVersao) {
 }
 
 /** Coleta dados de uma versao (ODBC ou cache) */
-async function coletarVersao(executor, nomeVersao, forceOdbc) {
-  if (!forceOdbc && cache.versoes[nomeVersao]) return cache.versoes[nomeVersao];
+async function coletarVersao(executor, nomeVersao, forceOdbc, area = 'Escrita') {
+  const chave = chaveCache(area, nomeVersao);
+  if (!forceOdbc && cache.versoes[chave]) return cache.versoes[chave];
 
   try {
     const [entResult, descResult, detalheResult] = await Promise.all([
-      executor.executar(queryEntradas(nomeVersao)),
-      executor.executar(queryDescartesFoco(nomeVersao)),
-      executor.executar(queryDetalhesDescartes(nomeVersao))
+      executor.executar(queryEntradas(nomeVersao, area)),
+      executor.executar(queryDescartesFoco(nomeVersao, area)),
+      executor.executar(queryDetalhesDescartes(nomeVersao, area))
     ]);
 
     const entradas = entResult && entResult[0] ? entResult[0].total : 0;
@@ -124,11 +131,11 @@ async function coletarVersao(executor, nomeVersao, forceOdbc) {
       conclSemDev: porMotivo[5], reprovadas: porMotivo[6], prescritas: porMotivo[23],
       totalDescartesFoco: totalFoco, percentual: pct, detalhes
     };
-    cache.versoes[nomeVersao] = dados;
+    cache.versoes[chave] = dados;
     return dados;
   } catch (err) {
-    console.warn('[descartes-ne] Erro %s: %s', nomeVersao, err.message);
-    return cache.versoes[nomeVersao] || null;
+    console.warn('[descartes-ne] Erro %s (%s): %s', nomeVersao, area, err.message);
+    return cache.versoes[chave] || null;
   }
 }
 
@@ -158,6 +165,7 @@ async function detectarAtual(executor) {
 /** Executa analise historica completa de descartes (CsD/Repr/Presc) */
 async function calcularDescartes(executor, opts = {}) {
   restaurarCache();
+  const area = opts.area || 'Escrita';
   const nomes = listarVersoes();
   const atual = await detectarAtual(executor);
   const resultados = [];
@@ -165,7 +173,7 @@ async function calcularDescartes(executor, opts = {}) {
   for (const nome of nomes) {
     const ehAtual = nome === atual;
     const force = opts.forceTodas || (ehAtual && opts.forceAtual !== false);
-    const dados = await coletarVersao(executor, nome, force);
+    const dados = await coletarVersao(executor, nome, force, area);
     if (dados && dados.entradas > 0) resultados.push(dados);
   }
 
