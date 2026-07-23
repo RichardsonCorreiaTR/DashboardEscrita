@@ -1,5 +1,5 @@
-/**
- * tempo-correcao-queries.js - Queries do indicador Tempo Correcao NE
+﻿/**
+ * tempo-implementacao-queries.js - Queries do indicador Tempo Implementacao SAL
  *
  * Tres fontes de tempo:
  * 1. SAIs liberadas na versao (nomeVersao = 'X')
@@ -31,7 +31,7 @@ function querySaisPorTipo(v, area = 'Escrita') {
     SELECT
       sp.tipoSAI,
       COUNT(*) as total,
-      SUM(CASE WHEN sp.tipoSAI = 'NE' AND COALESCE(sp.NE_PREVENCAO, 0) = 1 THEN 1 ELSE 0 END) as ne_internas
+      SUM(CASE WHEN sp.tipoSAI = 'SAL' AND COALESCE(sp.NE_PREVENCAO, 0) = 1 THEN 1 ELSE 0 END) as sal_internas
     FROM UP.SAI_PSAI sp
     JOIN bethadba.psai psai ON sp.i_psai = psai.i_psai
     WHERE ${condAreaNE(area, 'sp')}
@@ -46,8 +46,8 @@ function queryTempoDev(v, area = 'Escrita') {
   return `
     SELECT
       SUM(rd.tempo_realizado) as dev_total,
-      SUM(CASE WHEN sp.tipoSAI = 'NE' AND COALESCE(sp.NE_PREVENCAO, 0) <> 1
-        THEN rd.tempo_realizado ELSE 0 END) as dev_ne
+      SUM(CASE WHEN sp.tipoSAI = 'SAL' AND COALESCE(sp.NE_PREVENCAO, 0) <> 1
+        THEN rd.tempo_realizado ELSE 0 END) as dev_sal
     FROM bethadba.sai_roteiro_desenvolvimento rd
     JOIN UP.SAI_PSAI sp ON rd.i_sai = sp.i_sai
     JOIN bethadba.psai psai ON sp.i_psai = psai.i_psai
@@ -64,10 +64,10 @@ function queryTempoTeste(v, area = 'Escrita') {
     SELECT
       SUM(rt.tempo_teste_realizado) as teste_total,
       SUM(rt.tempo_preparacao_realizado) as prep_total,
-      SUM(CASE WHEN sp.tipoSAI = 'NE' AND COALESCE(sp.NE_PREVENCAO, 0) <> 1
-        THEN rt.tempo_teste_realizado ELSE 0 END) as teste_ne,
-      SUM(CASE WHEN sp.tipoSAI = 'NE' AND COALESCE(sp.NE_PREVENCAO, 0) <> 1
-        THEN rt.tempo_preparacao_realizado ELSE 0 END) as prep_ne
+      SUM(CASE WHEN sp.tipoSAI = 'SAL' AND COALESCE(sp.NE_PREVENCAO, 0) <> 1
+        THEN rt.tempo_teste_realizado ELSE 0 END) as teste_sal,
+      SUM(CASE WHEN sp.tipoSAI = 'SAL' AND COALESCE(sp.NE_PREVENCAO, 0) <> 1
+        THEN rt.tempo_preparacao_realizado ELSE 0 END) as prep_sal
     FROM bethadba.sai_roteiro_testes rt
     JOIN UP.SAI_PSAI sp ON rt.i_sai = sp.i_sai
     JOIN bethadba.psai psai ON sp.i_psai = psai.i_psai
@@ -200,3 +200,4 @@ module.exports = {
   queryParaleloDev, queryParaleloTeste,
   queryDetalheParaleloDev, queryDetalheParaleloTeste
 };
+

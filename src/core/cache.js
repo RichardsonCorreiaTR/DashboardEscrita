@@ -15,6 +15,12 @@ const fs = require('fs');
 const CACHE_DIR = path.join(__dirname, '..', '..', 'data', 'cache');
 const CACHE_FILE = path.join(CACHE_DIR, 'indicadores.json');
 
+/** Chave de versao no disco/memoria por area (Escrita mantem chave original). */
+function chaveVersaoArea(v, area = 'Escrita') {
+  if (!v) return v;
+  return area && area !== 'Escrita' ? `${v}@${area}` : v;
+}
+
 /** @type {Map<string, {valor: any, expira: number}>} */
 const memoria = new Map();
 
@@ -136,5 +142,5 @@ function restaurarDoDisco() {
 module.exports = {
   obter, definir, invalidar, limparTudo, estatisticas,
   salvarNoDisco, salvarTodosNoDisco, obterDoDisco,
-  ultimaAtualizacaoDisco, restaurarDoDisco
+  ultimaAtualizacaoDisco, restaurarDoDisco, chaveVersaoArea
 };

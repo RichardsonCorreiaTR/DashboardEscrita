@@ -1,8 +1,8 @@
-/**
- * consultas-ne.js - Queries compartilhadas para detalhamento de NEs
+﻿/**
+ * consultas-sal.js - Queries compartilhadas para SAL
  *
  * Fornece query builders reutilizaveis para movimentacao de NEs por versao.
- * Usado por: indicadores/produto/saldo-ne.js, indicadores/produto/entrada-ne.js
+ * Usado por: indicadores/produto/saldo-sal.js, indicadores/produto/entrada-sal.js
  *
  * Filtro padrao: nomeArea = Escrita, tipoSAI = NE, produto_grupo = 1 via psai
  *
@@ -15,6 +15,10 @@
  */
 
 const versao = require('./versao');
+const { condNeExterna, JOIN_SITUACAO, COL_SITUACAO_NOME } = require('./consultas-ne');
+
+/** Visibilidade externa SAL (exclui Interna: NE_PREVENCAO=1) — mesmo campo das NEs */
+const condSalExterna = condNeExterna;
 
 /**
  * Filtro padrao para entradas/descartes de NE por periodo.
@@ -32,19 +36,10 @@ const FILTRO_PRODUTO_ENTRADA = `
 /** nomeArea decodificado (latin1) para exibicao em Ambas */
 const COL_NOME_AREA = `CAST(TRIM(sai_psai.nomeArea) AS BINARY(32)) as nomeArea`;
 
-/** JOIN situacao SAI/PSAI (fallback quando i_sai_situacoes = 0) */
-const JOIN_SITUACAO = `
-    LEFT JOIN bethadba.sai_situacoes sit
-      ON sai_psai.i_sai_situacoes = sit.i_sai_situacoes AND sit.i_sai_linhas = 1
-    LEFT JOIN bethadba.psai_situacoes psai_sit
-      ON sai_psai.i_psai_situacoes = psai_sit.i_situacoes`;
-
-const COL_SITUACAO_NOME = `CAST(TRIM(COALESCE(sit.descricao, psai_sit.descricao)) AS BINARY(64)) as situacao_nome`;
-
 /**
  * Condicao SQL de filtro por area para NEs.
  * Escrita usa igualdade; demais usam LIKE por prefixo para evitar problemas
- * de acento (ex.: "Importacao"/"Importação").
+ * de acento (ex.: "Importacao"/"ImportaÃ§Ã£o").
  * @param {string} area - 'Escrita' (padrao) ou 'Importacao'
  * @param {string} alias - alias da tabela SAI_PSAI (padrao 'sai_psai')
  */
@@ -59,13 +54,9 @@ function condAreaNE(area, alias = 'sai_psai') {
   return `${alias}.nomeArea = 'Escrita'`;
 }
 
-/** NE externa (exclui prevencao interna, NE_PREVENCAO=1) — padrao em todos indicadores de produto */
-function condNeExterna(alias = 'sai_psai') {
-  return `AND COALESCE(${alias}.NE_PREVENCAO, 0) <> 1`;
-}
 
 /**
- * NEs que entraram no periodo com detalhamento completo:
+ * SALs que entraram no periodo com detalhamento completo:
  * situacao atual, origem (interna/externa), status de versao (nomeVersao/i_versoes).
  */
 function queryEntradasDetalhe(nomeVersao, area = 'Escrita') {
@@ -83,17 +74,17 @@ function queryEntradasDetalhe(nomeVersao, area = 'Escrita') {
     LEFT JOIN bethadba.psai_situacoes psai_sit
       ON sai_psai.i_psai_situacoes = psai_sit.i_situacoes
     WHERE ${condAreaNE(area)}
-      AND sai_psai.tipoSAI = 'NE'
+      AND sai_psai.tipoSAI = 'SAL'
+      ${condSalExterna()}
       AND sai_psai.CadastroPSAI > ${inicio}
       AND sai_psai.CadastroPSAI <= ${fim}
       ${FILTRO_PRODUTO_ENTRADA}
-      ${condNeExterna()}
     ORDER BY sai_psai.CadastroPSAI DESC
   `;
 }
 
 /**
- * NEs que entraram no periodo da versao (CadastroPSAI entre inicio e fim)
+ * SALs que entraram no periodo da versao (CadastroPSAI entre inicio e fim)
  */
 function queryEntradas(nomeVersao, area = 'Escrita') {
   const inicio = versao.sqlInicioVersao(nomeVersao);
@@ -103,16 +94,16 @@ function queryEntradas(nomeVersao, area = 'Escrita') {
            sai_psai.gravidade_ne, sai_psai.NE_PREVENCAO
     FROM UP.SAI_PSAI sai_psai
     WHERE ${condAreaNE(area)}
-      AND sai_psai.tipoSAI = 'NE'
+      AND sai_psai.tipoSAI = 'SAL'
+      ${condSalExterna()}
       AND sai_psai.CadastroPSAI > ${inicio}
       AND sai_psai.CadastroPSAI <= ${fim}
       ${FILTRO_PRODUTO_ENTRADA}
-      ${condNeExterna()}
   `;
 }
 
 /**
- * NEs descartadas no periodo com motivo.
+ * SALs descartadas no periodo com motivo.
  * JOIN sai_situacoes para situacao SAI + psai_situacoes para situacao PSAI (fallback).
  */
 function queryDescartes(nomeVersao, area = 'Escrita') {
@@ -129,16 +120,16 @@ function queryDescartes(nomeVersao, area = 'Escrita') {
     LEFT JOIN bethadba.psai_situacoes psai_sit
       ON sai_psai.i_psai_situacoes = psai_sit.i_situacoes
     WHERE ${condAreaNE(area)}
-      AND sai_psai.tipoSAI = 'NE'
+      AND sai_psai.tipoSAI = 'SAL'
+      ${condSalExterna()}
       AND sai_psai.Descarte > ${inicio}
       AND sai_psai.Descarte <= ${fim}
       ${FILTRO_PRODUTO_ENTRADA}
-      ${condNeExterna()}
   `;
 }
 
 /**
- * NEs liberadas na versao (nomeVersao + Liberacao preenchidos)
+ * SALs liberadas na versao (nomeVersao + Liberacao preenchidos)
  */
 function queryLiberadas(nomeVersao, area = 'Escrita') {
   return `
@@ -147,16 +138,16 @@ function queryLiberadas(nomeVersao, area = 'Escrita') {
     FROM UP.SAI_PSAI sai_psai
     JOIN bethadba.psai psai ON sai_psai.i_psai = psai.i_psai
     WHERE ${condAreaNE(area)}
-      AND sai_psai.tipoSAI = 'NE'
+      AND sai_psai.tipoSAI = 'SAL'
+      ${condSalExterna()}
       AND sai_psai.nomeVersao = '${nomeVersao}'
       AND sai_psai.Liberacao IS NOT NULL
       AND COALESCE(psai.i_produto_grupo, 1) = 1
-      ${condNeExterna()}
   `;
 }
 
 /**
- * NEs pendentes de liberacao (commitadas na versao mas Liberacao IS NULL)
+ * SALs pendentes de liberacao (commitadas na versao mas Liberacao IS NULL)
  */
 function queryPendentes(nomeVersao, area = 'Escrita') {
   return `
@@ -167,16 +158,16 @@ function queryPendentes(nomeVersao, area = 'Escrita') {
     JOIN bethadba.psai psai ON sai_psai.i_psai = psai.i_psai
     ${JOIN_SITUACAO}
     WHERE ${condAreaNE(area)}
-      AND sai_psai.tipoSAI = 'NE'
+      AND sai_psai.tipoSAI = 'SAL'
+      ${condSalExterna()}
       AND sai_psai.nomeVersao = '${nomeVersao}'
       AND sai_psai.Liberacao IS NULL
       AND COALESCE(psai.i_produto_grupo, 1) = 1
-      ${condNeExterna()}
   `;
 }
 
 /**
- * NEs liberadas via arquivo de versao (antecipacao).
+ * SALs liberadas via arquivo de versao (antecipacao).
  */
 function queryLiberadasArquivo(nomeVersao, area = 'Escrita') {
   const padrao = versao.padraoArquivoVersao(nomeVersao);
@@ -187,16 +178,16 @@ function queryLiberadasArquivo(nomeVersao, area = 'Escrita') {
     FROM UP.SAI_PSAI sai_psai
     JOIN bethadba.psai psai ON sai_psai.i_psai = psai.i_psai
     WHERE ${condAreaNE(area)}
-      AND sai_psai.tipoSAI = 'NE'
+      AND sai_psai.tipoSAI = 'SAL'
+      ${condSalExterna()}
       AND sai_psai.nomeVersao LIKE '${padrao}'
       AND sai_psai.Liberacao IS NOT NULL
       AND COALESCE(psai.i_produto_grupo, 1) = 1
-      ${condNeExterna()}
   `;
 }
 
 /**
- * NEs em arquivo de versao pendente publicacao.
+ * SALs em arquivo de versao pendente publicacao.
  */
 function queryEmArquivo(nomeVersao, area = 'Escrita') {
   const padrao = versao.padraoArquivoVersao(nomeVersao);
@@ -209,16 +200,16 @@ function queryEmArquivo(nomeVersao, area = 'Escrita') {
     JOIN bethadba.psai psai ON sai_psai.i_psai = psai.i_psai
     ${JOIN_SITUACAO}
     WHERE ${condAreaNE(area)}
-      AND sai_psai.tipoSAI = 'NE'
+      AND sai_psai.tipoSAI = 'SAL'
+      ${condSalExterna()}
       AND sai_psai.nomeVersao LIKE '${padrao}'
       AND sai_psai.Liberacao IS NULL
       AND COALESCE(psai.i_produto_grupo, 1) = 1
-      ${condNeExterna()}
   `;
 }
 
 /**
- * NEs alocadas na versao mas sem commit (projecao de liberacao).
+ * SALs alocadas na versao mas sem commit (projecao de liberacao).
  */
 function queryAlocadas(nomeVersao, area = 'Escrita') {
   return `
@@ -229,7 +220,8 @@ function queryAlocadas(nomeVersao, area = 'Escrita') {
     JOIN bethadba.psai psai ON sai_psai.i_psai = psai.i_psai
     ${JOIN_SITUACAO}
     WHERE ${condAreaNE(area)}
-      AND sai_psai.tipoSAI = 'NE'
+      AND sai_psai.tipoSAI = 'SAL'
+      ${condSalExterna()}
       AND sai_psai.nomeVersao IS NULL
       AND sai_psai.Liberacao IS NULL
       AND sai_psai.Descarte IS NULL
@@ -240,7 +232,6 @@ function queryAlocadas(nomeVersao, area = 'Escrita') {
           AND ${condAreaNE(area, 'sp2')}
       )
       AND COALESCE(psai.i_produto_grupo, 1) = 1
-      ${condNeExterna()}
   `;
 }
 
@@ -261,11 +252,11 @@ function queryDescartesPorSituacao(nomeVersao, area = 'Escrita') {
     LEFT JOIN bethadba.psai_situacoes psai_sit
       ON sai_psai.i_psai_situacoes = psai_sit.i_situacoes
     WHERE ${condAreaNE(area)}
-      AND sai_psai.tipoSAI = 'NE'
+      AND sai_psai.tipoSAI = 'SAL'
+      ${condSalExterna()}
       AND sai_psai.Descarte > ${inicio}
       AND sai_psai.Descarte <= ${fim}
       ${FILTRO_PRODUTO_ENTRADA}
-      ${condNeExterna()}
     GROUP BY COALESCE(NULLIF(sai_psai.i_sai_situacoes, 0), sai_psai.i_psai_situacoes)
     ORDER BY qtd DESC
   `;
@@ -308,7 +299,7 @@ async function querySSCsVinculadas(executar, psaiIds) {
  * Busca resumo executivo de NEs: descricao SAI (como binary p/ encoding), gravidade, SSC.
  * CAST AS BINARY para preservar bytes originais (latin1/cp1252 do ASA 9).
  */
-function queryResumoNEs(nomeVersao, area = 'Escrita') {
+function queryResumoSALs(nomeVersao, area = 'Escrita') {
   const inicio = versao.sqlInicioVersao(nomeVersao);
   const fim = versao.sqlFimVersao(nomeVersao);
   return `
@@ -320,7 +311,8 @@ function queryResumoNEs(nomeVersao, area = 'Escrita') {
     LEFT JOIN bethadba.sai sai ON sai_psai.i_sai = sai.i_sai AND sai_psai.i_sai > 0
     LEFT JOIN bethadba.psai psai ON sai_psai.i_psai = psai.i_psai
     WHERE ${condAreaNE(area)}
-      AND sai_psai.tipoSAI = 'NE'
+      AND sai_psai.tipoSAI = 'SAL'
+      ${condSalExterna()}
       AND sai_psai.CadastroPSAI > ${inicio}
       AND sai_psai.CadastroPSAI <= ${fim}
       ${FILTRO_PRODUTO_ENTRADA}
@@ -356,31 +348,31 @@ function classificarArea(descricao) {
   if (/\bsped\b|\befd\b|\becf\b|\bdirf\b|\bdctf(web)?\b|\bgfip\b|\bsefip\b|\brais\b|\bdefis\b|\bdestda\b|\befd.?reinf\b|\befd.?contribui|\bperd.?comp\b|\bdcbe\b/.test(d)) return 'Obrig. Acessorias';
 
   // 3. Impostos e tributos federais (calculo incorreto, apuracao, base)
-  if (/\birpj\b|\birpf\b|\bcsll\b|\bcofins\b|\bpis\b|\biss\b|\bicms\b|\bipi\b|\bcsrf\b|\birrf\b|\bimposto\b|\btributo\b|\btfe\b|\btff\b|\bret[eé]n[çc][ãa]o\b|\bbase\s+de\s+c[aá]lculo\b|\bisenção\b|\bisen[çc][ãa]o\b/.test(d)) return 'Impostos/Tributos';
+  if (/\birpj\b|\birpf\b|\bcsll\b|\bcofins\b|\bpis\b|\biss\b|\bicms\b|\bipi\b|\bcsrf\b|\birrf\b|\bimposto\b|\btributo\b|\btfe\b|\btff\b|\bret[eÃ©]n[Ã§c][Ã£a]o\b|\bbase\s+de\s+c[aÃ¡]lculo\b|\bisenÃ§Ã£o\b|\bisen[Ã§c][Ã£a]o\b/.test(d)) return 'Impostos/Tributos';
 
   // 4. GPS e INSS (previdencia social - relevante tambem em Escrita)
-  if (/\binss\b|\bgps\b|\bprevidenci|\bcontribui[çc][ãa]o\s+(previdenci|social)\b/.test(d)) return 'GPS/INSS';
+  if (/\binss\b|\bgps\b|\bprevidenci|\bcontribui[Ã§c][Ã£a]o\s+(previdenci|social)\b/.test(d)) return 'GPS/INSS';
 
   // 5. DARF e recolhimento
   if (/\bdarf\b|\bdas\b|\bguia\s+de\s+recolhimento\b|\brecolhimento\b|\bpagamento\s+(do|de|dos)\s+(imposto|tributo|darf)\b/.test(d)) return 'DARF/Recolhimento';
 
   // 6. Lancamento contabil e fiscal
-  if (/\blan[çc]amento\b|\blan[çc]ar\b|\bestorno\b|\bcontabiliza[çc][ãa]o\b|\bcontabilizar\b|\bpartida\b|\bdébito\b|\bcr[eé]dito\b|\bescritura[çc][ãa]o\b|\bregistro\s+(cont[áa]bil|fiscal)\b/.test(d)) return 'Lancamento';
+  if (/\blan[Ã§c]amento\b|\blan[Ã§c]ar\b|\bestorno\b|\bcontabiliza[Ã§c][Ã£a]o\b|\bcontabilizar\b|\bpartida\b|\bdÃ©bito\b|\bcr[eÃ©]dito\b|\bescritura[Ã§c][Ã£a]o\b|\bregistro\s+(cont[Ã¡a]bil|fiscal)\b/.test(d)) return 'Lancamento';
 
   // 7. Calculo e apuracao
-  if (/\bcalc[uú]l|\bapura[çc][ãa]o\b|\bcompet[eê]ncia\b|\bliquid|\brecalcul|\bprocessamento\b|\bcorr[eé][çc][ãa]o\s+(do|no|de)\s+(valor|campo|c[aá]lculo)\b/.test(d)) return 'Calculo/Apuracao';
+  if (/\bcalc[uÃº]l|\bapura[Ã§c][Ã£a]o\b|\bcompet[eÃª]ncia\b|\bliquid|\brecalcul|\bprocessamento\b|\bcorr[eÃ©][Ã§c][Ã£a]o\s+(do|no|de)\s+(valor|campo|c[aÃ¡]lculo)\b/.test(d)) return 'Calculo/Apuracao';
 
   // 8. Importacao e integracao de dados
-  if (/\bimporta[çc][ãa]o\b|\bexporta[çc][ãa]o\b|\bintegra[çc][ãa]o\b/.test(d)) return 'Importacao/Integracao';
+  if (/\bimporta[Ã§c][Ã£a]o\b|\bexporta[Ã§c][Ã£a]o\b|\bintegra[Ã§c][Ã£a]o\b/.test(d)) return 'Importacao/Integracao';
 
   // 9. Relatorios e conferencia
-  if (/\brelat[oó]rio\b|\blistagem\b|\bextra[çc][ãa]o\b|\bconfer[eê]ncia\b|\bdemonstrat[ií]vo\b/.test(d)) return 'Relatorios';
+  if (/\brelat[oÃ³]rio\b|\blistagem\b|\bextra[Ã§c][Ã£a]o\b|\bconfer[eÃª]ncia\b|\bdemonstrat[iÃ­]vo\b/.test(d)) return 'Relatorios';
 
   // 10. Parametrizacao fiscal (CFOP, CST, natureza de operacao, regime tributario)
-  if (/\bcfop\b|\bcst\b|\bnatureza\s+(de\s+)?opera[çc][ãa]o\b|\bregime\s+tribut[aá]rio\b|\blucro\s+(real|presumido|arbitrado)\b|\bsimples\s+nacional\b|\bpar[aâ]metr|\bcodifica[çc][ãa]o\b|\bclassifica[çc][ãa]o\s+(fiscal|tribut)\b|\bal[íi]quota\b/.test(d)) return 'Parametrizacao';
+  if (/\bcfop\b|\bcst\b|\bnatureza\s+(de\s+)?opera[Ã§c][Ã£a]o\b|\bregime\s+tribut[aÃ¡]rio\b|\blucro\s+(real|presumido|arbitrado)\b|\bsimples\s+nacional\b|\bpar[aÃ¢]metr|\bcodifica[Ã§c][Ã£a]o\b|\bclassifica[Ã§c][Ã£a]o\s+(fiscal|tribut)\b|\bal[Ã­i]quota\b/.test(d)) return 'Parametrizacao';
 
   // 11. Infraestrutura e erros de sistema
-  if (/\brequisição\b|\brequisicao\b|\berro\s+(na|no|de)\s+(requisição|servidor|sistema|campo)\b|dom[ií]nio\b|\bfalha\s+no\s+sistema\b/.test(d)) return 'Infraestrutura/Erro';
+  if (/\brequisiÃ§Ã£o\b|\brequisicao\b|\berro\s+(na|no|de)\s+(requisiÃ§Ã£o|servidor|sistema|campo)\b|dom[iÃ­]nio\b|\bfalha\s+no\s+sistema\b/.test(d)) return 'Infraestrutura/Erro';
 
   return 'Outros';
 }
@@ -388,10 +380,8 @@ function classificarArea(descricao) {
 module.exports = {
   FILTRO_PRODUTO_ENTRADA,
   COL_NOME_AREA,
-  JOIN_SITUACAO,
-  COL_SITUACAO_NOME,
   condAreaNE,
-  condNeExterna,
+  condSalExterna,
   queryEntradasDetalhe,
   queryEntradas,
   queryDescartes,
@@ -402,7 +392,8 @@ module.exports = {
   queryAlocadas,
   queryDescartesPorSituacao,
   querySSCsVinculadas,
-  queryResumoNEs,
+  queryResumoSALs,
   decodificarBinario,
   classificarArea
 };
+

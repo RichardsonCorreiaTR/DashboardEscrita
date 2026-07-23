@@ -12,12 +12,11 @@ alwaysApply: false
 ### saldo-ne
 - **Arquivo**: src/indicadores/produto/saldo-ne.js
 - **Codigo SGD**: 143633
-- **Formula**: NEs criadas ate FIM_VERSAO, nao liberadas/descartadas ate FIM_VERSAO
-- **Fonte**: UP.SAI_PSAI JOIN bethadba.psai (i_produto_grupo = 1)
-- **SQL**: COALESCE(Liberacao, '3000-12-01') > FIM_VERSAO (logica oficial SGD)
+- **Formula**: NEs externas (NE_PREVENCAO<>1) no saldo da versao
+- **Filtro prevencao**: `condNeExterna()` em consultas-ne.js
 - **Semaforo**: Verde=<=meta, Amarelo=ate +10%, Vermelho=>+10%
-- **Meta 2026**: 222 (progressao: 301->222)
-- **Resultado v2 (10.6A-02)**: 318 (amarelo), anterior: 298, variacao: +20
+- **Meta 2026**: progressao externa (80..88, ver METAS_MENSAIS)
+- **Resultado (10.6A-07)**: 74 saldo, estimativa final 52 (proj 22)
 
 ### ne-95-dias
 - **Arquivo**: src/indicadores/produto/ne-95-dias.js

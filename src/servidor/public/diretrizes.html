@@ -25,6 +25,12 @@
         <div class="header__versao">
           <label for="seletor-versao">Versao:</label>
           <select id="seletor-versao"></select>
+          <label for="seletor-area" style="margin-left:0.75rem">Área:</label>
+          <select id="seletor-area">
+            <option value="Escrita" selected>Escrita</option>
+            <option value="Importacao">Importação</option>
+            <option value="Ambas">Ambas</option>
+          </select>
           <span id="periodo-label" class="header__periodo"></span>
         </div>
         <div class="header__acoes">
@@ -55,8 +61,15 @@
     </div>
 
     <!-- CARDS -->
-    <main class="dashboard">
-      <section class="cards-grid" id="cards-container"></section>
+    <main class="dashboard" id="dashboard-main">
+      <section class="diretrizes-secao">
+        <h2 class="diretrizes-secao__titulo">NE's</h2>
+        <div class="cards-grid" id="cards-ne"></div>
+      </section>
+      <section class="diretrizes-secao diretrizes-secao--sal">
+        <h2 class="diretrizes-secao__titulo">SAL's</h2>
+        <div class="cards-grid" id="cards-sal"></div>
+      </section>
 
       <!-- AREA DE DETALHES -->
       <section class="detalhes" id="detalhes-container" hidden>
@@ -77,9 +90,14 @@
 
   <!-- SCRIPTS -->
   <script src="/js/nav.js?v=12"></script>
-  <script src="/js/api.js"></script>
+  <script src="/js/api.js?v=2"></script>
+  <script src="/js/diretrizes-cards.js?v=3"></script>
+  <script src="/js/diretrizes-snapshot.js?v=2"></script>
   <script src="/js/charts.js"></script>
-  <script src="/js/detalhes.js"></script>
-  <script src="/js/app-diretrizes.js"></script>
+  <script src="/js/detalhes-tabela.js?v=3"></script>
+  <script src="/js/detalhes-area.js?v=3"></script>
+  <script src="/js/detalhes-saldo.js?v=5"></script>
+  <script src="/js/detalhes.js?v=8"></script>
+  <script src="/js/app-diretrizes.js?v=4"></script>
 </body>
 </html>

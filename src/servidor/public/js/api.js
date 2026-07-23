@@ -39,6 +39,7 @@ const API = (() => {
     if (versao) params.set('versao', versao);
     if (opcoes.force) params.set('force', '1');
     if (opcoes.fonte) params.set('fonte', opcoes.fonte);
+    if (opcoes.area && opcoes.area !== 'Escrita') params.set('area', opcoes.area);
     const qs = params.toString();
     return get(`/indicadores/todos${qs ? '?' + qs : ''}`);
   }

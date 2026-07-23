@@ -15,9 +15,7 @@ alwaysApply: false
 - **Status**: Funcional sem feriados por enquanto
 - **Proximos passos**: Implementar tabela de feriados quando necessario
 
-## Duvidas resolvidas
-
-- [2026-02-14] Porta do servidor -> 4000
+- [2026-07-22] **NE_PREVENCAO excluida de todos indicadores de produto** -> Decisao Richardson: escopo so externas. Metas saldo recalibradas. Reconciliacao 10.6A-07: 74-22=52.
 - [2026-02-14] Pasta de relatorios -> dentro do projeto
 - [2026-02-14] Data base 95 dias -> CadastroPSAI (confirmado)
 - [2026-02-14] 5 dias uteis -> dias uteis (confirmado, excl. sab/dom)

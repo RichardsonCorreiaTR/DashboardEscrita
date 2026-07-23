@@ -1,28 +1,23 @@
 /**
  * app-diretrizes.js - Logica principal do dashboard de Diretrizes
- *
- * Responsabilidades:
- * - Carregar dados da API (ODBC ou cache)
- * - Renderizar cards com semaforo
- * - Gerenciar seletor de versao
- * - Exibir banner quando dado vem do cache
- * - Delegar detalhes para Detalhes.renderizar()
  */
-
-/* globals API, Detalhes */
+/* globals API, Detalhes, DiretrizesCards, DiretrizesSnapshot */
 const App = (() => {
-  let estado = { versaoAtual: null, versoes: [], resultados: {}, cardAtivo: null };
+  let estado = { versaoAtual: null, versoes: [], resultados: {}, cardAtivo: null, area: 'Escrita' };
   const els = {};
 
   function cachearElementos() {
     els.loading = document.getElementById('loading');
     els.erroGlobal = document.getElementById('erro-global');
     els.erroMsg = document.getElementById('erro-mensagem');
-    els.cards = document.getElementById('cards-container');
+    els.dashboard = document.getElementById('dashboard-main');
+    els.cardsNe = document.getElementById('cards-ne');
+    els.cardsSal = document.getElementById('cards-sal');
     els.detalhes = document.getElementById('detalhes-container');
     els.detalhesTitulo = document.getElementById('detalhes-titulo');
     els.detalhesBody = document.getElementById('detalhes-body');
     els.seletorVersao = document.getElementById('seletor-versao');
+    els.seletorArea = document.getElementById('seletor-area');
     els.periodoLabel = document.getElementById('periodo-label');
     els.atualizadoLabel = document.getElementById('atualizado-label');
     els.btnOdbc = document.getElementById('btn-odbc');
@@ -35,7 +30,7 @@ const App = (() => {
 
   function mostrarLoading(v) {
     els.loading.hidden = !v;
-    els.cards.style.display = v ? 'none' : '';
+    if (els.dashboard) els.dashboard.style.display = v ? 'none' : '';
   }
   function mostrarErro(msg) { els.erroGlobal.hidden = false; els.erroMsg.textContent = msg; mostrarLoading(false); }
   function esconderErro() { els.erroGlobal.hidden = true; }
@@ -49,23 +44,17 @@ const App = (() => {
       || `Exibindo dados do cache (ultima atualizacao: ${dataFmt}). Verifique a conexao ODBC.`;
     els.bannerOffline.hidden = false;
   }
-
-  function esconderBannerOffline() {
-    if (els.bannerOffline) els.bannerOffline.hidden = true;
-  }
+  function esconderBannerOffline() { if (els.bannerOffline) els.bannerOffline.hidden = true; }
 
   function popularVersoes(versaoDetectada) {
     els.seletorVersao.innerHTML = '';
-    const versoes = [];
     const hoje = new Date();
-    for (let i = 0; i < 4; i++) {
-      const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
-      const base = d.getFullYear() - 2020;
-      versoes.push(`10.${base}A-${String(d.getMonth() + 1).padStart(2, '0')}`);
-    }
-    if (versaoDetectada && !versoes.includes(versaoDetectada)) {
-      versoes.unshift(versaoDetectada);
-    }
+    const m = versaoDetectada && versaoDetectada.match(/^10\.(\d+)A-(\d{2})$/);
+    const base = m ? Number(m[1]) : hoje.getFullYear() - 2020;
+    const mesAtual = m ? Number(m[2]) : hoje.getMonth() + 1;
+    const versoes = [];
+    for (let mes = mesAtual; mes >= 1; mes--) versoes.push(`10.${base}A-${String(mes).padStart(2, '0')}`);
+    if (versaoDetectada && !versoes.includes(versaoDetectada)) versoes.unshift(versaoDetectada);
     estado.versoes = versoes;
     for (const v of versoes) {
       const opt = document.createElement('option');
@@ -87,124 +76,64 @@ const App = (() => {
     return `${fmt(inicio)} - ${fmt(fim)}`;
   }
 
-  /* ============== CARDS ============== */
-  const CARD_CONFIG = {
-    'saldo-ne': {
-      titulo: 'Saldo NE', formato: r => String(r.valor),
-      subtitulo: r => {
-        const gA = r.detalhes && r.detalhes.grupo_a != null ? r.detalhes.grupo_a : null;
-        const gB = r.detalhes && r.detalhes.grupo_b != null ? r.detalhes.grupo_b : null;
-        const breakdown = (gA !== null && gB !== null)
-          ? `<span class="card__grupo">com SAI: ${gA} | sem SAI: ${gB}</span>`
-          : '';
-        return `${breakdown}meta: ${r.meta}`;
-      },
-      extra: r => r.detalhes.variacao !== null ? `${r.detalhes.variacao >= 0 ? '+' : ''}${r.detalhes.variacao} vs anterior` : ''
-    },
-    'ne-95-dias': {
-      titulo: 'NE > 95 Dias', formato: r => String(r.valor),
-      subtitulo: r => {
-        const internas = r.detalhes && r.detalhes.total_internas != null ? r.detalhes.total_internas : null;
-        const total = r.detalhes && r.detalhes.total_geral != null ? r.detalhes.total_geral : null;
-        const breakdown = internas !== null
-          ? `<span class="card__grupo">externas: ${r.valor} | internas: ${internas} | total: ${total}</span>`
-          : '';
-        return `${breakdown}meta: ${r.meta}`;
-      },
-      extra: () => ''
-    },
-    'criticas-graves-5d': {
-      titulo: 'Criticas/Graves 5d', formato: r => `${r.valor}%`,
-      subtitulo: r => `meta: ${r.meta}%`,
-      extra: r => {
-        const ab = r.detalhes.total_abertas || (r.detalhes.abertas_agora || []).length;
-        const prazo = `${r.detalhes.dentro_5d}/${r.detalhes.total_periodo} no prazo`;
-        return ab > 0 ? (r.detalhes.total_periodo > 0 ? `${prazo} | ${ab} abertas` : `${ab} abertas no saldo`) : prazo;
-      }
-    },
-    'tempo-correcao-ne': {
-      titulo: 'Tempo Correcao', formato: r => `${r.valor}%`,
-      subtitulo: r => `meta: ${r.meta}%`,
-      extra: r => r.detalhes.projecao ? `real: ${r.detalhes.pct_real}%` : ''
-    },
-    'entrada-ne': {
-      titulo: 'Entradas NE', formato: r => String(r.valor),
-      subtitulo: r => `${r.detalhes.entradas} ent | ${r.detalhes.liberacoes} lib | ${r.detalhes.descartes} desc`,
-      extra: r => `saldo: ${r.detalhes.variacao_saldo >= 0 ? '+' : ''}${r.detalhes.variacao_saldo}`
-    }
-  };
-
-  function criarCard(id, resultado) {
-    const cfg = CARD_CONFIG[id]; if (!cfg) return '';
-    const status = resultado.status || 'info';
-    const ativo = estado.cardAtivo === id ? ' card--ativo' : '';
-    return `
-      <div class="card card--${status}${ativo}" data-id="${id}" onclick="App.selecionarCard('${id}')">
-        <span class="card__titulo">${cfg.titulo}</span>
-        <div class="card__valor">${cfg.formato(resultado)}</div>
-        <div class="card__meta">${cfg.subtitulo(resultado)}</div>
-        ${cfg.extra(resultado) ? `<span class="card__badge">${cfg.extra(resultado)}</span>` : ''}
-      </div>`;
-  }
-
   function renderizarCards() {
-    const ordem = ['saldo-ne', 'ne-95-dias', 'criticas-graves-5d', 'tempo-correcao-ne', 'entrada-ne'];
-    let html = '';
-    for (const id of ordem) {
-      const r = estado.resultados[id];
-      if (!r || r.status === 'erro') {
-        html += `<div class="card card--info"><span class="card__titulo">${(CARD_CONFIG[id] || {}).titulo || id}</span><div class="card__valor">--</div><div class="card__meta">${r ? r.erro : 'Nao calculado'}</div></div>`;
-        continue;
-      }
-      html += criarCard(id, r);
-    }
-    els.cards.innerHTML = html;
+    els.cardsNe.innerHTML = DiretrizesCards.htmlGrid(DiretrizesCards.ORDEM_NE, estado.resultados, estado.cardAtivo);
+    els.cardsSal.innerHTML = DiretrizesCards.htmlGrid(DiretrizesCards.ORDEM_SAL, estado.resultados, estado.cardAtivo);
   }
 
-  /* ============== DETALHES ============== */
+  function aplicarDados(dados) {
+    estado.resultados = dados.resultados;
+    esconderBannerOffline();
+    if (dados._fonte === 'cache') {
+      mostrarBannerOffline(dados._atualizado_em, dados._aviso);
+      atualizarTimestamp('cache', dados._atualizado_em);
+    } else {
+      atualizarTimestamp('odbc', dados._atualizado_em);
+    }
+    renderizarCards();
+  }
+
   function selecionarCard(id) {
     if (estado.cardAtivo === id) { estado.cardAtivo = null; els.detalhes.hidden = true; renderizarCards(); return; }
     estado.cardAtivo = id;
     renderizarCards();
     const r = estado.resultados[id];
     if (!r) return;
-    const cfg = CARD_CONFIG[id];
-    els.detalhesTitulo.textContent = cfg ? cfg.titulo : id;
+    els.detalhesTitulo.textContent = DiretrizesCards.titulo(id);
     els.detalhes.hidden = false;
-    Detalhes.renderizar(id, r, els.detalhesBody);
+    Detalhes.renderizar(id, r, els.detalhesBody, { area: estado.area });
     els.detalhes.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function fecharDetalhes() { estado.cardAtivo = null; els.detalhes.hidden = true; renderizarCards(); }
 
-  /* ============== FLUXO PRINCIPAL ============== */
+  function tentarSnapshot(versao) {
+    const snap = DiretrizesSnapshot.obter(versao, estado.area);
+    if (!snap) return false;
+    fecharDetalhes();
+    aplicarDados(snap);
+    return true;
+  }
 
-  /**
-   * Carrega indicadores
-   * @param {string} versao - Versao a consultar
-   * @param {Object} [opcoes] - { force: bool, fonte: 'cache' }
-   */
   async function carregar(versao, opcoes = {}) {
-    esconderErro(); esconderBannerOffline(); mostrarLoading(true); fecharDetalhes();
+    esconderErro();
+    if (opcoes.force) DiretrizesSnapshot.limparVersao(versao);
+    if (!opcoes.force && !opcoes.fonte && tentarSnapshot(versao)) return;
+
+    esconderBannerOffline();
+    mostrarLoading(true);
+    fecharDetalhes();
     try {
-      const dados = await API.calcularTodos(versao, opcoes);
-      estado.resultados = dados.resultados;
+      const dados = await API.calcularTodos(versao, { ...opcoes, area: estado.area });
+      DiretrizesSnapshot.salvar(versao, estado.area, dados);
+      aplicarDados(dados);
+      if (opcoes.force) DiretrizesSnapshot.prefetch(API, versao, estado.area);
+      else if (opcoes.fonte === 'cache') DiretrizesSnapshot.prefetch(API, versao, estado.area, { fonte: 'cache' });
 
-      // Verificar fonte dos dados
-      if (dados._fonte === 'cache') {
-        mostrarBannerOffline(dados._atualizado_em, dados._aviso);
-        atualizarTimestamp('cache', dados._atualizado_em);
-      } else {
-        atualizarTimestamp('odbc');
-      }
-
-      // Tentar obter periodo (pode falhar se ODBC estiver fora)
       try {
         const datas = await API.obterDatasVersao(versao || estado.versaoAtual);
         els.periodoLabel.textContent = formatarPeriodo(datas.inicio, datas.fim);
       } catch { /* manter periodo anterior */ }
-
-      renderizarCards();
     } catch (err) { mostrarErro(`Erro ao carregar indicadores: ${err.message}`); }
     finally { mostrarLoading(false); }
   }
@@ -216,6 +145,12 @@ const App = (() => {
     els.btnRetry.addEventListener('click', () => carregar(els.seletorVersao.value || estado.versaoAtual));
     els.btnFechar.addEventListener('click', fecharDetalhes);
     els.seletorVersao.addEventListener('change', e => carregar(e.target.value));
+    if (els.seletorArea) {
+      els.seletorArea.addEventListener('change', e => {
+        estado.area = e.target.value;
+        carregar(els.seletorVersao.value || estado.versaoAtual);
+      });
+    }
     mostrarLoading(true);
     try {
       const vInfo = await API.obterVersaoAtual();
@@ -224,12 +159,9 @@ const App = (() => {
       els.periodoLabel.textContent = formatarPeriodo(vInfo.inicio, vInfo.fim);
       await carregar(vInfo.versao);
     } catch (err) {
-      // ODBC indisponivel: tentar carregar via cache com versao estimada
       console.warn('[app] ODBC indisponivel, tentando cache:', err.message);
       const agora = new Date();
-      const anoBase = agora.getFullYear() - 2020;
-      const mes = String(agora.getMonth() + 1).padStart(2, '0');
-      const versaoEstimada = `10.${anoBase}A-${mes}`;
+      const versaoEstimada = `10.${agora.getFullYear() - 2020}A-${String(agora.getMonth() + 1).padStart(2, '0')}`;
       estado.versaoAtual = versaoEstimada;
       popularVersoes(versaoEstimada);
       try {

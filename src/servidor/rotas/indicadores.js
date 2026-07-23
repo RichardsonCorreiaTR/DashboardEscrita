@@ -22,6 +22,13 @@ const cache = require('../../core/cache');
 
 const router = Router();
 
+/** Normaliza o parametro de area (Escrita padrao). */
+function normalizarArea(a) {
+  if (a === 'Importacao' || a === 'Ambas') return a;
+  return 'Escrita';
+}
+const chaveVersaoArea = cache.chaveVersaoArea;
+
 /** GET /api/versao/atual */
 router.get('/versao/atual', async (req, res) => {
   try {
@@ -54,14 +61,16 @@ router.get('/indicadores/todos', async (req, res) => {
   const v = req.query.versao || undefined;
   const force = req.query.force === '1';
   const fonte = req.query.fonte;
+  const area = normalizarArea(req.query.area);
+  const cacheV = chaveVersaoArea(v, area);
 
   // Fonte=cache: retorna cache de disco direto
   if (fonte === 'cache') {
-    const dadosDisco = v ? cache.obterDoDisco(v) : null;
+    const dadosDisco = cacheV ? cache.obterDoDisco(cacheV) : null;
     const atualizado = cache.ultimaAtualizacaoDisco();
     if (dadosDisco) {
       return res.json({
-        versao: v, resultados: dadosDisco,
+        versao: v, area, resultados: dadosDisco,
         _fonte: 'cache', _atualizado_em: atualizado
       });
     }
@@ -73,7 +82,7 @@ router.get('/indicadores/todos', async (req, res) => {
 
   // Fonte ODBC (padrao) com fallback para cache
   try {
-    const opcoes = v ? { versao: v, force } : { force };
+    const opcoes = v ? { versao: v, force, area } : { force, area };
     const lista = indicadores.listar();
     const resultados = {};
 
@@ -86,21 +95,21 @@ router.get('/indicadores/todos', async (req, res) => {
     }
 
     // Salvar snapshot completo no disco
-    if (v) cache.salvarTodosNoDisco(v, resultados);
+    if (cacheV) cache.salvarTodosNoDisco(cacheV, resultados);
 
     res.json({
-      versao: v || 'auto', resultados,
+      versao: v || 'auto', area, resultados,
       _fonte: 'odbc', _atualizado_em: new Date().toISOString()
     });
   } catch (err) {
     // Fallback: tentar servir cache de disco
     console.error('[api] Falha ODBC, tentando cache disco:', err.message);
-    const dadosDisco = v ? cache.obterDoDisco(v) : null;
+    const dadosDisco = cacheV ? cache.obterDoDisco(cacheV) : null;
     const atualizado = cache.ultimaAtualizacaoDisco();
 
     if (dadosDisco) {
       return res.json({
-        versao: v, resultados: dadosDisco,
+        versao: v, area, resultados: dadosDisco,
         _fonte: 'cache', _atualizado_em: atualizado,
         _aviso: 'Conexao ODBC indisponivel. Exibindo ultimo cache.'
       });
@@ -114,17 +123,19 @@ router.get('/indicadores/todos', async (req, res) => {
 router.get('/indicadores/:id', async (req, res) => {
   const v = req.query.versao || undefined;
   const force = req.query.force === '1';
+  const area = normalizarArea(req.query.area);
+  const cacheV = chaveVersaoArea(v, area);
 
   try {
-    const opcoes = v ? { versao: v, force } : { force };
+    const opcoes = v ? { versao: v, force, area } : { force, area };
     const resultado = await indicadores.calcular(req.params.id, qe, opcoes);
 
-    if (v) cache.salvarNoDisco(v, req.params.id, resultado);
+    if (cacheV) cache.salvarNoDisco(cacheV, req.params.id, resultado);
 
     res.json({ ...resultado, _fonte: 'odbc', _atualizado_em: new Date().toISOString() });
   } catch (err) {
     // Fallback disco
-    const dadoDisco = v ? cache.obterDoDisco(v, req.params.id) : null;
+    const dadoDisco = cacheV ? cache.obterDoDisco(cacheV, req.params.id) : null;
     if (dadoDisco) {
       return res.json({
         ...dadoDisco,

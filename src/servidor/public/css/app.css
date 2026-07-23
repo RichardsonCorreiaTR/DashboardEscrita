@@ -493,6 +493,18 @@ body.com-sidebar .pagina {
 }
 
 /* === CARDS GRID === */
+.diretrizes-secao { margin-bottom: 1.5rem; }
+.diretrizes-secao--sal {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--cor-borda);
+}
+.diretrizes-secao__titulo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--cor-texto-secundario);
+  margin: 0 0 0.75rem;
+  letter-spacing: 0.02em;
+}
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -631,6 +643,42 @@ body.com-sidebar .pagina {
   border-bottom: 1px solid var(--cor-borda);
 }
 .tabela-detalhes tr:hover td { background: var(--cor-fundo); }
+tr.row-area--escrita td { background: rgba(59, 130, 246, 0.05); }
+tr.row-area--importacao td { background: rgba(249, 115, 22, 0.07); }
+tr.row-area--escrita:hover td { background: rgba(59, 130, 246, 0.1); }
+tr.row-area--importacao:hover td { background: rgba(249, 115, 22, 0.12); }
+
+.badge-area {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-area--escrita { background: #dbeafe; color: #1e40af; }
+.badge-area--importacao { background: #ffedd5; color: #c2410c; }
+.area-legenda {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0 0 0.75rem;
+  padding: 0.45rem 0.65rem;
+  background: var(--cor-fundo);
+  border-radius: 6px;
+  font-size: 0.78rem;
+}
+.area-legenda--aviso {
+  background: #fef3c7;
+  border: 1px solid var(--amarelo);
+  color: #92400e;
+}
+.area-legenda--aviso strong { font-weight: 700; }
+
+.th-sort { cursor: pointer; user-select: none; white-space: nowrap; }
+.th-sort:hover { color: var(--cor-primaria); background: var(--info-bg); }
+.sort-icon { font-size: 0.65rem; color: var(--cor-primaria); }
 
 /* === LINKS SGD === */
 .link-sgd {

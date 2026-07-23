@@ -9,19 +9,20 @@
  * - Descartes = Descarte dentro do periodo da versao
  * - Liberacoes = nomeVersao = versao (liberacao real)
  * - produto_grupo = 1 (ou NULL) via EXISTS bethadba.sai + i_sai=0
- * - NE_PREVENCAO: NAO e filtro, e detalhamento (interna vs externa)
+ * - NE_PREVENCAO=1 (prevencao interna) excluida de todos os contadores
  *
  * Periodicidade: por versao (mensal) e semanal (futuro)
  */
 
 const versao = require('../../core/versao');
 const consultasNE = require('../../core/consultas-ne');
+const { enriquecerNomeArea } = require('../../core/consultas-ne-enriquecer');
 
 /**
  * Query: entradas e descartes dentro do periodo de uma versao
  * Inclui NE_PREVENCAO como campo de classificacao (nao como filtro)
  */
-function queryMovimentacao(nomeVersao) {
+function queryMovimentacao(nomeVersao, area = 'Escrita') {
   const inicio = versao.sqlInicioVersao(nomeVersao);
   const fim = versao.sqlFimVersao(nomeVersao);
   return `
@@ -38,7 +39,7 @@ function queryMovimentacao(nomeVersao) {
         THEN 1 ELSE 0
       END as eh_descarte
     FROM UP.SAI_PSAI sai_psai
-    WHERE sai_psai.nomeArea = 'Escrita'
+    WHERE ${consultasNE.condAreaNE(area)}
       AND sai_psai.tipoSAI = 'NE'
       AND (
         (sai_psai.CadastroPSAI > ${inicio}
@@ -55,6 +56,7 @@ function queryMovimentacao(nomeVersao) {
         )
         OR sai_psai.i_sai = 0
       )
+      ${consultasNE.condNeExterna()}
   `;
 }
 
@@ -62,7 +64,7 @@ function queryMovimentacao(nomeVersao) {
  * Query: liberacoes reais na versao (nomeVersao + Liberacao preenchidos)
  * Inclui liberacoes via arquivo de versao (antecipacao).
  */
-function queryLiberacoes(nomeVersao) {
+function queryLiberacoes(nomeVersao, area = 'Escrita') {
   const padrao = versao.padraoArquivoVersao(nomeVersao);
   const filtroArquivo = padrao
     ? `OR (sai_psai.nomeVersao LIKE '${padrao}' AND sai_psai.Liberacao IS NOT NULL)`
@@ -71,18 +73,19 @@ function queryLiberacoes(nomeVersao) {
     SELECT COUNT(*) as liberacoes
     FROM UP.SAI_PSAI sai_psai
     JOIN bethadba.psai psai ON sai_psai.i_psai = psai.i_psai
-    WHERE sai_psai.nomeArea = 'Escrita'
+    WHERE ${consultasNE.condAreaNE(area)}
       AND sai_psai.tipoSAI = 'NE'
       AND (
         (sai_psai.nomeVersao = '${nomeVersao}' AND sai_psai.Liberacao IS NOT NULL)
         ${filtroArquivo}
       )
       AND COALESCE(psai.i_produto_grupo, 1) = 1
+      ${consultasNE.condNeExterna()}
   `;
 }
 
 /**
- * Processa registros e consolida contagens com detalhamento interno/externo
+ * Processa registros e consolida contagens
  * @param {Object[]} registros - Resultado da query
  * @returns {{entradas: number, descartes: number, internas: Object, externas: Object}}
  */
@@ -132,18 +135,19 @@ module.exports = {
         opcoes.mes || (new Date().getMonth() + 1)
       );
 
+    const area = opcoes.area || 'Escrita';
     const versaoAnt = versao.versaoAnterior(nomeVersao);
 
     const [movResult, libResult, movAntResult, libAntResult,
            descSitResult, descListaResult, entradasDetalheResult
     ] = await Promise.all([
-      executor.executar(queryMovimentacao(nomeVersao)),
-      executor.executar(queryLiberacoes(nomeVersao)),
-      versaoAnt ? executor.executar(queryMovimentacao(versaoAnt)) : Promise.resolve([]),
-      versaoAnt ? executor.executar(queryLiberacoes(versaoAnt)) : Promise.resolve(null),
-      executor.executar(consultasNE.queryDescartesPorSituacao(nomeVersao)),
-      executor.executar(consultasNE.queryDescartes(nomeVersao)),
-      executor.executar(consultasNE.queryEntradasDetalhe(nomeVersao))
+      executor.executar(queryMovimentacao(nomeVersao, area)),
+      executor.executar(queryLiberacoes(nomeVersao, area)),
+      versaoAnt ? executor.executar(queryMovimentacao(versaoAnt, area)) : Promise.resolve([]),
+      versaoAnt ? executor.executar(queryLiberacoes(versaoAnt, area)) : Promise.resolve(null),
+      executor.executar(consultasNE.queryDescartesPorSituacao(nomeVersao, area)),
+      executor.executar(consultasNE.queryDescartes(nomeVersao, area)),
+      executor.executar(consultasNE.queryEntradasDetalhe(nomeVersao, area))
     ]);
 
     if (!movResult) {
@@ -158,28 +162,40 @@ module.exports = {
     const libAtual = libResult ? libResult[0].liberacoes : 0;
     const anterior = consolidarMovimentacao(movAntResult || []);
     const libAnterior = libAntResult ? libAntResult[0].liberacoes : 0;
+    const descExt = atual.origem.externas.descartes;
+    const descExtAnt = anterior.origem.externas.descartes;
+
+    // Entradas e descartes = apenas EXTERNAS (prevencao interna excluida)
+    const entExt = atual.origem.externas.entradas;
+    const entExtAnt = anterior.origem.externas.entradas;
+
+    const entradasLista = entradasDetalheResult || [];
+    const descartesLista = descListaResult || [];
+    if (area === 'Ambas') {
+      await enriquecerNomeArea(executor, entradasLista, descartesLista);
+    }
 
     return {
-      valor: atual.entradas,
+      valor: entExt,
       meta: null,
       pct: null,
       status: 'info',
       detalhes: {
         versao: nomeVersao,
-        entradas: atual.entradas,
-        descartes: atual.descartes,
+        entradas: entExt,
+        descartes: descExt,
         liberacoes: libAtual,
-        variacao_saldo: atual.entradas - atual.descartes - libAtual,
+        variacao_saldo: entExt - descExt - libAtual,
         origem: atual.origem,
-        entradas_lista: entradasDetalheResult || [],
+        entradas_lista: entradasLista,
         descartes_por_situacao: descSitResult || [],
-        descartes_lista: descListaResult || [],
+        descartes_lista: descartesLista,
         versao_anterior: versaoAnt ? {
           versao: versaoAnt,
-          entradas: anterior.entradas,
-          descartes: anterior.descartes,
+          entradas: entExtAnt,
+          descartes: descExtAnt,
           liberacoes: libAnterior,
-          variacao_saldo: anterior.entradas - anterior.descartes - libAnterior,
+          variacao_saldo: entExtAnt - descExtAnt - libAnterior,
           origem: anterior.origem
         } : null
       },

@@ -1,38 +1,21 @@
 /**
- * tempo-correcao-ne.js - % Tempo gasto em NEs (Dev + Teste + Preparacao)
- *
- * Diretriz 1.4.4 (codigo SGD: 143636)
- *
- * Formula v7:
- *   % = Tempo NE / (Tempo Liberadas + Tempo Paralelo) * 100
- *
- * Onde:
- *   Tempo Liberadas = Dev+Teste+Prep de SAIs Escrita liberadas (versao + arquivo)
- *   Tempo Paralelo  = Dev+Teste+Prep de SAIs em versoes paralelas
- *                     (ex: PacotesIA, ImportacaoEsoci) com roteiros
- *                     concluidos (data_conclusao) no periodo da versao
+ * tempo-implementacao-sal.js - % Tempo gasto em SALs (Dev + Teste + Preparacao)
  */
-
-const fs = require('fs');
-const path = require('path');
-
 const versaoUtil = require('../../core/versao');
-const q = require('./tempo-correcao-queries');
+const q = require('./tempo-implementacao-queries');
 
-const CONFIG_PATH = path.join(__dirname, '..', '..', '..', 'config', 'projecoes-2026.json');
+const METAS_MENSAIS = [22.7, 18.2, 19.9, 10.4, 15.4, 9.6, 14.6, 17.2, 12.4, 15.9, 11.9, 19.8];
+const META_ANUAL = 19.8;
 
-function carregarProjecoes() {
-  return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
-}
+function obterMeta(indice) { return METAS_MENSAIS[indice] ?? META_ANUAL; }
 
 function determinarSemaforo(pctReal, metaMes) {
-  if (metaMes == null) return 'verde';
+  if (metaMes == null) return 'info';
   if (pctReal <= metaMes) return 'verde';
   if (pctReal <= metaMes + 5) return 'amarelo';
   return 'vermelho';
 }
 
-/** Monta array de detalhe por SAI cruzando dev e teste */
 function montarDetalhe(devRows, testeRows, label) {
   const mapa = {};
   for (const r of devRows) {
@@ -49,29 +32,23 @@ function montarDetalhe(devRows, testeRows, label) {
     }
   }
   return Object.values(mapa).map(s => ({
-    ...s,
-    total: s.dev + s.teste + s.prep,
-    via: label || s.nomeVersao
+    ...s, total: s.dev + s.teste + s.prep, via: label || s.nomeVersao
   })).sort((a, b) => b.total - a.total);
 }
 
 module.exports = {
-  id: 'tempo-correcao-ne',
-  nome: 'Tempo Trabalhado para Correcao de NEs',
+  id: 'tempo-implementacao-sal',
+  nome: 'Tempo de Implementacao SAL',
   categoria: 'produto',
   cacheTTL: 30 * 60 * 1000,
 
   async calcular(executor, opcoes = {}) {
     const nomeVersao = opcoes.versao
-      || versaoUtil.nomeDaVersao(
-        opcoes.ano || new Date().getFullYear(),
-        opcoes.mes || (new Date().getMonth() + 1)
-      );
-
+      || versaoUtil.nomeDaVersao(opcoes.ano || new Date().getFullYear(), opcoes.mes || (new Date().getMonth() + 1));
     const area = opcoes.area || 'Escrita';
     const parsed = versaoUtil.parsearNomeVersao(nomeVersao);
     const indice = parsed ? parsed.indice : (new Date().getMonth());
-    const metaMes = carregarProjecoes().metas['tempo-correcao-ne-pct'][indice];
+    const metaMes = opcoes.meta || obterMeta(indice);
 
     const [
       saisPorTipo, devAgg, testeAgg, devDet, testeDet,
@@ -89,42 +66,32 @@ module.exports = {
     ]);
 
     const totalSais = saisPorTipo.reduce((s, r) => s + r.total, 0);
-    const neRow = saisPorTipo.find(r => r.tipoSAI === 'NE') || {};
-    const totalNe = neRow.total || 0;
-    const totalNeInternas = neRow.ne_internas || 0;
-    const totalNeExternas = totalNe - totalNeInternas;
+    const salRow = saisPorTipo.find(r => r.tipoSAI === 'SAL') || {};
+    const totalSal = salRow.total || 0;
 
     if (totalSais === 0) {
       return {
         valor: null, meta: metaMes, pct: null, status: 'erro',
-        detalhes: { versao: nomeVersao },
-        validacao: { ok: false, registros_lidos: 0,
-          problemas: ['Nenhuma SAI liberada na versao'] }
+        detalhes: { versao: nomeVersao, tipo_foco: 'SAL' },
+        validacao: { ok: false, registros_lidos: 0, problemas: ['Nenhuma SAI liberada na versao'] }
       };
     }
 
     const da = devAgg[0] || {};
     const ta = testeAgg[0] || {};
-    const dev = { total: da.dev_total || 0, ne: da.dev_ne || 0 };
-    const teste = { total: ta.teste_total || 0, ne: ta.teste_ne || 0 };
-    const prep = { total: ta.prep_total || 0, ne: ta.prep_ne || 0 };
+    const dev = { total: da.dev_total || 0, ne: da.dev_sal || 0 };
+    const teste = { total: ta.teste_total || 0, ne: ta.teste_sal || 0 };
+    const prep = { total: ta.prep_total || 0, ne: ta.prep_sal || 0 };
 
     const pa = parDevAgg[0] || {};
     const pt = parTesteAgg[0] || {};
-    const paralelo = {
-      dev: pa.par_dev || 0,
-      teste: pt.par_teste || 0,
-      prep: pt.par_prep || 0
-    };
+    const paralelo = { dev: pa.par_dev || 0, teste: pt.par_teste || 0, prep: pt.par_prep || 0 };
     paralelo.total = paralelo.dev + paralelo.teste + paralelo.prep;
 
     const somaLib = dev.total + teste.total + prep.total;
-    const somaNe = dev.ne + teste.ne + prep.ne;
+    const somaSal = dev.ne + teste.ne + prep.ne;
     const somaTotal = somaLib + paralelo.total;
-
-    const pctReal = somaTotal > 0
-      ? Math.round((somaNe / somaTotal) * 1000) / 10
-      : 0;
+    const pctReal = somaTotal > 0 ? Math.round((somaSal / somaTotal) * 1000) / 10 : 0;
 
     const breakdown = {};
     saisPorTipo.forEach(r => { breakdown[r.tipoSAI] = r.total; });
@@ -134,9 +101,6 @@ module.exports = {
     const saisPar = montarDetalhe(parDevDet, parTesteDet, null)
       .map(s => ({ ...s, via: 'Paralelo (' + s.nomeVersao + ')' }));
 
-    const qtdVersao = saisLib.filter(s => s.via === 'Versao').length;
-    const qtdArquivo = saisLib.filter(s => s.via !== 'Versao').length;
-
     return {
       valor: pctReal,
       meta: metaMes,
@@ -144,20 +108,23 @@ module.exports = {
       status: determinarSemaforo(pctReal, metaMes),
       detalhes: {
         versao: nomeVersao,
+        tipo_foco: 'SAL',
+        meta_anual: META_ANUAL,
+        metas_mensais: METAS_MENSAIS,
         total_sai_liberada: totalSais,
-        total_sai_ne: totalNeExternas,
-        total_sai_ne_internas: totalNeInternas,
-        qtd_versao: qtdVersao,
-        qtd_arquivo: qtdArquivo,
+        total_sai_ne: totalSal,
+        total_sai_ne_internas: 0,
+        qtd_versao: saisLib.filter(s => s.via === 'Versao').length,
+        qtd_arquivo: saisLib.filter(s => s.via !== 'Versao').length,
         qtd_paralelo: saisPar.length,
         breakdown_tipo: breakdown,
-        tempo_dev: { total: dev.total, ne: dev.ne },
-        tempo_teste: { total: teste.total, ne: teste.ne },
-        tempo_prep: { total: prep.total, ne: prep.ne },
+        tempo_dev: dev,
+        tempo_teste: teste,
+        tempo_prep: prep,
         tempo_liberadas: somaLib,
         tempo_paralelo: paralelo,
-        tempo_soma: { total: somaTotal, ne: somaNe },
-        formula: `${somaNe} / (${somaLib} + ${paralelo.total}) = ${pctReal}%`,
+        tempo_soma: { total: somaTotal, ne: somaSal },
+        formula: `${somaSal} / (${somaLib} + ${paralelo.total}) = ${pctReal}%`,
         sais: saisLib,
         sais_paralelo: saisPar
       },
@@ -165,8 +132,7 @@ module.exports = {
         ok: true,
         registros_lidos: totalSais + saisPar.length,
         registros_usados: totalSais + saisPar.length,
-        avisos: somaTotal === 0
-          ? ['Tempo total zerado - roteiros sem tempo preenchido'] : []
+        avisos: somaTotal === 0 ? ['Tempo total zerado - roteiros sem tempo preenchido'] : []
       }
     };
   }

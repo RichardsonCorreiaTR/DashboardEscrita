@@ -17,6 +17,8 @@
 
 const { contarDiasUteis } = require('../../core/date-utils');
 const versao = require('../../core/versao');
+const { condAreaNE } = require('../../core/consultas-ne');
+const COL_NOME_AREA = `CAST(TRIM(sai_psai.nomeArea) AS BINARY(32)) as nomeArea`;
 
 const META_PCT = 90;
 const LIMITE_DIAS_UTEIS = 5;
@@ -25,43 +27,45 @@ const LIMITE_DIAS_UTEIS = 5;
  * Query: Criticas/Graves liberadas na versao OU em arquivo (antecipacao).
  * Mesmo padrao do tempo-correcao-ne: versao direta + arquivo da anterior.
  */
-function queryLiberadas(nomeVersao) {
+function queryLiberadas(nomeVersao, area = 'Escrita') {
   const padraoArquivo = versao.padraoArquivoVersao(nomeVersao);
   const filtroVersao = padraoArquivo
     ? `(sai_psai.nomeVersao = '${nomeVersao}' OR sai_psai.nomeVersao LIKE '${padraoArquivo}')`
     : `sai_psai.nomeVersao = '${nomeVersao}'`;
   return `
     SELECT
-      sai_psai.i_sai, sai_psai.i_psai, sai_psai.gravidade_ne,
+      sai_psai.i_sai, sai_psai.i_psai, ${COL_NOME_AREA}, sai_psai.gravidade_ne,
       sai_psai.CadastroPSAI, sai_psai.Liberacao, sai_psai.nomeVersao
     FROM UP.SAI_PSAI sai_psai
     JOIN bethadba.psai psai ON sai_psai.i_psai = psai.i_psai
-    WHERE sai_psai.nomeArea = 'Escrita'
+    WHERE ${condAreaNE(area)}
       AND sai_psai.tipoSAI = 'NE'
       AND sai_psai.gravidade_ne IN ('Critica', 'Grave')
       AND ${filtroVersao}
       AND sai_psai.Liberacao IS NOT NULL
       AND COALESCE(psai.i_produto_grupo, 1) = 1
+      AND COALESCE(sai_psai.NE_PREVENCAO, 0) <> 1
   `;
 }
 
 /** Query: Criticas/Graves atualmente abertas (no saldo) */
-function queryAbertas(nomeVersao) {
+function queryAbertas(nomeVersao, area = 'Escrita') {
   const fim = versao.sqlFimVersao(nomeVersao);
   return `
     SELECT
-      sai_psai.i_sai, sai_psai.i_psai, sai_psai.gravidade_ne,
+      sai_psai.i_sai, sai_psai.i_psai, ${COL_NOME_AREA}, sai_psai.gravidade_ne,
       sai_psai.CadastroPSAI,
       DATEDIFF(day, sai_psai.CadastroPSAI, GETDATE()) as dias_corridos
     FROM UP.SAI_PSAI sai_psai
     JOIN bethadba.psai psai ON sai_psai.i_psai = psai.i_psai
-    WHERE sai_psai.nomeArea = 'Escrita'
+    WHERE ${condAreaNE(area)}
       AND sai_psai.tipoSAI = 'NE'
       AND sai_psai.gravidade_ne IN ('Critica', 'Grave')
       AND sai_psai.CadastroPSAI <= ${fim}
       AND (COALESCE(sai_psai.Liberacao, '3000-12-01') > ${fim})
       AND (COALESCE(sai_psai.Descarte, '3000-12-01') > ${fim})
       AND COALESCE(psai.i_produto_grupo, 1) = 1
+      AND COALESCE(sai_psai.NE_PREVENCAO, 0) <> 1
   `;
 }
 
@@ -76,6 +80,7 @@ function calcularDiasUteis(dados) {
     return {
       i_sai: d.i_sai,
       i_psai: d.i_psai,
+      nomeArea: d.nomeArea,
       gravidade: d.gravidade_ne,
       cadastro: d.CadastroPSAI,
       liberacao: d.Liberacao,
@@ -112,9 +117,10 @@ module.exports = {
         opcoes.mes || (new Date().getMonth() + 1)
       );
 
+    const area = opcoes.area || 'Escrita';
     const [liberadasResult, abertasResult] = await Promise.all([
-      executor.executar(queryLiberadas(nomeVersao)),
-      executor.executar(queryAbertas(nomeVersao))
+      executor.executar(queryLiberadas(nomeVersao, area)),
+      executor.executar(queryAbertas(nomeVersao, area))
     ]);
 
     if (!liberadasResult) {

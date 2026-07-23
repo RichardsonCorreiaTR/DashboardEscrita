@@ -1,40 +1,26 @@
 /**
- * saldo-ne.js - Indicador: Saldo de NEs da area Escrita
- *
- * Diretriz 1.4.1 (codigo SGD: 143633)
- * Meta 2026: 222 NEs ao final do ano
- *
- * Formula (logica correta - independente de versao):
- *   Saldo = Grupo A: NEs que possuem SAI gerada (i_sai <> 0)
- *                    sem Liberacao nem Descarte
- *         + Grupo B: PSAIs de NE sem SAI gerada (i_sai = 0)
- *                    sem Descarte (pendentes de analise)
- *   Ambos com produto_grupo = 1 (ou NULL)
- *   Exclui NEs internas de prevencao (NE_PREVENCAO=1)
- *
- * Documentacao: docs/diretrizes/1-produto/1.4-controladas-coordenacao/1.4.1-saldo-ne.md
+ * saldo-sal.js - Indicador: Saldo de SALs (mesma logica do saldo-ne, tipo SAL)
  */
-
 const versao = require('../../core/versao');
-const consultasNE = require('../../core/consultas-ne');
-const consultasOutros = require('../../core/consultas-ne-outros');
+const consultasSAL = require('../../core/consultas-sal');
 const { enriquecerNomeArea } = require('../../core/consultas-ne-enriquecer');
-const queries = require('./saldo-ne-queries');
+const queries = require('./saldo-sal-queries');
 
-const METAS_MENSAIS = [80, 67, 79, 85, 90, 82, 93, 93, 93, 92, 80, 88];
-const META_ANUAL = 88;
+const METAS_MENSAIS = [120, 125, 110, 115, 110, 115, 120, 110, 110, 107, 110, 115];
+const META_ANUAL = 115;
 
 function obterMeta(indice) { return METAS_MENSAIS[indice] || META_ANUAL; }
 
 function determinarSemaforo(saldo, meta) {
+  if (meta == null) return 'info';
   if (saldo <= meta) return 'verde';
   if (saldo <= meta * 1.10) return 'amarelo';
   return 'vermelho';
 }
 
 module.exports = {
-  id: 'saldo-ne',
-  nome: 'Saldo de NEs',
+  id: 'saldo-sal',
+  nome: 'Saldo de SALs',
   categoria: 'produto',
   cacheTTL: 30 * 60 * 1000,
 
@@ -45,29 +31,26 @@ module.exports = {
     const parsed = versao.parsearNomeVersao(nomeVersao);
     const indice = parsed ? parsed.indice : (new Date().getMonth());
     const versaoAnteriorNome = versao.versaoAnterior(nomeVersao);
-    const qLibArq = consultasNE.queryLiberadasArquivo(nomeVersao, area);
-    const qEmArq = consultasNE.queryEmArquivo(nomeVersao, area);
+    const qLibArq = consultasSAL.queryLiberadasArquivo(nomeVersao, area);
+    const qEmArq = consultasSAL.queryEmArquivo(nomeVersao, area);
 
     const [saldoResult, gravidadeResult, saldoAnteriorResult,
       entradasResult, descartesResult, liberadasResult, pendentesResult,
       libArquivoResult, emArquivoResult, alocadasResult,
-      grupoAResult, grupoBResult,
-      libInternas, libOutros
+      grupoAResult, grupoBResult
     ] = await Promise.all([
       executor.executar(queries.querySaldo(nomeVersao, area)),
       executor.executar(queries.queryGravidade(nomeVersao, area)),
       versaoAnteriorNome ? executor.executar(queries.querySaldo(versaoAnteriorNome, area)) : Promise.resolve(null),
-      executor.executar(consultasNE.queryEntradas(nomeVersao, area)),
-      executor.executar(consultasNE.queryDescartes(nomeVersao, area)),
-      executor.executar(consultasNE.queryLiberadas(nomeVersao, area)),
-      executor.executar(consultasNE.queryPendentes(nomeVersao, area)),
+      executor.executar(consultasSAL.queryEntradas(nomeVersao, area)),
+      executor.executar(consultasSAL.queryDescartes(nomeVersao, area)),
+      executor.executar(consultasSAL.queryLiberadas(nomeVersao, area)),
+      executor.executar(consultasSAL.queryPendentes(nomeVersao, area)),
       qLibArq ? executor.executar(qLibArq) : Promise.resolve([]),
       qEmArq ? executor.executar(qEmArq) : Promise.resolve([]),
-      executor.executar(consultasNE.queryAlocadas(nomeVersao, area)),
+      executor.executar(consultasSAL.queryAlocadas(nomeVersao, area)),
       executor.executar(queries.queryGrupoA(nomeVersao, area)),
-      executor.executar(queries.queryGrupoB(nomeVersao, area)),
-      executor.executar(consultasOutros.queryLiberadasInternas(nomeVersao, area)),
-      executor.executar(consultasOutros.queryLiberadasOutros(nomeVersao, area))
+      executor.executar(queries.queryGrupoB(nomeVersao, area))
     ]);
 
     if (!saldoResult || saldoResult.length === 0) {
@@ -84,19 +67,17 @@ module.exports = {
     const nEnt = (entradasResult || []).length;
     const nDesc = (descartesResult || []).length;
     const nLib = (liberadasResult || []).length + (libArquivoResult || []).length;
-    const excluidasLib = consultasOutros.mergeExcluidasLiberadas(libInternas, libOutros);
     const movimentacao = {
       entradas: entradasResult || [], descartes: descartesResult || [],
       liberadas: liberadasResult || [], pendentes: pendentesResult || [],
       liberadas_arquivo: libArquivoResult || [], em_arquivo: emArquivoResult || [],
-      alocadas: alocadasResult || [],
-      excluidas_liberadas: excluidasLib
+      alocadas: alocadasResult || []
     };
     if (area === 'Ambas') {
       await enriquecerNomeArea(executor,
         movimentacao.entradas, movimentacao.descartes, movimentacao.liberadas,
         movimentacao.pendentes, movimentacao.liberadas_arquivo, movimentacao.em_arquivo,
-        movimentacao.alocadas, movimentacao.excluidas_liberadas);
+        movimentacao.alocadas);
     }
 
     return {

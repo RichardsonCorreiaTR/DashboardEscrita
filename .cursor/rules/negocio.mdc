@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Regras de Negocio - SGD e Escrita Fiscal
 
-> MEMORIA do negocio. Atualizado em: 18/02/2026
+> MEMORIA do negocio. Atualizado em: 22/07/2026
 > Dividido em 3 arquivos: negocio.mdc (regras criticas), negocio-versoes.mdc (versoes/PIAZZA), negocio-sql.mdc (SQL/situacoes)
 
 ## Regras CRITICAS confirmadas pelo usuario
@@ -32,7 +32,11 @@ alwaysApply: false
    - `Liberacao` preenchido = **versao liberada** (de fato no cliente)
    - **Liberacao REAL** = `nomeVersao IS NOT NULL AND Liberacao IS NOT NULL`
 8. **Filtro produto_grupo**: COALESCE(psai.i_produto_grupo, 1) = 1 (produto principal)
-9. **NE_PREVENCAO**: NAO e filtro! E apenas classificacao (0=externa, 1=interna/prevencao). Considerar TODAS, detalhar a origem.
+9. **NE_PREVENCAO** (0=externa, 1=interna/prevencao) — **excluida de TODOS os indicadores de produto** (decisao jul/2026):
+   - Filtro SQL padrao: `COALESCE(sai_psai.NE_PREVENCAO, 0) <> 1` via `condNeExterna()` em `consultas-ne.js`.
+   - Aplica a: saldo, entradas, descartes, liberadas, projecao, NE>95 dias, Criticas/Graves.
+   - **SAL:** visibilidade "Interna" no SGD = `NE_PREVENCAO=1` (ex.: PSAI 125088). Mesmo filtro via `condSalExterna()` em `consultas-sal.js`.
+   - Metas mensais de saldo recalibradas para escopo externo (ver `saldo-ne.js` METAS_MENSAIS).
 10. **Situacao 26** = "Liberado em versoes anteriores" (limpeza de backlog pelo coordenador).
 
 ## NE convertida para SAIL (excecao conhecida)

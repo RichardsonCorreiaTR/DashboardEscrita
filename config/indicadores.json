@@ -54,6 +54,47 @@
       "_nota": "Indicador de acompanhamento, sem meta formal. Impacta saldo."
     },
     {
+      "id": "saldo-sal",
+      "nome": "Saldo SAL",
+      "categoria": "produto",
+      "codigo-sgd": null,
+      "arquivo": "src/indicadores/produto/saldo-sal.js",
+      "diretriz": null,
+      "cache-ttl-ms": 1800000,
+      "status": "ativo"
+    },
+    {
+      "id": "tempo-implementacao-sal",
+      "nome": "Tempo Implementacao SAL",
+      "categoria": "produto",
+      "codigo-sgd": null,
+      "arquivo": "src/indicadores/produto/tempo-implementacao-sal.js",
+      "diretriz": null,
+      "cache-ttl-ms": 1800000,
+      "status": "ativo"
+    },
+    {
+      "id": "idade-sal",
+      "nome": "Idade da SAL",
+      "categoria": "produto",
+      "codigo-sgd": null,
+      "arquivo": "src/indicadores/produto/idade-sal.js",
+      "diretriz": null,
+      "cache-ttl-ms": 1800000,
+      "status": "ativo",
+      "_nota": "Corte de idade: 140 dias"
+    },
+    {
+      "id": "entrada-sal",
+      "nome": "Entrada SAL",
+      "categoria": "produto",
+      "codigo-sgd": null,
+      "arquivo": "src/indicadores/produto/entrada-sal.js",
+      "diretriz": null,
+      "cache-ttl-ms": 1800000,
+      "status": "ativo"
+    },
+    {
       "id": "tempo-trabalho-analise",
       "nome": "Tempo Trabalhado Analise",
       "categoria": "equipe",

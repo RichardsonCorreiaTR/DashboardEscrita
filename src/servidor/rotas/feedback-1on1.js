@@ -66,11 +66,14 @@ router.get('/feedback-1on1/sessoes/:id', (req, res) => {
 });
 
 router.post('/feedback-1on1/sessoes', apenasCoord, (req, res) => {
-  const { data, colaborador_slug, coordenador_slug } = req.body || {};
+  const { data, colaborador_slug, coordenador_slug, horario, duracao } = req.body || {};
   if (!data || !colaborador_slug || !coordenador_slug) {
     return res.status(400).json({ erro: 'Campos obrigatorios: data, colaborador_slug, coordenador_slug' });
   }
-  const nova = storage.criar({ data, colaborador_slug, coordenador_slug });
+  const campos = { data, colaborador_slug, coordenador_slug };
+  if (horario !== undefined) campos.horario = horario;
+  if (duracao !== undefined) campos.duracao = duracao;
+  const nova = storage.criar(campos);
   res.json({ ok: true, sessao: nova });
 });
 

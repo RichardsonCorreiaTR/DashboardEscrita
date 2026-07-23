@@ -16,6 +16,9 @@ const path = require('path');
 const cache = require('../core/cache');
 const { validarResultado } = require('../core/validator');
 
+/** Incrementar ao mudar estrutura de detalhes (ex.: nomeArea em Ambas). */
+const CACHE_SCHEMA = 3;
+
 /** @type {Map<string, Object>} Mapa de indicadores registrados */
 const registro = new Map();
 
@@ -69,12 +72,14 @@ async function calcular(id, executor, opcoes = {}) {
     throw new Error(`[indicadores] Indicador desconhecido: '${id}'`);
   }
 
+  const area = opcoes.area || 'Escrita';
+  const cacheKey = `indicador:${id}:s${CACHE_SCHEMA}:${JSON.stringify({ versao: opcoes.versao, area })}`;
+
   // Verificar cache memoria (pula se force=true)
   if (!opcoes.force) {
-    const cacheKey = `indicador:${id}:${JSON.stringify({ versao: opcoes.versao })}`;
     const cacheado = cache.obter(cacheKey);
     if (cacheado) {
-      console.log('[indicadores] %s (cache memoria)', id);
+      console.log('[indicadores] %s (cache memoria, %s)', id, area);
       return cacheado;
     }
   }
@@ -92,14 +97,14 @@ async function calcular(id, executor, opcoes = {}) {
   }
 
   // Cachear em memoria
-  const cacheKey = `indicador:${id}:${JSON.stringify({ versao: opcoes.versao })}`;
   if (indicador.cacheTTL) {
     cache.definir(cacheKey, resultado, indicador.cacheTTL);
   }
 
   // Salvar em disco (fallback offline)
-  if (opcoes.versao) {
-    cache.salvarNoDisco(opcoes.versao, id, resultado);
+  const cacheV = cache.chaveVersaoArea(opcoes.versao, area);
+  if (cacheV) {
+    cache.salvarNoDisco(cacheV, id, resultado);
   }
 
   return resultado;
