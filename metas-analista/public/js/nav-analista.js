@@ -1,28 +1,113 @@
 /**
- * nav-analista.js - Menu lateral (metas + acompanhamentos individuais)
+ * nav-analista.js - Sidebar do portal individual (padrao visual do dashboard)
  */
 /* eslint-disable no-unused-vars */
 const Nav = (() => {
-  function ativo(href) {
-    return location.pathname === href ? ' sidebar__link--ativo' : '';
+  const PAGINAS = [
+    { id: 'metas', href: '/metas.html', titulo: 'Minhas Metas', icone: '\u25CF' },
+    {
+      id: 'acomp-sals', titulo: 'Acomp. SALs', icone: '\u25A1',
+      sub: [
+        { id: 'sal-tempo-descarte', href: '/acomp-sals.html', titulo: 'Tempo Descarte' },
+        { id: 'sal-tempo-detalhe', href: '/acomp-sals-tempo.html', titulo: 'Tempo por SAL' }
+      ]
+    },
+    {
+      id: 'acomp-nes', titulo: 'Acomp. NEs', icone: '\u25C7',
+      sub: [
+        { id: 'nes-tempo-detalhe', href: '/acomp-nes-tempo.html', titulo: 'Tempo por NE' }
+      ]
+    }
+  ];
+
+  function detectarPagina() {
+    const path = window.location.pathname;
+    if (path === '/acomp-sals.html') return 'sal-tempo-descarte';
+    if (path === '/acomp-sals-tempo.html') return 'sal-tempo-detalhe';
+    if (path === '/acomp-nes-tempo.html') return 'nes-tempo-detalhe';
+    return 'metas';
+  }
+
+  function grupoAtivo(atual) {
+    const p = PAGINAS.find(pg => pg.sub && pg.sub.some(s => s.id === atual));
+    return p ? p.id : null;
+  }
+
+  function renderItem(p, atual, aberto) {
+    if (p.sub) {
+      const exp = aberto === p.id;
+      return '<li class="sidebar__grupo' + (exp ? ' sidebar__grupo--aberto' : '') + '">' +
+        '<a href="#" class="sidebar__item sidebar__grupo-toggle" role="button" aria-expanded="' +
+        (exp ? 'true' : 'false') + '" aria-label="Submenu: ' + p.titulo + '">' +
+        '<span class="sidebar__icone" aria-hidden="true">' + p.icone + '</span>' +
+        '<span class="sidebar__texto">' + p.titulo + '</span>' +
+        '<span class="sidebar__seta" aria-hidden="true">\u25B8</span></a>' +
+        '<ul class="sidebar__submenu" role="group">' +
+        p.sub.map(s =>
+          '<li><a href="' + s.href + '" class="sidebar__subitem' +
+          (s.id === atual ? ' sidebar__subitem--ativo' : '') + '"' +
+          (s.id === atual ? ' aria-current="page"' : '') + '>' +
+          '<span class="sidebar__subtexto">' + s.titulo + '</span></a></li>'
+        ).join('') +
+        '</ul></li>';
+    }
+    return '<li><a href="' + p.href + '" class="sidebar__item' +
+      (p.id === atual ? ' sidebar__item--ativo' : '') + '"' +
+      (p.id === atual ? ' aria-current="page"' : '') + '>' +
+      '<span class="sidebar__icone" aria-hidden="true">' + p.icone + '</span>' +
+      '<span class="sidebar__texto">' + p.titulo + '</span></a></li>';
+  }
+
+  function ativarSubmenus(container) {
+    container.querySelectorAll('.sidebar__grupo-toggle').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        const li = btn.closest('.sidebar__grupo');
+        const aberto = li.classList.toggle('sidebar__grupo--aberto');
+        btn.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+      });
+    });
+  }
+
+  function ativarToggleMobile(container) {
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'sidebar__toggle';
+    toggle.innerHTML = '\u2630';
+    toggle.title = 'Menu';
+    toggle.setAttribute('aria-label', 'Abrir ou fechar menu');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.addEventListener('click', () => {
+      const aberto = container.classList.toggle('sidebar--aberta');
+      toggle.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+    });
+    document.body.prepend(toggle);
+    document.addEventListener('click', e => {
+      if (!container.contains(e.target) && !toggle.contains(e.target)) {
+        container.classList.remove('sidebar--aberta');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
   }
 
   function renderizar() {
-    const el = document.getElementById('nav-container');
-    if (!el) return;
-    el.className = 'sidebar';
-    el.innerHTML =
-      '<div class="sidebar__header"><span class="sidebar__sigla">EF</span>' +
-      '<span class="sidebar__titulo">Minhas Metas</span></div>' +
+    const container = document.getElementById('nav-container');
+    if (!container) return;
+    const atual = detectarPagina();
+    const aberto = grupoAtivo(atual);
+    container.className = 'sidebar';
+    container.setAttribute('aria-label', 'Navegacao principal');
+    container.innerHTML =
+      '<div class="sidebar__logo">' +
+        '<span class="sidebar__logo-sigla">Metas</span>' +
+        '<span class="sidebar__logo-texto">Escrita Fiscal</span>' +
+      '</div>' +
       '<ul class="sidebar__menu">' +
-        '<li><a href="/metas.html" class="sidebar__link' + ativo('/metas.html') + '">Minhas Metas</a></li>' +
-        '<li class="sidebar__grupo"><span class="sidebar__grupo-titulo">Acomp. SALs</span></li>' +
-        '<li><a href="/acomp-sals.html" class="sidebar__link' + ativo('/acomp-sals.html') + '">Tempo Descarte</a></li>' +
-        '<li><a href="/acomp-sals-tempo.html" class="sidebar__link' + ativo('/acomp-sals-tempo.html') + '">Tempo por SAL</a></li>' +
-        '<li class="sidebar__grupo"><span class="sidebar__grupo-titulo">Acomp. NEs</span></li>' +
-        '<li><a href="/acomp-nes-tempo.html" class="sidebar__link' + ativo('/acomp-nes-tempo.html') + '">Tempo por NE</a></li>' +
+        PAGINAS.map(p => renderItem(p, atual, aberto)).join('') +
       '</ul>' +
-      '<div class="sidebar__footer"><a href="/auth/logout" class="sidebar__link">Sair</a></div>';
+      '<div class="sidebar__rodape">Portal do Analista v1.1</div>';
+    ativarSubmenus(container);
+    ativarToggleMobile(container);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', renderizar);
