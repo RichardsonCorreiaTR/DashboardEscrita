@@ -11,7 +11,8 @@ const SHARED_JS = [
 
 const BACKEND_CORE = [
   'conexao.js', 'query-executor.js', 'planilha-escrita.js', 'planilha-cruzamento.js',
-  'ss-respondidas-shared.js', 'cache-ss-respondidas.js', 'consultas-ne.js', 'versao.js'
+  'ss-respondidas-shared.js', 'cache-ss-respondidas.js', 'consultas-ne.js', 'versao.js',
+  'date-utils.js'
 ];
 
 function copiarBackendMetas(root, dest) {
@@ -20,10 +21,60 @@ function copiarBackendMetas(root, dest) {
     if (fs.existsSync(src)) copiar(src, path.join(dest, 'src/core', f));
   });
   copiarDir(path.join(root, 'src/indicadores/equipe'), path.join(dest, 'src/indicadores/equipe'));
+  copiarDependenciasFaltantes(root, dest);
   copiar(path.join(root, 'config/conexao.json'), path.join(dest, 'config/conexao.json'));
   copiar(path.join(root, 'config/pontos-definicao.json'), path.join(dest, 'config/pontos-definicao.json'));
+  copiar(path.join(root, 'config/feriados.json'), path.join(dest, 'config/feriados.json'));
+  // Sem os overrides o recalculo local usa o nivel do SGD e divergo da planilha
+  const overrides = path.join(root, 'config/pontos-overrides.json');
+  if (!fs.existsSync(overrides)) throw new Error('config/pontos-overrides.json ausente');
+  copiar(overrides, path.join(dest, 'config/pontos-overrides.json'));
   const planilha = path.join(root, 'data/planilha-escrita-2026.xlsm');
   if (fs.existsSync(planilha)) copiar(planilha, path.join(dest, 'data/planilha-escrita-2026.xlsm'));
+}
+
+function listarJs(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir).flatMap(f => {
+    const full = path.join(dir, f);
+    if (fs.statSync(full).isDirectory()) return listarJs(full);
+    return f.endsWith('.js') ? [full] : [];
+  });
+}
+
+function resolverJs(alvo) {
+  if (fs.existsSync(alvo + '.js')) return alvo + '.js';
+  if (fs.existsSync(alvo) && fs.statSync(alvo).isFile()) return alvo;
+  const idx = path.join(alvo, 'index.js');
+  return fs.existsSync(idx) ? idx : null;
+}
+
+function depsFaltantes(root, dest, arquivo) {
+  const re = /require\(\s*['"](\.[^'"]+)['"]\s*\)/g;
+  const txt = fs.readFileSync(arquivo, 'utf8');
+  const out = [];
+  let m;
+  while ((m = re.exec(txt))) {
+    const alvo = path.resolve(path.dirname(arquivo), m[1]);
+    if (resolverJs(alvo)) continue;
+    const noRoot = resolverJs(path.join(root, path.relative(dest, alvo)));
+    if (noRoot) out.push(noRoot);
+  }
+  return out;
+}
+
+// Fecha a arvore de dependencias: um require faltando quebra o botao Atualizar
+function copiarDependenciasFaltantes(root, dest) {
+  for (let passo = 0; passo < 10; passo++) {
+    let copiou = false;
+    listarJs(path.join(dest, 'src')).forEach(arq => {
+      depsFaltantes(root, dest, arq).forEach(noRoot => {
+        copiar(noRoot, path.join(dest, path.relative(root, noRoot)));
+        copiou = true;
+      });
+    });
+    if (!copiou) return;
+  }
 }
 
 function copiar(src, dest) {
