@@ -63,7 +63,8 @@ function queryPontosDefinicao(ano, sgd) {
 // sit=2 (Analisada) = analista envia; sit 4,11,12 = coordenador responde
 const SIT_ENVIO = 2;
 const SIT_RESPOSTA = '(4, 11, 12)';
-const SIT_DEFINIDA = 17; // psai_situacoes: Definida (PSAIs sem SAI gerada)
+// Analisada (2) + Definida (17): PSAIs sem SAI gerada que ja passaram pela analise
+const SIT_PSAI_SEM_SAI = '(2, 17)';
 
 // N - (N+DOW-2)/7 - (N+DOW-1)/7 : converte dias corridos em uteis (exclui sab/dom)
 function diasUteisSql(diffExpr, dowExpr) {
@@ -238,7 +239,7 @@ function queryAnalisesSemSai(ano, sgdList) {
   `;
 }
 
-// PSAIs Definidas sem SAI gerada (sit=17, i_sai=0), agrupadas pela data do ultimo tramite
+// PSAIs Analisadas/Definidas sem SAI (sit 2 ou 17, i_sai=0), pela data do ultimo tramite
 function queryPsaisDefinidas(ano, sgd) {
   const extra = sgd ? `AND p.i_responsaveis = ${sgd}` : '';
   return `
@@ -252,10 +253,26 @@ function queryPsaisDefinidas(ano, sgd) {
       ON pt_max.i_psai = sp.i_psai
     WHERE ${FILTRO_AREA}
       AND sp.i_sai = 0
-      AND sp.i_psai_situacoes = ${SIT_DEFINIDA}
+      AND sp.i_psai_situacoes IN ${SIT_PSAI_SEM_SAI}
       AND COALESCE(p.i_produto_grupo, 1) = 1
       ${extra}
       AND YEAR(pt_max.max_ent) = ${ano}
+  `;
+}
+
+function queryDetalhePsaisDefinidas(sgd, ano, mes) {
+  return `
+    SELECT p.i_responsaveis as i_usuarios, sp.i_psai, sp.tipoSAI, p.nivel_alteracao,
+      sp.CadastroPSAI, pt_max.max_ent as data_tramite, sp.i_psai_situacoes
+    FROM UP.SAI_PSAI sp
+    JOIN bethadba.psai p ON sp.i_psai = p.i_psai
+    JOIN (SELECT i_psai, MAX(entrada) as max_ent FROM bethadba.psai_tramites GROUP BY i_psai) pt_max
+      ON pt_max.i_psai = sp.i_psai
+    WHERE ${FILTRO_AREA}
+      AND sp.i_sai = 0 AND sp.i_psai_situacoes IN ${SIT_PSAI_SEM_SAI}
+      AND COALESCE(p.i_produto_grupo, 1) = 1
+      AND p.i_responsaveis = ${sgd}
+      AND YEAR(pt_max.max_ent) = ${ano} AND MONTH(pt_max.max_ent) = ${mes}
   `;
 }
 
@@ -264,5 +281,5 @@ module.exports = {
   queryPontosDefinicao, queryPontosGerados, queryTramitacoesPsai,
   queryRespostasSS, queryTempoAtividades, queryTempoMedioSal,
   queryControleDescartes, queryDescartesDataSituacao, queryAnalisesSemSai,
-  queryPsaisDefinidas
+  queryPsaisDefinidas, queryDetalhePsaisDefinidas
 };

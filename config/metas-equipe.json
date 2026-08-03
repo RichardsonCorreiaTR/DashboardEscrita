@@ -44,7 +44,7 @@
     {
       "id": "psais-definidas",
       "descricao": "Pontos das PSAIs analisadas sem SAI gerada",
-      "detalhes": "PSAIs onde o analista e o responsavel (psai.i_responsaveis), situacao Definida (i_psai_situacoes=17) e nenhuma SAI foi criada (i_sai=0). Pontuacao calculada pela tabela cargo x tipo x nivel. Agrupado pela data do ultimo tramite da PSAI.",
+      "detalhes": "PSAIs onde o analista e o responsavel (psai.i_responsaveis), situacao Analisada (2) ou Definida (17) e nenhuma SAI foi criada (i_sai=0). Pontuacao calculada pela tabela cargo x tipo x nivel. Agrupado pela data do ultimo tramite da PSAI.",
       "valor-esperado": 0,
       "unidade": "pontos",
       "contribui-para": "Informativo",

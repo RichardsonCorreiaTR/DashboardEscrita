@@ -301,21 +301,10 @@ async function buscarDetalhe(a, metaId, mes) {
     }));
   }
   if (metaId === 'psais-definidas') {
-    const rows = await qe.executar(`
-      SELECT p.i_responsaveis as i_usuarios, sp.i_psai, sp.tipoSAI, p.nivel_alteracao,
-        sp.CadastroPSAI, pt_max.max_ent as data_tramite
-      FROM UP.SAI_PSAI sp
-      JOIN bethadba.psai p ON sp.i_psai = p.i_psai
-      JOIN (SELECT i_psai, MAX(entrada) as max_ent FROM bethadba.psai_tramites GROUP BY i_psai) pt_max
-        ON pt_max.i_psai = sp.i_psai
-      WHERE sp.nomeArea IN ('Escrita', 'Importacao', 'ONVIO ESCRITA')
-        AND sp.i_sai = 0 AND sp.i_psai_situacoes = 17
-        AND COALESCE(p.i_produto_grupo, 1) = 1
-        AND p.i_responsaveis = ${sgd}
-        AND YEAR(pt_max.max_ent) = ${ANO} AND MONTH(pt_max.max_ent) = ${mes}
-    `);
+    const rows = await qe.executar(queries.queryDetalhePsaisDefinidas(sgd, ANO, mes));
     return rows.map(r => ({
       i_psai: r.i_psai, tipoSAI: r.tipoSAI, CadastroSAI: r.CadastroPSAI,
+      situacao: Number(r.i_psai_situacoes) === 2 ? 'Analisada' : 'Definida',
       nivel: pontosCalc.nivelDbLabel(r.nivel_alteracao) || 'N\u00e3o definido',
       nivel_inferido: !r.nivel_alteracao,
       pontuacao: pontosCalc.pontosSai(r.tipoSAI, String(r.nivel_alteracao || 1), a.senioridade)
