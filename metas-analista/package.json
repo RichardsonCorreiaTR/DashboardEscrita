@@ -5,7 +5,8 @@
   "private": true,
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node src/app.js",
+    "verificar": "node src/verificar-pacote.js"
   },
   "dependencies": {
     "exceljs": "^4.4.0",

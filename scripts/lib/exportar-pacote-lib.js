@@ -143,16 +143,46 @@ function exportarPacote(root, slug, opts) {
   fs.writeFileSync(path.join(dest, 'data/cache/metas-equipe.json'), JSON.stringify(cache, null, 2));
   fs.writeFileSync(path.join(dest, '.standalone'), '');
   const ref = (opts && opts.referencia) || new Date().toISOString().slice(0, 7);
-  fs.writeFileSync(path.join(dest, 'LEIA-ME.txt'),
-    'Minhas Metas — Escrita Fiscal\r\nReferencia: ' + ref + '\r\n\r\n' +
-    '1. Instale Node.js 18+\r\n2. npm install\r\n3. npm start\r\n4. http://localhost:4002\r\n\r\n' +
-    'Use o botao Atualizar para buscar seus dados no banco (DSN pbcvs9).\r\n' +
-    'Somente suas consultas SQL sao executadas.\r\n\r\n' +
-    'Login: ' + user.usuario + '\r\n' +
-    (user.trocar_senha ? 'Troque a senha no primeiro acesso.\r\n' : '') +
-    '\r\nPacote individual — contem somente seus dados.\r\n'
-  );
+  fs.writeFileSync(path.join(dest, 'LEIA-ME.txt'), textoLeiaMe(ref, user));
   return { ok: true, slug, apelido: colab.apelido, usuario: user.usuario, dest };
+}
+
+function textoLeiaMe(ref, user) {
+  return [
+    'Minhas Metas — Escrita Fiscal',
+    'Referencia: ' + ref,
+    '',
+    'INSTALACAO (uma vez so)',
+    '1. Instale o Node.js 18 ou superior: https://nodejs.org',
+    '2. Extraia este ZIP em uma pasta sem acentos, ex.: C:\\Metas',
+    '3. Abra o PowerShell na pasta que contem o arquivo package.json',
+    '4. Rode: npm install',
+    '5. Rode: npm run verificar   (confere se esta tudo no lugar)',
+    '',
+    'USO NO DIA A DIA',
+    '1. Rode: npm start',
+    '2. Abra http://localhost:4002',
+    '3. Login: ' + user.usuario,
+    (user.trocar_senha ? '4. Troque a senha no primeiro acesso' : '4. Use sua senha atual'),
+    '5. Clique em Atualizar para buscar seus dados no banco',
+    '',
+    'PRE-REQUISITO DO BANCO',
+    'O botao Atualizar usa o DSN ODBC "pbcvs9" do seu Windows.',
+    'Se ele nao existir: Painel de Controle > Ferramentas Administrativas >',
+    'Fontes de Dados ODBC (64 bits) > aba DSN de Usuario > Adicionar,',
+    'escolha o driver do SQL Anywhere e nomeie o DSN como pbcvs9.',
+    'Sem o DSN o portal ainda abre, mas mostra os dados do ultimo envio.',
+    '',
+    'SE DER ERRO',
+    'Rode: npm run verificar — ele diz exatamente o que fazer.',
+    '- "Cannot find module" ou "Pacote incompleto": peca o ZIP mais recente.',
+    '- "npm nao e reconhecido": o Node.js nao foi instalado ou falta reabrir o PowerShell.',
+    '- "porta em uso": feche a outra janela do portal e rode npm start de novo.',
+    '',
+    'Pacote individual — contem somente os seus dados.',
+    'Somente as suas consultas SQL sao executadas.',
+    ''
+  ].join('\r\n');
 }
 
 module.exports = { exportarPacote, listarAnalistas, cacheFiltrado, SHARED_JS, copiarBackendMetas };
