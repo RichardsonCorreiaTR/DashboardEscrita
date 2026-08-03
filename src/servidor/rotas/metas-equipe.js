@@ -112,7 +112,7 @@ router.get('/metas-equipe/:slug', meuSlug, async (req, res) => {
   }
 });
 
-router.get('/metas-equipe/:slug/detalhe/:metaId/:mes', async (req, res) => {
+router.get('/metas-equipe/:slug/detalhe/:metaId/:mes', meuSlug, async (req, res) => {
   const a = getAnalistas().find(x => x.slug === req.params.slug);
   if (!a) return res.status(404).json({ erro: 'Nao encontrado' });
   const metaId = req.params.metaId, mes = parseInt(req.params.mes, 10);

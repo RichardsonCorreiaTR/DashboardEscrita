@@ -12,6 +12,11 @@
     "calcular": "node src/indicadores/index.js",
     "screenshot-isv": "node scripts/screenshot-isv.js",
     "offline": "node src/servidor/app-offline.js",
+    "start:analista": "node metas-analista/src/app.js",
+    "preparar-analista": "node scripts/preparar-pacote-analista.js",
+    "exportar-analista": "node scripts/exportar-pacote-analista.js",
+    "exportar-pacotes-mes": "node scripts/exportar-pacotes-mes.js",
+    "zipar-pacotes-analista": "node scripts/zipar-pacotes-analista.js",
     "sync-overrides": "node scripts/sync-overrides-planilha.js"
   },
   "keywords": [

@@ -13,6 +13,7 @@ const App = (() => {
     els.dashboard = document.getElementById('dashboard-main');
     els.cardsNe = document.getElementById('cards-ne');
     els.cardsSal = document.getElementById('cards-sal');
+    els.cardsSamSail = document.getElementById('cards-sam-sail');
     els.detalhes = document.getElementById('detalhes-container');
     els.detalhesTitulo = document.getElementById('detalhes-titulo');
     els.detalhesBody = document.getElementById('detalhes-body');
@@ -79,6 +80,9 @@ const App = (() => {
   function renderizarCards() {
     els.cardsNe.innerHTML = DiretrizesCards.htmlGrid(DiretrizesCards.ORDEM_NE, estado.resultados, estado.cardAtivo);
     els.cardsSal.innerHTML = DiretrizesCards.htmlGrid(DiretrizesCards.ORDEM_SAL, estado.resultados, estado.cardAtivo);
+    if (els.cardsSamSail) {
+      els.cardsSamSail.innerHTML = DiretrizesCards.htmlGrid(DiretrizesCards.ORDEM_SAM_SAIL, estado.resultados, estado.cardAtivo);
+    }
   }
 
   function aplicarDados(dados) {

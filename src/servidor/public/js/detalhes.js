@@ -8,7 +8,7 @@
  * - Graficos via Charts.js
  */
 
-/* globals Charts, DetalhesSaldo, DetalhesTabela, DetalhesArea */
+/* globals Charts, DetalhesSaldo, DetalhesTabela, DetalhesArea, DetalhesSamSail */
 /* eslint-disable no-unused-vars */
 const Detalhes = (() => {
   const URL_SAI = 'https://sgsai.dominiosistemas.com.br/sgsai/faces/sai.html?sai=';
@@ -188,8 +188,9 @@ const Detalhes = (() => {
     const pr = d.tempo_prep || {}; const sm = d.tempo_soma || {};
     const par = d.tempo_paralelo || {};
     const sais = d.sais || [];
-    const saisFoco = sais.filter(s => s.tipo === foco);
-    const saisOutras = sais.filter(s => s.tipo !== foco);
+    const ehTipoFoco = (tipo, f) => (f === 'SAM/SAIL' ? (tipo === 'SAM' || tipo === 'SAIL') : tipo === f);
+    const saisFoco = sais.filter(s => ehTipoFoco(s.tipo, foco));
+    const saisOutras = sais.filter(s => !ehTipoFoco(s.tipo, foco));
     const saisPar = d.sais_paralelo || [];
     const colsDet = [...colsSaiPsai,
       { label: 'Tipo', render: r => r.tipo || '--' },
@@ -335,6 +336,10 @@ const Detalhes = (() => {
       'criticas-graves-5d': renderCriticas,
       'tempo-correcao-ne': renderTempo,
       'tempo-implementacao-sal': renderTempo,
+      'tempo-implementacao-sam-sail': renderTempo,
+      'liberadas-sam-sail': (r, body) => DetalhesSamSail.renderLiberadas(r, body, {
+        colsSaiPsai, infoBox, abasHTML, tbl, fmtData, inicializarAbas
+      }),
       'entrada-ne': renderEntradas,
       'entrada-sal': renderEntradas
     };

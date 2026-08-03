@@ -14,7 +14,7 @@ const { parsearExcel } = require('../../core/nes-definicao-parser');
 const DATA_DIR = path.join(__dirname, '..', '..', '..', 'data');
 const EXCEL_PATH = path.join(DATA_DIR, 'nes-definicao.xlsx');
 const CACHE_PATH = path.join(DATA_DIR, 'nes-definicao-cache.json');
-const ORIGINAL_PATH = 'C:\\1 - A\\B\\Programas\\Análise de NEs.xlsx';
+const ORIGINAL_PATH = 'C:\\1 - A\\B\\Análise de NEs.xlsx';
 const router = Router();
 
 function ensureDataDir() {

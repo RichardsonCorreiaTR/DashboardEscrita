@@ -140,3 +140,13 @@ gaGerenciadorAtividades.i_usuarios = CAST(UDUSUARIOS.CODIGO_SGD AS INT)
 - Arquivo: `data/cache/metas-equipe.json`
 - Suporta toggle ODBC (ao vivo) / Cache (disco) igual diretrizes
 - Fallback automatico para cache quando ODBC falha
+
+### Pacotes individuais Minhas Metas (analistas)
+- Config rotina: `config/pacotes-analista.json`
+- Exportar um: `npm run exportar-analista -- <slug>`
+- Exportar todos (mensal): `npm run exportar-pacotes-mes`
+- Com refresh ODBC antes: `npm run exportar-pacotes-mes -- --refresh`
+- Saida: `output/pacotes-analista/Metas-<slug>/` + `manifesto-YYYY-MM.json`
+- Agendar Windows (1o dia, 9h): `scripts/agendar-pacotes-mes.ps1`
+- **Nunca** enviar repo completo ao analista — somente ZIP da pasta `Metas-<slug>`
+- Cadastro: `config/equipe.json` (slug, codigo-sgd) | Login: `config/usuarios.json` (coordenador only)

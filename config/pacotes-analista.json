@@ -1,0 +1,29 @@
+{
+  "versao": 1,
+  "descricao": "Rotina mensal de pacotes individuais Minhas Metas para analistas",
+  "saida_relativa": "output/pacotes-analista",
+  "rotina_mensal": {
+    "dia": 1,
+    "hora": 9,
+    "minuto": 0,
+    "atualizar_cache_antes": true,
+    "notas": "Executar no 1o dia util do mes, apos fechamento do mes anterior. Coordenador valida cache antes de distribuir."
+  },
+  "comando": "npm run exportar-pacotes-mes",
+  "comando_com_refresh_odbc": "npm run exportar-pacotes-mes -- --refresh",
+  "distribuicao": {
+    "formato": "ZIP da pasta Metas-<slug>",
+    "canal": "Microsoft Teams (chat privado com cada analista)",
+    "nao_distribuir": [
+      "Repositorio Git completo do DashboardEscrita",
+      "config/usuarios.json",
+      "data/cache/metas-equipe.json completo"
+    ]
+  },
+  "analista_recebe": [
+    "Pasta Metas-<slug> com portal standalone",
+    "config/usuario.json apenas dele",
+    "data/cache/metas-equipe.json apenas dele",
+    "LEIA-ME.txt com login e instrucoes"
+  ]
+}

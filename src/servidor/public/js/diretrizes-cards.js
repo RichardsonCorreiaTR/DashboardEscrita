@@ -66,11 +66,32 @@ const DiretrizesCards = (() => {
       titulo: 'Entrada de SAL', formato: r => String(r.valor),
       subtitulo: r => `${r.detalhes.entradas} ent | ${r.detalhes.liberacoes} lib | ${r.detalhes.descartes} desc · meta: ${fmtMeta(r.meta)}`,
       extra: r => `saldo: ${r.detalhes.variacao_saldo >= 0 ? '+' : ''}${r.detalhes.variacao_saldo}`
+    },
+    'liberadas-sam-sail': {
+      titulo: 'Liberadas Versao', formato: r => String(r.valor),
+      subtitulo: r => {
+        const d = r.detalhes || {};
+        return `SAM: ${d.qtd_sam ?? d.por_tipo?.SAM ?? 0} | SAIL: ${d.qtd_sail ?? d.por_tipo?.SAIL ?? 0}${r.meta != null ? ` · meta: ${fmtMeta(r.meta)}` : ''}`;
+      },
+      extra: r => {
+        const d = r.detalhes || {};
+        return d.qtd_versao != null ? `${d.qtd_versao} versao + ${d.qtd_arquivo || 0} arquivo` : '';
+      }
+    },
+    'tempo-implementacao-sam-sail': {
+      titulo: 'Tempo Implementacao', formato: r => `${r.valor}%`,
+      subtitulo: r => {
+        const d = r.detalhes || {};
+        const bk = `SAM: ${d.por_tipo?.SAM ?? d.breakdown_tipo?.SAM ?? 0} | SAIL: ${d.por_tipo?.SAIL ?? d.breakdown_tipo?.SAIL ?? 0}`;
+        return r.meta != null ? `${bk} · meta: ${fmtMeta(r.meta)}%` : bk;
+      },
+      extra: () => ''
     }
   };
 
   const ORDEM_NE = ['saldo-ne', 'ne-95-dias', 'criticas-graves-5d', 'tempo-correcao-ne', 'entrada-ne'];
   const ORDEM_SAL = ['saldo-sal', 'tempo-implementacao-sal', 'idade-sal', 'entrada-sal'];
+  const ORDEM_SAM_SAIL = ['liberadas-sam-sail', 'tempo-implementacao-sam-sail'];
 
   function htmlGrid(ordem, resultados, cardAtivo) {
     let out = '';
@@ -97,5 +118,5 @@ const DiretrizesCards = (() => {
     return CONFIG[id]?.titulo || id;
   }
 
-  return { htmlGrid, titulo, ORDEM_NE, ORDEM_SAL };
+  return { htmlGrid, titulo, ORDEM_NE, ORDEM_SAL, ORDEM_SAM_SAIL };
 })();

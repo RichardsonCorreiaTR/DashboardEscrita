@@ -233,7 +233,9 @@ const EquipesCoordenador = (() => {
           '<p style="font-size:0.8rem;opacity:0.6;margin:4px 0 0">M\u00eas atual: ' +
           MESES_LABEL[MES_ATUAL - 1] + ' / ' + new Date().getFullYear() + ' \u2014 ' +
           membros.length + ' colaboradores</p></div>' +
-        secao('Especialistas', esp) + secao('Analistas', ana);
+        secao('Especialistas', esp) + secao('Analistas', ana) +
+        '<div id="eq-avaliacao-wrap"></div>';
+      EquipesAvaliacao.init(membros, document.getElementById('eq-avaliacao-wrap'), ano);
     } catch (e) {
       container.innerHTML = '<p class="eq-sem-dados">Erro ao carregar dados: ' + e.message + '</p>';
     }

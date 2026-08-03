@@ -9,3 +9,5 @@ output/ux-referencia-product-engineering/*.png
 logs/
 *.log
 .env
+metas-analista/config/usuario.json
+output/pacotes-analista/

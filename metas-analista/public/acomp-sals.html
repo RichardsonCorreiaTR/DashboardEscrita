@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acomp. SALs — Tempo Descarte</title>
+  <link rel="stylesheet" href="/shared/css/app.css?v=13">
+  <style>
+    main.dashboard { max-width: none; padding: 1rem 1.25rem; }
+    .sal-diretriz {
+      background: var(--info-bg); border: 1px solid var(--info-borda);
+      border-radius: var(--radius); padding: 0.75rem 1.25rem;
+      font-size: 0.82rem; margin-bottom: 1rem;
+      display: flex; gap: 2rem; flex-wrap: wrap; align-items: center;
+    }
+    .sal-diretriz strong { color: var(--cor-primaria); font-size: 1.1rem; display: block; }
+    .sal-controles {
+      display: flex; gap: 0.75rem; align-items: center;
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 0.6rem 1rem; margin-bottom: 0.75rem;
+    }
+    .sal-controles select { padding: 0.3rem 0.6rem; border: 1px solid var(--cor-borda); border-radius: 6px; font-size: 0.82rem; }
+    .sal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap: 1rem; }
+    .sal-card {
+      background: var(--cor-fundo-card); border: 1px solid var(--cor-borda);
+      border-radius: var(--radius); padding: 1rem; border-left: 4px solid var(--vermelho);
+    }
+    .sal-card--ok { border-left-color: var(--verde); }
+    .sal-card__header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--cor-borda); }
+    .sal-card__nome { font-weight: 700; font-size: 0.95rem; flex: 1; }
+    .sal-card__cargo { font-size: 0.68rem; color: var(--cor-texto-sec); background: var(--cor-fundo); padding: 0.1rem 0.35rem; border-radius: 4px; }
+    .sal-card__psais { font-size: 0.7rem; color: var(--cor-texto-sec); margin-left: auto; }
+    .sal-metrica { margin-bottom: 0.6rem; padding: 0.45rem 0.7rem; background: var(--cor-fundo); border-radius: var(--radius-sm); }
+    .sal-metrica__label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cor-texto-sec); }
+    .sal-metrica__valor { font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
+    .sal-metrica__base, .sal-metrica__status { font-size: 0.73rem; }
+  </style>
+</head>
+<body class="com-sidebar">
+  <nav id="nav-container"></nav>
+  <div class="pagina">
+    <header class="header">
+      <div class="header__info">
+        <h1 class="header__title">Acomp. SALs — Tempo Descarte</h1>
+        <span class="header__subtitle">Seus dados · −20% tempo médio · −30% descartadas</span>
+      </div>
+      <div class="header__acoes">
+        <span id="header-usuario" style="font-size:0.8rem;color:#94a3b8;margin-right:0.75rem"></span>
+        <a href="/auth/logout" class="btn btn--outline" style="font-size:0.8rem">Sair</a>
+      </div>
+    </header>
+    <main class="dashboard">
+      <div class="sal-diretriz">
+        <div><strong>−20%</strong>Tempo médio por PSAI SAL</div>
+        <div><strong>−30%</strong>Tempo em PSAIs SAL descartadas</div>
+        <div style="margin-left:auto;font-size:.73rem;color:var(--cor-texto-sec)">Somente seus registros</div>
+      </div>
+      <div class="sal-controles">
+        <label for="sal-ano" style="font-size:.82rem;font-weight:600">Ano:</label>
+        <select id="sal-ano">
+          <option value="2026" selected>2026</option>
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
+        </select>
+        <button id="sal-btn-consultar" class="btn btn--outline" style="font-size:.8rem">Consultar</button>
+      </div>
+      <div class="sal-grid" id="sal-conteudo">
+        <div class="loading"><div class="loading__spinner"></div><span>Carregando...</span></div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/nav-analista.js?v=2"></script>
+  <script src="/js/app-acomp-sals-analista.js?v=1"></script>
+</body>
+</html>

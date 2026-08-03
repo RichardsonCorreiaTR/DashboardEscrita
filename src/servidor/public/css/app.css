@@ -234,6 +234,44 @@ body.com-sidebar .pagina {
   color: #fff;
   font-weight: 600;
 }
+.eq-aval-secao { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 2px solid var(--cor-borda); }
+.eq-aval-secao__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; }
+.eq-aval-secao__titulo { font-size: 1.05rem; margin: 0; font-weight: 700; }
+.eq-aval-secao__filtros { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.eq-aval-secao__filtro { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--cor-texto-sec); }
+.eq-aval-select { font-size: 0.85rem; padding: 0.35rem 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--cor-borda); min-width: 200px; }
+.eq-aval__legenda { font-size: 0.78rem; color: var(--cor-texto-sec); margin: 0 0 1rem; }
+.eq-aval-tabela { width: 100%; font-size: 0.8rem; margin-top: 1rem; }
+.eq-aval-link { color: var(--cor-primaria); font-weight: 600; text-decoration: none; }
+.eq-aval-link:hover { text-decoration: underline; }
+.eq-aval-detalhe { background: var(--cor-fundo-card); border: 1px solid var(--cor-borda); border-radius: var(--radius); padding: 1.25rem; }
+.eq-aval-detalhe__header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem; }
+.eq-aval-detalhe__nome { margin: 0; font-size: 1.1rem; }
+.eq-aval-detalhe__cargo { font-size: 0.75rem; color: var(--cor-texto-sec); }
+.eq-aval-detalhe__nota { font-size: 2rem; font-weight: 800; line-height: 1; }
+.eq-aval-detalhe__tend { font-size: 0.8rem; font-weight: 600; display: inline-block; margin-bottom: 0.75rem; }
+.eq-aval-detalhe__texto { font-size: 0.82rem; line-height: 1.5; color: var(--cor-texto-sec); margin-bottom: 1rem; }
+.eq-aval-detalhe__texto p { margin: 0 0 0.5rem; }
+.eq-aval-detalhe__charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.eq-aval-detalhe__chart { position: relative; height: 200px; }
+.eq-aval-detalhe__chart--wide { height: 220px; margin-bottom: 0.5rem; }
+.eq-aval-detalhe__chart-label { display: block; font-size: 0.72rem; color: var(--cor-texto-sec); margin-bottom: 0.35rem; font-weight: 600; }
+.eq-aval-detalhe__link { font-size: 0.8rem; }
+.eq-aval-detalhe__acoes { margin-bottom: 1rem; }
+.eq-aval-btn-meses { font-size: 0.72rem; padding: 0.2rem 0.5rem; white-space: nowrap; cursor: pointer; }
+.eq-aval-modal { position: fixed; inset: 0; z-index: 2000; background: rgba(15, 23, 42, 0.55); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.eq-aval-modal[hidden] { display: none; }
+.eq-aval-modal__box { background: var(--cor-fundo-card, #fff); border-radius: var(--radius); max-width: 640px; width: 100%; max-height: 88vh; overflow: auto; padding: 1.25rem; box-shadow: 0 8px 32px rgba(0,0,0,.2); }
+.eq-aval-modal__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.75rem; }
+.eq-aval-modal__titulo { margin: 0; font-size: 1rem; }
+.eq-aval-modal__fechar { background: none; border: none; font-size: 1.5rem; line-height: 1; cursor: pointer; color: var(--cor-texto-sec); padding: 0 0.25rem; }
+.eq-aval-modal__explic { font-size: 0.82rem; line-height: 1.55; background: rgba(59,130,246,.08); border-left: 3px solid var(--cor-primaria); padding: 0.65rem 0.85rem; margin: 0 0 0.75rem; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.eq-aval-modal__sub { font-size: 0.72rem; color: var(--cor-texto-sec); margin: 0 0 0.75rem; }
+.eq-aval-modal__tabela { width: 100%; font-size: 0.78rem; }
+@media (max-width: 640px) {
+  .eq-aval-detalhe__charts { grid-template-columns: 1fr; }
+  .eq-aval-secao__head { flex-direction: column; align-items: flex-start; }
+}
 .sidebar__subheader {
   padding: 0.5rem 1rem 0.2rem 1.2rem;
   font-size: 0.68rem;
@@ -495,6 +533,10 @@ body.com-sidebar .pagina {
 /* === CARDS GRID === */
 .diretrizes-secao { margin-bottom: 1.5rem; }
 .diretrizes-secao--sal {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--cor-borda);
+}
+.diretrizes-secao--sam-sail {
   padding-top: 1.25rem;
   border-top: 1px solid var(--cor-borda);
 }

@@ -95,6 +95,28 @@
       "status": "ativo"
     },
     {
+      "id": "liberadas-sam-sail",
+      "nome": "Liberadas SAM/SAIL",
+      "categoria": "produto",
+      "codigo-sgd": null,
+      "arquivo": "src/indicadores/produto/liberadas-sam-sail.js",
+      "diretriz": null,
+      "cache-ttl-ms": 1800000,
+      "status": "ativo",
+      "_nota": "Soma SAM + SAIL liberadas na versao (versao + arquivo)"
+    },
+    {
+      "id": "tempo-implementacao-sam-sail",
+      "nome": "Tempo Implementacao SAM/SAIL",
+      "categoria": "produto",
+      "codigo-sgd": null,
+      "arquivo": "src/indicadores/produto/tempo-implementacao-sam-sail.js",
+      "diretriz": null,
+      "cache-ttl-ms": 1800000,
+      "status": "ativo",
+      "_nota": "Metas mensais pendentes — aguardando indices do coordenador"
+    },
+    {
       "id": "tempo-trabalho-analise",
       "nome": "Tempo Trabalhado Analise",
       "categoria": "equipe",

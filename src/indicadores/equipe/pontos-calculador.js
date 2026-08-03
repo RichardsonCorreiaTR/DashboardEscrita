@@ -30,12 +30,23 @@ function carregarOverrides() {
 }
 
 let _overridesCache = null;
+let _overridesMtime = null;
+
+function mtimeOverrides() {
+  try { return fs.statSync(OVERRIDES_PATH).mtimeMs; } catch (_) { return null; }
+}
+
+// Recarrega quando o arquivo muda, para edicoes valerem sem reiniciar o servidor
 function getOverrides() {
-  if (!_overridesCache) _overridesCache = carregarOverrides();
+  const mtime = mtimeOverrides();
+  if (!_overridesCache || mtime !== _overridesMtime) {
+    _overridesCache = carregarOverrides();
+    _overridesMtime = mtime;
+  }
   return _overridesCache;
 }
 
-function limparCacheOverrides() { _overridesCache = null; }
+function limparCacheOverrides() { _overridesCache = null; _overridesMtime = null; }
 
 const NIVEL_LABEL = { 1: 'Baixa', 2: 'Media', 3: 'Alta', 4: 'Extra Alta' };
 
