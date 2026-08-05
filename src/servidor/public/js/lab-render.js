@@ -8,14 +8,13 @@
 /* eslint-disable no-unused-vars */
 const LabRender = (() => {
   const LABELS_AREA = {
-    motor_calculo: 'Motor de Calculo', api_esocial: 'eSocial',
-    integracao_contabil: 'Integ. Contabil', processamento_lote: 'Proc. em Lote',
-    relatorio: 'Relatorios', relatorios: 'Relatorios',
-    importacao_exportacao: 'Import/Export', parametrizacao: 'Parametrizacao',
-    interface_web: 'Interface Web', interface_usuario: 'Interface',
-    banco_dados: 'Banco de Dados', autenticacao: 'Autenticacao',
-    cadastros: 'Cadastros', seguranca: 'Seguranca',
-    obrigacoes_acessorias: 'Obrig. Acessorias', beneficios: 'Beneficios'
+    obrigacoes_acessorias: 'Obrig. Acessorias', impostos_tributos: 'Impostos/Tributos',
+    gps_inss: 'GPS/INSS', darf_recolhimento: 'DARF/Recolhimento',
+    lancamento: 'Lancamento', calculo_apuracao: 'Calculo/Apuracao',
+    importacao_integracao: 'Importacao/Integracao',
+    relatorios: 'Relatorios', relatorio: 'Relatorios',
+    parametrizacao: 'Parametrizacao', infraestrutura: 'Infraestrutura',
+    outros: 'Outros', sem_classificacao: 'Sem classif.'
   };
 
   function renderSeletorVersoes(versoes, select) {

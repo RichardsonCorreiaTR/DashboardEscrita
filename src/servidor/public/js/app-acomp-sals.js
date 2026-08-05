@@ -1,10 +1,12 @@
 /**
- * app-acomp-sals.js - Acompanhamento SALs: Tempo Descarte
- * Diretriz: -20% tempo medio SAL | -30% tempo em PSAIs SAL descartadas
- * 3 abas: Resumo por Analista | Acumulado | Por Funcionario
+ * app-acomp-sals.js - Acompanhamento SA: Tempo Descarte (SAL ou SAM/SAIL)
+ * Diretriz: -20% tempo medio | -30% tempo em PSAIs descartadas
+ * CFG: window.ACOMP_CFG = { apiBase, label }
  */
 /* global AcompSalsAcumulado, AcompSalsFuncionario */
 const AppAcompSals = (() => {
+  const CFG = window.ACOMP_CFG || { apiBase: '/api/acomp-sals', label: 'SAL' };
+  const L = CFG.label;
   const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const META_ATV = 0.20, META_DESC = 0.30;
 
@@ -39,10 +41,10 @@ const AppAcompSals = (() => {
       <div class="sal-card__header">
         <span class="sal-card__nome">${a.apelido}</span>
         <span class="sal-card__cargo">${a.senioridade}</span>
-        <span class="sal-card__psais">${a.total_psais} SALs · ${a.total_descartadas} desc.</span>
+        <span class="sal-card__psais">${a.total_psais} ${L}s · ${a.total_descartadas} desc.</span>
       </div>
-      ${linha('Tempo médio/SAL (−20%)', a.media_min, base?.media_min, stAtv)}
-      ${linha('Tempo SALs descartadas (−30%)', a.tempo_total_descartadas, base?.tempo_total_descartadas, stDsc)}
+      ${linha('Tempo médio/' + L + ' (−20%)', a.media_min, base?.media_min, stAtv)}
+      ${linha('Tempo ' + L + 's descartadas (−30%)', a.tempo_total_descartadas, base?.tempo_total_descartadas, stDsc)}
       <div class="sal-card__detalhe">
         <button class="btn btn--sm btn--outline" onclick="AppAcompSals.toggleTabela('${a.slug}')">▾ Detalhe mensal</button>
       </div>
@@ -52,7 +54,7 @@ const AppAcompSals = (() => {
 
   function renderTabela(a) {
     return `<table class="eq-tabela" style="margin-top:.75rem;font-size:.75rem">
-      <thead><tr><th>Mês</th><th>SALs</th><th>Média/SAL</th><th>Descartadas</th><th>Tempo Desc.</th></tr></thead>
+      <thead><tr><th>Mês</th><th>${L}s</th><th>Média/${L}</th><th>Descartadas</th><th>Tempo Desc.</th></tr></thead>
       <tbody>${MESES.map((mes,i) => {
         const m = i+1, av = a.mensal_ativas[m]||{tempo:0,qtd:0}, dc = a.mensal_descartadas[m]||{tempo:0,qtd:0};
         if (!av.qtd && !dc.qtd) return `<tr style="opacity:.35"><td>${mes}</td><td colspan="4">—</td></tr>`;
@@ -68,8 +70,8 @@ const AppAcompSals = (() => {
     setLoading(true);
     try {
       [_dados, _detalhe] = await Promise.all([
-        fetch(`/api/acomp-sals/tempo-descarte?ano=${_ano}`).then(r => r.json()),
-        fetch(`/api/acomp-sals/detalhe?ano=${_ano}`).then(r => r.json())
+        fetch(`${CFG.apiBase}/tempo-descarte?ano=${_ano}`).then(r => r.json()),
+        fetch(`${CFG.apiBase}/detalhe?ano=${_ano}`).then(r => r.json())
       ]);
       ativarAba(document.querySelector('.sal-aba--ativa')?.dataset.aba || 'resumo');
     } catch (e) { document.getElementById('sal-conteudo').innerHTML = `<p class="eq-sem-dados">Erro: ${e.message}</p>`; }

@@ -1,24 +1,28 @@
 /**
  * retornos-planilha.js - Agrega retornos (Qtde Tramite) por analista/mes da planilha
  *
- * Formula: indice = SUM(qtdTramite) / COUNT(PSAIs) por tipo (SAL | SAIL+SAM)
+ * Formula: indice = SUM(qtdTramite) / COUNT(PSAIs) por tipo (NE | SAL | SAIL+SAM)
  * Fonte: planilha-escrita-2026.xlsm, coluna "Qtde Tramite" (col 12)
  */
 
 const planilha = require('../../core/planilha-escrita');
 
 function novoAcum() {
-  return { sal: {}, sailSam: {} };
+  return { ne: {}, sal: {}, sailSam: {} };
+}
+
+function chaveTipo(tipo) {
+  if (tipo === 'NE') return 'ne';
+  if (tipo === 'SAL') return 'sal';
+  if (tipo === 'SAIL' || tipo === 'SAM') return 'sailSam';
+  return null;
 }
 
 function acumularSais(acum, mes, sais) {
   const vistos = new Set();
   for (const s of sais) {
-    const tipo = (s.tipoSAI || '').toUpperCase();
-    let chave;
-    if (tipo === 'SAL') chave = 'sal';
-    else if (tipo === 'SAIL' || tipo === 'SAM') chave = 'sailSam';
-    else continue;
+    const chave = chaveTipo((s.tipoSAI || '').toUpperCase());
+    if (!chave) continue;
     const chaveUnica = (s.i_psai || s.i_sai) + '_' + chave;
     if (vistos.has(chaveUnica)) continue;
     vistos.add(chaveUnica);

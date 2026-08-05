@@ -5,11 +5,22 @@ const versaoUtil = require('../../core/versao');
 const q = require('./tempo-implementacao-sam-sail-queries');
 
 const FOCO = 'SAM/SAIL';
+/**
+ * Metas % Tempo SAM/SAIL por mes (Jan-Dez).
+ * Piso: quanto MAIOR o %, melhor (tempo investido em evolucao do produto).
+ */
+const METAS_MENSAIS = [
+  65.37, 72.19, 72.37, 80.80, 73.43, 80.92,
+  77.17, 72.16, 77.16, 70.62, 76.74, 69.31
+];
+const META_ANUAL = 69.31;
+
+function obterMeta(indice) { return METAS_MENSAIS[indice] ?? META_ANUAL; }
 
 function determinarSemaforo(pctReal, metaMes) {
   if (metaMes == null) return 'info';
-  if (pctReal <= metaMes) return 'verde';
-  if (pctReal <= metaMes + 5) return 'amarelo';
+  if (pctReal >= metaMes) return 'verde';
+  if (pctReal >= metaMes - 5) return 'amarelo';
   return 'vermelho';
 }
 
@@ -47,7 +58,9 @@ module.exports = {
     const nomeVersao = opcoes.versao
       || versaoUtil.nomeDaVersao(opcoes.ano || new Date().getFullYear(), opcoes.mes || (new Date().getMonth() + 1));
     const area = opcoes.area || 'Escrita';
-    const metaMes = opcoes.meta ?? null;
+    const parsed = versaoUtil.parsearNomeVersao(nomeVersao);
+    const indice = parsed ? parsed.indice : (new Date().getMonth());
+    const metaMes = opcoes.meta || obterMeta(indice);
 
     const [
       saisPorTipo, devAgg, testeAgg, devDet, testeDet,
@@ -106,6 +119,8 @@ module.exports = {
       detalhes: {
         versao: nomeVersao,
         tipo_foco: FOCO,
+        meta_anual: META_ANUAL,
+        metas_mensais: METAS_MENSAIS,
         por_tipo: { SAM: bk.SAM || 0, SAIL: bk.SAIL || 0 },
         total_sai_liberada: totalSais,
         total_sai_ne: totalFoco,

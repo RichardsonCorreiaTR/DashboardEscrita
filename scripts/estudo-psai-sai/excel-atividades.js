@@ -20,7 +20,7 @@ function criarAbaTempoAnalistas(wb, analise) {
   ws.getCell('B2').value = 'Tempo Total por Analista (minutos)';
   ws.getCell('B2').style = sTitulo(14);
   ws.mergeCells('B3:J3');
-  ws.getCell('B3').value = 'Tempo = tempo_analise + tempo_definicao por PSAI | Excl. Vitor (gestor)';
+  ws.getCell('B3').value = 'Tempo = tempo_analise + tempo_definicao por PSAI | Excl. gestor (sgd legado)';
   ws.getCell('B3').style = sSubtitulo();
 
   aplicarHeaders(ws, 5, [
@@ -53,7 +53,7 @@ function criarAbaTempoAnalistas(wb, analise) {
   const meses = ['2025-11', '2025-12', '2026-01', '2026-02', '2026-03'];
   const mesesLbl = ['Nov/25', 'Dez/25', 'Jan/26', 'Fev/26', 'Mar/26*'];
 
-  for (const e of q.EQUIPE.filter(e => e.nome !== 'Vitor Justino')) {
+  for (const e of q.EQUIPE.filter(e => e.sgd !== q.SGD_GESTOR_EXCLUIDO)) {
     const a = atividades[e.iu];
     if (!a || !a.meses) continue;
     row++;

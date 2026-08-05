@@ -1,39 +1,48 @@
 /**
- * metadata-sais.js - Carrega metadados originais das SAIs
+ * metadata-sais.js - Metadados das SAIs Escrita a partir dos lotes locais
  *
- * Le sai-psai-folha.json do BuscaSaiFolha e constroi um mapa
- * PSAI -> { i_sai, tipo, descricao, status, gravidade }.
- * Usado para enriquecer itens auto-classificados que nao
- * tiveram metadados preservados.
+ * Le lote-entrada-*.json e classificados-auto-*.json em data/ia/
+ * (gerados via ODBC). Sem dependencia de BuscaSaiFolha.
  */
-
 const fs = require('fs');
 const path = require('path');
 
-const BUSCA_SAI_PATH = path.join(
-  'C:', 'Users', '6038243',
-  'OneDrive - Thomson Reuters Incorporated',
-  'Aplicacoes Cursor', 'BuscaSaiFolha', 'data', 'cache', 'sai-psai-folha.json'
-);
+const IA_DIR = path.join(__dirname, '..', '..', '..', 'data', 'ia');
 
 let _meta = null;
+
+function indexarArquivo(file, meta) {
+  let data;
+  try { data = JSON.parse(fs.readFileSync(path.join(IA_DIR, file), 'utf-8')); }
+  catch { return; }
+  for (const it of (data.itens || [])) {
+    if (!it.i_psai) continue;
+    const prev = meta[it.i_psai] || {};
+    meta[it.i_psai] = {
+      i_sai: it.i_sai || prev.i_sai || 0,
+      tipo: it.tipo || prev.tipo || null,
+      descricao: (it.descricao || prev.descricao || '').trim(),
+      status: it.status || prev.status || '',
+      gravidade: it.gravidade || prev.gravidade || 'Normal'
+    };
+  }
+}
 
 function carregar() {
   if (_meta) return _meta;
   _meta = {};
   try {
-    if (!fs.existsSync(BUSCA_SAI_PATH)) return _meta;
-    const raw = JSON.parse(fs.readFileSync(BUSCA_SAI_PATH, 'utf-8'));
-    for (const d of raw.dados) {
-      if (d.nomeArea !== 'Escrita') continue;
-      _meta[d.i_psai] = {
-        i_sai: d.i_sai, tipo: d.tipoSAI,
-        descricao: (d.sai_descricao || '').trim(),
-        status: d.situacaoSai || '',
-        gravidade: d.gravidade_ne || 'Normal'
-      };
+    if (!fs.existsSync(IA_DIR)) return _meta;
+    const files = fs.readdirSync(IA_DIR);
+    for (const f of files.filter(n => /^lote-entrada-.+\.json$/.test(n))) {
+      indexarArquivo(f, _meta);
     }
-    console.log('[meta-sais] %d SAIs Escrita indexadas', Object.keys(_meta).length);
+    for (const f of files.filter(n => /^classificados-auto-.+\.json$/.test(n))) {
+      indexarArquivo(f, _meta);
+    }
+    if (Object.keys(_meta).length) {
+      console.log('[meta-sais] %d SAIs Escrita indexadas (data/ia)', Object.keys(_meta).length);
+    }
   } catch (err) {
     console.warn('[meta-sais] Nao carregou metadata:', err.message);
   }

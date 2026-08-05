@@ -79,7 +79,8 @@ const EquipesDetalhe = (() => {
     const semRet = rows.filter(r => !r.qtdTramite || r.qtdTramite === 0);
     const totalRet = rows.reduce((s, r) => s + (r.qtdTramite || 0), 0);
     const indice = rows.length > 0 ? Math.round((totalRet / rows.length) * 100) / 100 : 0;
-    const metaStr = metaId === 'indice-retornos-sal' ? '\u2264 1,00' : '\u2264 1,50';
+    const metaStr = metaId === 'indice-retornos-sail-sam' ? '\u2264 1,50'
+      : metaId === 'indice-retornos-ne' ? '\u2264 0,50' : '\u2264 1,00';
     return grupoRet('\u26A0 PSAIs com retorno', comRet, 'eq-det--alerta') +
       grupoRet('\u2705 PSAIs sem retorno', semRet, '') +
       '<div class="eq-det__formula"><strong>Calculo:</strong> ' + totalRet +

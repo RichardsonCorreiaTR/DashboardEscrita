@@ -392,7 +392,7 @@
 
   [1] URGENTE - ESTA SEMANA
   ─────────────────────────
-  a) Reuniao Vitor + Sabrina + Ana Paula + Jerusa:
+  a) Reuniao Richardson + Sabrina + Ana Paula + Jerusa:
      - Mapear ownership do cluster IRRF/Transportador (128909/128910/105827/128834)
      - Garantir que o DEV da 128909 saiba que 128834 ja foi liberada
      - Garantir que o TESTE da 105827 inclua cenarios de Transportador Autonomo
@@ -417,7 +417,7 @@
 
   [3] ESTRUTURAL
   ──────────────
-  g) Ritual semanal 15min entre Vitor e Sabrina para sincronizar PSAIs
+  g) Ritual semanal 15min entre Richardson e Sabrina para sincronizar PSAIs
   h) Antes de tramitar PSAI de NE, verificar se ha outra PSAI do mesmo tema/codigo
   i) Compartilhar artefatos gerados com IA entre os times
 

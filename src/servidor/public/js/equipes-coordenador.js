@@ -4,6 +4,7 @@
  * Exibe tabela com valores acumulados iguais ao totalizador individual.
  */
 
+/* global EquipesAvaliacao, EquipesMatrizVolume, MetasConfig */
 /* eslint-disable no-unused-vars */
 const EquipesCoordenador = (() => {
   const MESES_LABEL = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -18,7 +19,7 @@ const EquipesCoordenador = (() => {
     'indice-revisoes-sal': 0.50, 'indice-revisoes-ne': 0.50,
     'indice-revisoes-sail': 1.15, 'indice-revisoes-sam-imp': 0.80,
     'indice-revisoes-sam-esc': 0.50,
-    'indice-retornos-sal': 1.00, 'indice-retornos-sail-sam': 1.50,
+    'indice-retornos-ne': 0.50, 'indice-retornos-sal': 1.00, 'indice-retornos-sail-sam': 1.50,
     'pontos-definicao': 80, 'tempo-trabalho-analise': 85,
     'tempo-trabalho-principal': 70,
     'respostas-ss-3d': 95
@@ -107,7 +108,7 @@ const EquipesCoordenador = (() => {
   }
 
   const ZERO_DEC = new Set(['indice-revisoes-sal','indice-revisoes-ne','indice-revisoes-sail',
-    'indice-revisoes-sam-imp','indice-revisoes-sam-esc','indice-retornos-sal','indice-retornos-sail-sam']);
+    'indice-revisoes-sam-imp','indice-revisoes-sam-esc','indice-retornos-ne','indice-retornos-sal','indice-retornos-sail-sam']);
 
   function statusCelula(porMeta, metaId, mensal) {
     const zeroTxt = ZERO_DEC.has(metaId) ? '0,00' : '0';
@@ -234,6 +235,7 @@ const EquipesCoordenador = (() => {
           MESES_LABEL[MES_ATUAL - 1] + ' / ' + new Date().getFullYear() + ' \u2014 ' +
           membros.length + ' colaboradores</p></div>' +
         secao('Especialistas', esp) + secao('Analistas', ana) +
+        (typeof EquipesMatrizVolume !== 'undefined' ? EquipesMatrizVolume.render(ana) : '') +
         '<div id="eq-avaliacao-wrap"></div>';
       EquipesAvaliacao.init(membros, document.getElementById('eq-avaliacao-wrap'), ano);
     } catch (e) {

@@ -210,6 +210,17 @@
       "fonte": "psai-tramites"
     },
     {
+      "id": "indice-retornos-ne",
+      "descricao": "Manter indice de retornos abaixo de 0,50 em PSAIs de NE",
+      "detalhes": "Retornos por complemento ou alteracao de definicao. Indice = SUM(Qtde Tramite) / COUNT(PSAIs NE) por mes. Fonte: planilha de acompanhamento.",
+      "valor-esperado": 0.50,
+      "unidade": "indice",
+      "direcao": "menor-melhor",
+      "contribui-para": "Customer",
+      "data-limite": "2026-12-31",
+      "fonte": "planilha-tramites"
+    },
+    {
       "id": "indice-retornos-sal",
       "descricao": "Manter indice de retornos abaixo de 1,00 em PSAIs de SAL",
       "detalhes": "Retornos por complemento ou alteracao de definicao. Indice = SUM(Qtde Tramite) / COUNT(PSAIs SAL) por mes. Fonte: planilha de acompanhamento.",
@@ -269,6 +280,7 @@
       "indice-revisoes-sail",
       "indice-revisoes-sam-imp",
       "indice-revisoes-sam-esc",
+      "indice-retornos-ne",
       "indice-retornos-sal",
       "indice-retornos-sail-sam",
       "controle-descartes",
@@ -289,6 +301,7 @@
       "indice-revisoes-sail",
       "indice-revisoes-sam-imp",
       "indice-revisoes-sam-esc",
+      "indice-retornos-ne",
       "indice-retornos-sal",
       "indice-retornos-sail-sam",
       "controle-descartes",
@@ -309,6 +322,7 @@
       "indice-revisoes-sail",
       "indice-revisoes-sam-imp",
       "indice-revisoes-sam-esc",
+      "indice-retornos-ne",
       "indice-retornos-sal",
       "indice-retornos-sail-sam",
       "controle-descartes",

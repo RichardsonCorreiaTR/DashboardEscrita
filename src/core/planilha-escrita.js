@@ -10,11 +10,13 @@ const fs = require('fs');
 const ExcelJS = require('exceljs');
 
 const PLANILHA_PATH = path.join(__dirname, '..', '..', 'data', 'planilha-escrita-2026.xlsm');
+const EQUIPE_PATH = path.join(__dirname, '..', '..', 'config', 'equipe.json');
 const MESES_NOMES = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
 let _cache = null;
 let _mtimCache = null;
+let _primeirosRepetidos = null;
 
 async function carregarWorkbook() {
   const mtime = fs.existsSync(PLANILHA_PATH) ? fs.statSync(PLANILHA_PATH).mtimeMs : null;
@@ -80,16 +82,42 @@ function normalizarNome(nome) {
   return (nome || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 }
 
+function partesNome(nome) {
+  return normalizarNome(nome).split(/\s+/).filter(Boolean);
+}
+
+// Primeiros nomes repetidos na equipe (ex.: duas Rafaelas): nesses casos
+// o primeiro nome nao identifica a pessoa e o sobrenome passa a ser exigido.
+function primeirosNomesRepetidos() {
+  if (_primeirosRepetidos) return _primeirosRepetidos;
+  const contagem = {};
+  try {
+    const equipe = JSON.parse(fs.readFileSync(EQUIPE_PATH, 'utf8'));
+    (equipe.analistas || []).forEach(a => {
+      new Set([partesNome(a.apelido)[0], partesNome(a.nome)[0]].filter(Boolean))
+        .forEach(p => { contagem[p] = (contagem[p] || 0) + 1; });
+    });
+  } catch { /* sem config: mantem comportamento permissivo */ }
+  _primeirosRepetidos = new Set(Object.keys(contagem).filter(p => contagem[p] > 1));
+  return _primeirosRepetidos;
+}
+
 function encontrarNomePlanilha(analista) {
   const apelido = normalizarNome(analista.apelido);
   const nomeCompleto = normalizarNome(analista.nome);
+  const termos = new Set([...partesNome(analista.apelido), ...partesNome(analista.nome)]);
+  const primeiros = new Set([partesNome(analista.apelido)[0], partesNome(analista.nome)[0]].filter(Boolean));
+  const repetidos = primeirosNomesRepetidos();
+  const homonimo = [...primeiros].some(p => repetidos.has(p));
   return row => {
     // Pontos Definicao = responsabilidade do PSAI (quem definiu/analisou)
     const resp = normalizarNome(row.responsavel_psai);
-    return resp === apelido ||
-      resp === nomeCompleto ||
-      nomeCompleto.startsWith(resp) ||
-      resp.startsWith(apelido.split(' ')[0]);
+    if (!resp) return false;
+    if (resp === apelido || resp === nomeCompleto) return true;
+    const partes = resp.split(/\s+/).filter(Boolean);
+    if (!primeiros.has(partes[0])) return false;
+    if (!homonimo) return true;
+    return partes.slice(1).some(p => termos.has(p));
   };
 }
 

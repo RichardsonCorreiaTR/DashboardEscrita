@@ -1,6 +1,6 @@
 ==========================================================================================
   ANALISE DE CONFLITOS E RETRABALHO - DETALHAMENTO COMPLETO
-  Escrita Fiscal (Vitor) vs Time SA (Sabrina)
+  Escrita Fiscal (Richardson) vs Time SA (Sabrina)
   Data: 18/03/2026 | Periodo: 04/03 a 18/03/2026 | Versao: 10.6A-03
 ==========================================================================================
 
@@ -80,7 +80,7 @@
 
   ACAO RECOMENDADA:
   ------------------
-  [URGENTE] Reuniao entre Vitor, Sabrina, Ana Paula e Jerusa para:
+  [URGENTE] Reuniao entre Richardson, Sabrina, Ana Paula e Jerusa para:
   1. Mapear qual time lidera qual PSAI do cluster
   2. Garantir que o desenvolvedor tenha visao das 3 PSAIs juntas
   3. Definir ordem de implementacao (128834 ja saiu, 128909 em dev, 105827 em analise)
@@ -253,7 +253,7 @@
 
   URGENTE (esta semana):
   ----------------------
-  1. Reuniao Vitor + Sabrina + Ana Paula + Jerusa sobre o CLUSTER IRRF/Transportador:
+  1. Reuniao Richardson + Sabrina + Ana Paula + Jerusa sobre o CLUSTER IRRF/Transportador:
      - PSAIs 128909, 128910, 128834 (liberada), 105827
      - Definir quem lidera, garantir que Dev tenha visao do conjunto
   
@@ -272,7 +272,7 @@
 
   ESTRUTURAL (implementar como processo):
   ----------------------------------------
-  5. Ritual semanal de 15min entre Vitor e Sabrina para sincronizar PSAIs
+  5. Ritual semanal de 15min entre Richardson e Sabrina para sincronizar PSAIs
   6. Ao tramitar PSAI de area NE, verificar se ha outra PSAI do mesmo tema pendente
   7. Compartilhar definicoes geradas com IA entre os times (evitar retrabalho)
 

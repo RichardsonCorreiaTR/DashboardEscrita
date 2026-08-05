@@ -1,16 +1,38 @@
 {
-  "_comentario": "Sobrescritas manuais de nivel e pontos por SAI. Edite este arquivo para corrigir dados gravados incorretamente no SGD.",
+  "_comentario": "Sobrescritas manuais de nivel e credito de SAI entre analistas. Edite este arquivo para corrigir dados do SGD.",
   "_campos": {
     "i_sai": "ID da SAI no SGD (obrigatorio)",
-    "nivel": "Nivel correto: Baixa | Media | Alta | Extra Alta (obrigatorio)",
+    "nivel": "Nivel correto: Baixa | Media | Alta | Extra Alta (obrigatorio nos overrides de nivel)",
     "conferido": "true = usar este override no calculo (obrigatorio)",
     "motivo": "Descricao do motivo da correcao (opcional)"
+  },
+  "_campos_creditos": {
+    "i_sai": "SAI a compartilhar (obrigatorio)",
+    "i_psai": "PSAI vinculada (opcional, documentacao)",
+    "de_slug": "slug da analista no SGD (origem — continua contando)",
+    "para_slug": "slug que tambem recebe o credito de pontos",
+    "ano": "ano do credito (opcional)",
+    "mes": "mes forçado do credito (opcional)",
+    "conferido": "true = aplicar",
+    "motivo": "texto livre"
   },
   "conferido_ate": {
     "ano": 2026,
     "mes": 7,
     "_comentario": "Meses ja conferidos manualmente. O relatorio ignora SAIs com mes <= este valor."
   },
+  "creditos": [
+    {
+      "i_sai": 101706,
+      "i_psai": 130025,
+      "de_slug": "rafaela-sampaio",
+      "para_slug": "flavia",
+      "ano": 2026,
+      "mes": 5,
+      "conferido": true,
+      "motivo": "Analise compartilhada no SGD — pontos para Flavia e Rafaela (SGD nao permite dois nomes)"
+    }
+  ],
   "overrides": [
     {
       "i_sai": 94650,

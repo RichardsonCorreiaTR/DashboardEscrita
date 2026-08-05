@@ -1,20 +1,28 @@
 /**
- * app-acomp-tempo-analista.js - Tempo por SAL/NE (somente o logado)
- * Uso: body[data-acomp="sal"|"ne"]
+ * app-acomp-tempo-analista.js - Tempo por SAL/NE/SAM (somente o logado)
+ * CFG: window.ACOMP_CFG = { modo, label, apiDetalhe } ou body[data-acomp]
  */
 /* global Chart */
 const AppAcompTempoAnalista = (() => {
   const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   const NIVEL_COR = { 1: '#22c55e', 2: '#eab308', 3: '#f97316', 4: '#ef4444' };
-  const modo = (document.body.dataset.acomp || 'sal');
-  const isSal = modo === 'sal';
-  const labelItem = isSal ? 'SAL' : 'NE';
+  const CFG = window.ACOMP_CFG || {};
+  const modo = CFG.modo || document.body.dataset.acomp || 'sal';
+  const isNivel = modo === 'sal' || modo === 'sam';
+  const labelItem = CFG.label || (modo === 'ne' ? 'NE' : modo === 'sam' ? 'SAM/SAIL' : 'SAL');
   let _linhas = [], _chart = null, _situacoesSel = null, _sgd = null;
 
   function fmtMin(min) {
     if (!min) return '0';
     const h = Math.floor(min / 60), m = Math.round(min % 60);
     return h > 0 ? h + 'h ' + m + 'min' : m + 'min';
+  }
+
+  function apiBase() {
+    if (CFG.apiDetalhe) return CFG.apiDetalhe;
+    if (modo === 'ne') return '/api/acomp-nes/tempo-detalhado';
+    if (modo === 'sam') return '/api/acomp-sams/tempo-detalhado';
+    return '/api/acomp-sals/tempo-detalhado';
   }
 
   async function init() {
@@ -27,10 +35,6 @@ const AppAcompTempoAnalista = (() => {
     const elNome = document.getElementById('salt-meu-nome');
     if (elNome && eu) elNome.textContent = eu.apelido + ' (' + eu.senioridade + ')';
     document.getElementById('salt-consultar').addEventListener('click', consultar);
-  }
-
-  function apiBase() {
-    return isSal ? '/api/acomp-sals/tempo-detalhado' : '/api/acomp-nes/tempo-detalhado';
   }
 
   function popularAnos() {
@@ -50,11 +54,8 @@ const AppAcompTempoAnalista = (() => {
     cont.innerHTML = '<div class="loading"><div class="loading__spinner"></div><span>Consultando banco...</span></div>';
     document.getElementById('salt-chart-wrap').style.display = 'none';
     let url = apiBase() + '?ano=' + ano + '&analista=' + encodeURIComponent(_sgd || '');
-    if (isSal) {
-      url += '&nivel=' + (document.getElementById('salt-nivel').value || 'todos');
-    } else {
-      url += '&area=' + (document.getElementById('salt-area').value || 'Escrita');
-    }
+    if (isNivel) url += '&nivel=' + (document.getElementById('salt-nivel').value || 'todos');
+    else url += '&area=' + (document.getElementById('salt-area').value || 'Escrita');
     try {
       const r = await fetch(url, { signal: AbortSignal.timeout(180000) }).then(x => x.json());
       if (r.erro) throw new Error(r.erro);
@@ -154,12 +155,11 @@ const AppAcompTempoAnalista = (() => {
   }
 
   function renderDetalhe(linhas) {
-    const colsNivel = isSal;
-    const head = '<th>PSAI</th><th>SAI</th>' + (colsNivel ? '<th>Nível</th>' : '') +
+    const head = '<th>PSAI</th><th>SAI</th>' + (isNivel ? '<th>Nível</th>' : '') +
       '<th class="num">Análise</th><th class="num">Definição</th><th class="num">Total</th><th>Situação</th>';
     const body = linhas.slice().sort((a, b) => b.tempo_total - a.tempo_total).map(l =>
       '<tr><td>' + l.i_psai + '</td><td>' + (l.i_sai || '—') + '</td>' +
-      (colsNivel ? '<td><span class="salt-badge" style="color:' + (NIVEL_COR[l.nivel] || '#64748b') +
+      (isNivel ? '<td><span class="salt-badge" style="color:' + (NIVEL_COR[l.nivel] || '#64748b') +
         '">' + l.nivel_nome + '</span></td>' : '') +
       '<td class="num">' + l.tempo_analise + '</td><td class="num">' + l.tempo_definicao +
       '</td><td class="num"><strong>' + l.tempo_total + '</strong></td><td>' + l.situacao + '</td></tr>'

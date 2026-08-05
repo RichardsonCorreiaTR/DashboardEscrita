@@ -108,9 +108,12 @@ function querySsEnvolvimento(codigoSgdList, ano, mes) {
       perg.i_usuarios as pergunta_sgd,
       perg.entrada as entrada,
       st.entrada as data_resposta,
-      MONTH(st.entrada) as mes
+      MONTH(st.entrada) as mes,
+      CAST(TRIM(m.nome) AS BINARY(64)) as modulo
     FROM bethadba.ss_tramites st
     JOIN bethadba.ss s ON st.i_ss = s.i_ss
+    LEFT JOIN bethadba.modulos m
+      ON m.i_modulos = s.i_modulos AND m.i_sistemas = s.i_sistemas
     ${PERGUNTA_JOIN}
     WHERE st.i_usuarios IN (${ids})
       AND st.situacao = ${SIT_RESPOSTA_GP}
@@ -119,6 +122,11 @@ function querySsEnvolvimento(codigoSgdList, ano, mes) {
       AND COALESCE(s.i_produto_grupo, 1) = 1
     ORDER BY st.i_ss ASC, st.i_ss_tramites ASC
   `;
+}
+
+function labelModulo(v) {
+  const s = v == null ? '' : String(v).trim();
+  return s || 'Sem módulo';
 }
 
 function mapearLinhas(rows) {
@@ -130,6 +138,7 @@ function mapearLinhas(rows) {
     resp_tramite: r.resp_tramite,
     pergunta_sgd: r.pergunta_sgd,
     mes: r.mes,
+    modulo: labelModulo(r.modulo),
     entrada: r.entrada,
     data_resposta: r.data_resposta,
     dias_corridos: 0,
@@ -162,6 +171,6 @@ function filtrarMembroMes(registros, sgd, mes) {
 }
 
 module.exports = {
-  diasUteisSybase, recalcularRegistro, querySsEnvolvimento,
+  diasUteisSybase, recalcularRegistro, querySsEnvolvimento, labelModulo,
   mapearLinhas, agruparPorMembroMes, filtrarMembroMes, dedupePorPergunta, colapsarPorAnalista
 };

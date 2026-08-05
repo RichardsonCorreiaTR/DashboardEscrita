@@ -235,7 +235,7 @@ docs/
 │   │   ├── 1.1-[nome-diretriz-a].md         ← Diretriz A detalhada
 │   │   ├── 1.2-[nome-diretriz-b].md         ← Diretriz B detalhada
 │   │   ├── 1.3-[nome-diretriz-c].md         ← Diretriz C detalhada
-│   │   └── 1.4-controladas-coordenacao/     ← Diretrizes que sao do produto mas controladas pelo Vitor
+│   │   └── 1.4-controladas-coordenacao/     ← Diretrizes que sao do produto mas controladas pelo Richardson
 │   │       ├── README.md
 │   │       ├── 1.4.1-[nome].md
 │   │       └── 1.4.2-[nome].md
@@ -406,7 +406,7 @@ O agente DEVE criar e manter os arquivos `.mdc` abaixo desde o inicio do projeto
 
 **projeto.mdc** - Deve conter:
 - O que o projeto faz (1 paragrafo)
-- Quem usa (Vitor, equipe Escrita Fiscal)
+- Quem usa (Richardson, equipe Escrita Fiscal)
 - Onde mora (caminhos de pastas)
 - Como rodar
 - Referencia ao PBCVS Discovery
@@ -795,7 +795,7 @@ Para entender o SGD e as dores do setor, o agente deve:
 1. Ler `PBCVS Discovery/CONTEXTO.md` e `GLOSSARIO-SGD.md` (terminologia)
 2. Ler `PBCVS Discovery/analise/MAPA-COMPLETO.md` (estrutura de dados)
 3. Ler `PBCVS Discovery/analise/RELACIONAMENTOS.md` (como as coisas se conectam)
-4. Perguntar ao Vitor sobre cada diretriz quando for implementa-la
+4. Perguntar ao Richardson sobre cada diretriz quando for implementa-la
 5. Registrar tudo em `negocio.mdc` de forma organizada
 
 ---

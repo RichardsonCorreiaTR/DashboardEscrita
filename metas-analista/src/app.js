@@ -9,6 +9,7 @@ const auth = require('./auth');
 const { configFiltrada, ROOT, STANDALONE, PKG } = require('./config-analista');
 const rotasLocal = require('./rotas-metas-local');
 const rotasAcomp = require('./rotas-acomp');
+const rotasNesDef = require('./rotas-nes-definicao');
 
 const PORT = process.env.PORT_ANALISTA || 4002;
 const PUBLIC = path.join(PKG, 'public');
@@ -99,12 +100,16 @@ if (STANDALONE) {
 }
 
 app.use('/api', rotasAcomp.criarRotas(STANDALONE ? slugPacote() : null));
+app.use('/api', rotasNesDef.criarRotas(STANDALONE ? slugPacote() : null));
 app.use('/api', (_req, res) => res.status(404).json({ erro: 'Rota nao disponivel neste portal' }));
 app.get('/', (_req, res) => res.redirect('/metas.html'));
 app.get('/metas.html', (_req, res) => res.sendFile(path.join(PUBLIC, 'metas.html')));
 app.get('/acomp-sals.html', (_req, res) => res.sendFile(path.join(PUBLIC, 'acomp-sals.html')));
 app.get('/acomp-sals-tempo.html', (_req, res) => res.sendFile(path.join(PUBLIC, 'acomp-sals-tempo.html')));
+app.get('/acomp-sams.html', (_req, res) => res.sendFile(path.join(PUBLIC, 'acomp-sams.html')));
+app.get('/acomp-sams-tempo.html', (_req, res) => res.sendFile(path.join(PUBLIC, 'acomp-sams-tempo.html')));
 app.get('/acomp-nes-tempo.html', (_req, res) => res.sendFile(path.join(PUBLIC, 'acomp-nes-tempo.html')));
+app.get('/nes-definicao.html', (_req, res) => res.sendFile(path.join(PUBLIC, 'nes-definicao.html')));
 
 function iniciar() {
   const u = auth.lerUsuario();

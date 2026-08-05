@@ -10,7 +10,7 @@ const fs = require('fs');
 
 const CACHE_DIR = path.join(__dirname, '..', '..', 'data', 'cache');
 const CACHE_FILE = path.join(CACHE_DIR, 'ss-respondidas.json');
-const CACHE_LOGIC_VERSION = 7; // v7: par por situacao 6 (pergunta GP) -> 7 (resposta GP)
+const CACHE_LOGIC_VERSION = 8; // v8: inclui nome do modulo da SS
 
 let disco = { _meta: { atualizado_em: null, versao_logica: CACHE_LOGIC_VERSION }, anos: {} };
 

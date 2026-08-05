@@ -6,6 +6,8 @@
  */
 /* global Chart */
 const AppAcompSalsTempo = (() => {
+  const CFG = window.ACOMP_CFG || { apiBase: '/api/acomp-sals', label: 'SAL' };
+  const L = CFG.label;
   const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   const NIVEL_COR = { 1: '#22c55e', 2: '#eab308', 3: '#f97316', 4: '#ef4444' };
   let _linhas = [];
@@ -48,7 +50,7 @@ const AppAcompSalsTempo = (() => {
 
   async function popularFiltros() {
     try {
-      const r = await fetch('/api/acomp-sals/tempo-detalhado?filtros=1').then(x => x.json());
+      const r = await fetch(CFG.apiBase + '/tempo-detalhado?filtros=1').then(x => x.json());
       const sel = document.getElementById('salt-analista');
       (r.filtros.analistas || []).forEach(a => {
         const o = document.createElement('option');
@@ -66,7 +68,7 @@ const AppAcompSalsTempo = (() => {
     cont.innerHTML = '<div class="loading"><div class="loading__spinner"></div><span>Consultando banco (pode demorar)...</span></div>';
     document.getElementById('salt-chart-wrap').style.display = 'none';
     try {
-      const url = `/api/acomp-sals/tempo-detalhado?ano=${ano}&analista=${analista}&nivel=${nivel}`;
+      const url = `${CFG.apiBase}/tempo-detalhado?ano=${ano}&analista=${analista}&nivel=${nivel}`;
       const r = await fetch(url, { signal: AbortSignal.timeout(180000) }).then(x => x.json());
       if (r.erro) throw new Error(r.erro);
       _linhas = r.linhas || [];
@@ -124,7 +126,7 @@ const AppAcompSalsTempo = (() => {
     if (!_linhas.length) {
       document.getElementById('salt-situacoes').style.display = 'none';
       document.getElementById('salt-chart-wrap').style.display = 'none';
-      cont.innerHTML = '<p class="eq-sem-dados">Nenhuma SAL encontrada para os filtros selecionados.</p>';
+      cont.innerHTML = `<p class="eq-sem-dados">Nenhuma ${L} encontrada para os filtros selecionados.</p>`;
       return;
     }
     renderFiltroSituacoes();
@@ -158,7 +160,7 @@ const AppAcompSalsTempo = (() => {
     }
     if (!rows.length) {
       document.getElementById('salt-chart-wrap').style.display = 'none';
-      cont.innerHTML = '<p class="eq-sem-dados">Nenhuma SAL para as situações selecionadas.</p>';
+      cont.innerHTML = `<p class="eq-sem-dados">Nenhuma ${L} para as situações selecionadas.</p>`;
       return;
     }
     const mediaTotalA = totQtd ? Math.round(totA / totQtd) : 0;
@@ -166,9 +168,9 @@ const AppAcompSalsTempo = (() => {
     cont.innerHTML = `
       <table class="salt-tabela">
         <thead><tr>
-          <th>Mês</th><th class="num">SALs</th><th class="num">T. Análise</th>
+          <th>Mês</th><th class="num">${L}s</th><th class="num">T. Análise</th>
           <th class="num">T. Definição</th><th class="num">T. Total</th>
-          <th class="num">Média Análise/SAL</th><th class="num">Detalhe</th>
+          <th class="num">Média Análise/${L}</th><th class="num">Detalhe</th>
         </tr></thead>
         <tbody>${rows.join('')}</tbody>
         <tfoot><tr class="salt-total-row">
@@ -233,7 +235,7 @@ const AppAcompSalsTempo = (() => {
       data: {
         labels,
         datasets: [{
-          label: 'Média de análise por SAL (min)',
+          label: 'Média de análise por ' + L + ' (min)',
           data,
           borderColor: 'rgba(59,130,246,0.9)',
           backgroundColor: 'rgba(59,130,246,0.08)',

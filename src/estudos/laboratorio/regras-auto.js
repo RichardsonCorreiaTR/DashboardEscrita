@@ -1,48 +1,28 @@
 /**
- * laboratorio/regras-auto.js - Regras deterministicas (Camada 1)
+ * laboratorio/regras-auto.js - Regras deterministicas Camada 1 (Escrita Fiscal)
  *
- * Classifica SAIs automaticamente quando tags + metadados
- * sao suficientes. Retorna null nos campos que precisa de IA.
+ * Infere area_tecnica pela descricao (taxonomia Escrita) + risco/complexidade
+ * por metadados. Campos incompletos ficam null para a IA.
  */
+const { classificarArea } = require('../../core/consultas-ne');
 
-const TAGS_ESOCIAL = [
-  'S-1200', 'S-1210', 'S-1260', 'S-1270', 'S-1280', 'S-1299',
-  'S-2190', 'S-2200', 'S-2205', 'S-2206', 'S-2210', 'S-2220',
-  'S-2230', 'S-2240', 'S-2250', 'S-2298', 'S-2299', 'S-2300',
-  'S-2306', 'S-2399', 'S-2400', 'S-2500', 'S-3000',
-  'S-5001', 'S-5002', 'S-5003', 'S-5011', 'S-5012',
-  'S-1000', 'FGTS Digital'
-];
+const AREA_MAP = {
+  'Obrig. Acessorias': 'obrigacoes_acessorias',
+  'Impostos/Tributos': 'impostos_tributos',
+  'GPS/INSS': 'gps_inss',
+  'DARF/Recolhimento': 'darf_recolhimento',
+  'Lancamento': 'lancamento',
+  'Calculo/Apuracao': 'calculo_apuracao',
+  'Importacao/Integracao': 'importacao_integracao',
+  'Relatorios': 'relatorios',
+  'Parametrizacao': 'parametrizacao',
+  'Infraestrutura/Erro': 'infraestrutura'
+};
 
-const TAGS_EXPORTACAO = [
-  'SEFIP', 'CAGED', 'RAIS', 'DIRF', 'DCTFWeb', 'GPS', 'DARF',
-  'Informe de Rendimentos', 'CTPS Digital', 'FAP', 'Certidão Negativa'
-];
-
-const TAGS_CALCULO = [
-  'Cálculo', 'Décimo Terceiro', 'Adiantamento', 'PLR',
-  'Provisão', 'Horas Extras', 'Adicional Noturno',
-  'Insalubridade', 'Periculosidade', 'Banco de Horas'
-];
-
-function inferirAreaTecnica(tags) {
-  if (!tags || tags.length === 0) return null;
-  if (tags.some(t => TAGS_ESOCIAL.includes(t))) return 'api_esocial';
-  if (tags.includes('Integração') || tags.includes('Domínio Contábil')
-    || tags.includes('Contabilização')) return 'integracao_contabil';
-  if (tags.some(t => TAGS_EXPORTACAO.includes(t))
-    && !tags.includes('Cálculo')) return 'importacao_exportacao';
-  if (tags.includes('Agente') || tags.includes('Rotinas Automáticas')
-    || tags.includes('Ponto Eletrônico')) return 'processamento_lote';
-  if (tags.includes('Certificado Digital')) return 'autenticacao';
-  if (tags.includes('Relatórios') && !tags.includes('Cálculo')) return 'relatorio';
-  if (tags.some(t => TAGS_CALCULO.includes(t))) return 'motor_calculo';
-  if (tags.includes('Parâmetros') || tags.includes('Admissão')
-    || tags.includes('Convenção Coletiva')
-    || tags.includes('Tabelas')) return 'parametrizacao';
-  if (tags.includes('Holerite') || tags.includes('Vale Transporte')
-    || tags.includes('Vale Refeição')) return 'interface_web';
-  return null;
+function inferirAreaTecnica(item, tags) {
+  const texto = [item.descricao, item.texto_spec, ...(tags || [])].filter(Boolean).join(' ');
+  const area = classificarArea(texto);
+  return AREA_MAP[area] || null;
 }
 
 function inferirRiscoRegressao(nivelAlteracao) {
@@ -66,31 +46,32 @@ function inferirRecorrencia(refsCruzadas) {
 }
 
 function classificarAuto(item, tagsIndex) {
-  const tags = tagsIndex || [];
-  const area = inferirAreaTecnica(tags);
+  const tags = tagsIndex || item.tags || [];
+  const area = inferirAreaTecnica(item, tags);
   const risco = inferirRiscoRegressao(item.nivel_alteracao);
   const complex = inferirComplexidade(item.tempoPrevistoTotal);
   const recorr = inferirRecorrencia(item.refs_cruzadas);
 
-  const campos = { area_tecnica: area, risco_regressao: risco,
-    complexidade_real: complex, padrao_recorrencia: recorr };
+  const campos = {
+    area_tecnica: area, risco_regressao: risco,
+    complexidade_real: complex, padrao_recorrencia: recorr
+  };
   const preenchidos = Object.values(campos).filter(v => v !== null).length;
   const confianca = preenchidos >= 3 ? 3 : preenchidos >= 2 ? 2 : 1;
-  const completa = preenchidos >= 3;
 
   return {
     i_psai: item.i_psai,
-    tipo_causa_raiz: item.tipoSAI === 'NE' ? null : null,
+    tipo_causa_raiz: null,
     area_tecnica: area,
     complexidade_real: complex,
     risco_regressao: risco,
     escopo_impacto: null,
     padrao_recorrencia: recorr,
     confianca,
-    observacao: 'Classificacao automatica (Camada 1)',
+    observacao: 'Classificacao automatica Escrita (Camada 1)',
     _auto: true,
-    _completa: completa
+    _completa: preenchidos >= 3
   };
 }
 
-module.exports = { classificarAuto, inferirAreaTecnica };
+module.exports = { classificarAuto, inferirAreaTecnica, AREA_MAP };

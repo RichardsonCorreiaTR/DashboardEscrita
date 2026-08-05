@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>SAIs com Nível SGD Menor que Planilha — 2026</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; color: #1e293b; background: #f8fafc; }
+    h1 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+    .resumo { display: flex; gap: 1.5rem; margin: 1rem 0 1.5rem; flex-wrap: wrap; }
+    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem 1.25rem; min-width: 140px; }
+    .card strong { display: block; font-size: 1.6rem; font-weight: 800; }
+    .card span { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+    .card.alerta strong { color: #dc2626; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    th { background: #1e293b; color: #e2e8f0; padding: 0.5rem 0.75rem; font-size: 0.72rem; text-align: left; white-space: nowrap; }
+    td { padding: 0.45rem 0.75rem; border-bottom: 1px solid #f1f5f9; font-size: 0.82rem; }
+    tr:hover td { background: #f8fafc; }
+    a { color: #3b82f6; font-weight: 600; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .nivel-ok  { color: #16a34a; font-weight: 600; }
+    .nivel-nok { color: #dc2626; font-weight: 600; }
+    .pts  { text-align: right; }
+    .nok  { color: #dc2626; }
+    .diff { text-align: right; font-weight: 700; color: #f59e0b; }
+    .nota { font-size: 0.75rem; color: #64748b; margin-top: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 0.75rem; }
+    .gerado { font-size: 0.72rem; color: #94a3b8; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>⚠ SAIs com Nível no SGD MENOR que na Planilha — 2026</h1>
+  <p style="color:#64748b;font-size:0.85rem">Ajustando o nível no SGD para o valor da planilha, estes analistas ganhariam mais pontos.</p>
+  <p style="font-size:0.8rem;background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:0.5rem 0.9rem;display:inline-block;margin-bottom:0.75rem">✓ Meses 01–06/2026 já conferidos — exibindo apenas a partir de 07/2026</p>
+
+  <div class="resumo">
+    <div class="card alerta"><strong>0</strong><span>SAIs divergentes</span></div>
+    <div class="card"><strong>0</strong><span>Analistas afetados</span></div>
+    <div class="card alerta"><strong>+0 pts</strong><span>Pontos sub-contados (total)</span></div>
+    <div class="card"><strong>0</strong><span>Sem nível no SGD</span></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>SAI</th><th>Tipo</th><th>Mês</th><th>Analista</th>
+        <th>Nível Planilha</th><th>Nível SGD</th>
+        <th>Pts Planilha</th><th>Pts SGD</th><th>Diferença</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <p class="nota">
+    <strong>Ação sugerida:</strong> Para cada SAI, verificar no SGD (clique no número) qual é o nível correto
+    e ajustar o campo <em>Nível de Alteração</em> na PSAI. Se o nível da planilha estiver correto,
+    o ajuste no SGD fará os pontos serem recalculados automaticamente no dashboard.
+    Se não for possível alterar o SGD, registrar um override em <code>config/pontos-overrides.json</code>.
+  </p>
+  <p class="gerado">Gerado em 07/07/2026, 13:53:38 | Fonte: planilha-escrita-2026.xlsm × SGD (pbcvs9)</p>
+</body>
+</html>

@@ -1,35 +1,9 @@
 /**
  * nes-definicao-parser.js - Parseia Excel de NEs com Definicao
- * Le apenas abas "* Escrita*" e retorna dados estruturados por versao e analista.
+ * Le abas Escrita/Importacao. Com coluna "Considera", so entra "Sim".
  */
 const ExcelJS = require('exceljs');
-
-const NOME_SLUG = {
-  'felipi': 'felipi', 'felipi ferreira': 'felipi',
-  'fabio': 'fabio', 'fabio coral': 'fabio', 'fabio sasso': 'fabio',
-  'giovani': 'giovani', 'giovani cunha': 'giovani',
-  'jennifer': 'jennifer', 'jennifer rodrigues': 'jennifer',
-  'victor': 'victor', 'victor ferreira': 'victor',
-  'barbara melo': 'barbara-melo', 'barbara mello': 'barbara-melo', 'barbara teixeira': 'barbara-melo',
-  'carolina': 'carolina', 'carolina esmeraldino': 'carolina',
-  'daniela': 'daniela', 'daniela stupp': 'daniela', 'daniela ferreira': 'daniela',
-  'erick': 'erick', 'erick vicente': 'erick',
-  'flavia': 'flavia', 'flavia cardoso': 'flavia', 'flavia felipe': 'flavia',
-  'mateus': 'mateus', 'mateus alves': 'mateus',
-  'bruna': 'bruna', 'bruna ferro': 'bruna',
-  'patricia': 'patricia', 'patricia costa': 'patricia',
-  'patricia machado': 'patricia', 'patricia macedo': 'patricia',
-  'barbara leite': 'barbara-leite',
-  'gabriely': 'gabriely', 'gabriely marques': 'gabriely',
-  'juliana': 'juliana', 'juliana kuerten': 'juliana',
-  'lais': 'lais', 'laysa': 'laysa', 'laysa gabriela': 'laysa',
-  'rafaela ribeiro': 'rafaela-ribeiro', 'rafaela gubert': 'rafaela-ribeiro',
-  'rafaela sampaio': 'rafaela-sampaio', 'rafaela silva': 'rafaela-sampaio',
-  'renan': 'renan', 'renan maiato': 'renan',
-  'sabrine': 'sabrine', 'sabrina': 'sabrine', 'sabrina neves': 'sabrine',
-  'vinicyos': 'vinicyos', 'vinicyos magnus': 'vinicyos',
-  'richardson': 'richardson', 'marielli': 'marielli',
-};
+const { normalizarNome, nomeParaSlug } = require('./nes-definicao-nomes');
 
 const MESES_ABREV = {
   'janeiro': 'Jan', 'fevereiro': 'Fev', 'favereiro': 'Fev',
@@ -48,22 +22,6 @@ function cellText(cell) {
   return String(v).trim();
 }
 
-function normalizarNome(nome) {
-  if (!nome || nome === '-' || nome === 'null' || nome === '') return null;
-  return nome.trim().toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, ' ').trim();
-}
-
-function nomeParaSlug(nome) {
-  if (!nome) return null;
-  const normalized = normalizarNome(nome);
-  if (!normalized || normalized === '-') return null;
-  // Handle "Nome/Outro" → pega o primeiro
-  const primeiro = normalized.split('/')[0].trim();
-  return NOME_SLUG[primeiro] || NOME_SLUG[normalized] || null;
-}
-
 function parseTitulo(titulo) {
   if (!titulo) return {};
   const verMatch = titulo.match(/\(([0-9]+\.[0-9]+[A-Z]-[0-9]+)\)/i);
@@ -78,7 +36,6 @@ function parseTitulo(titulo) {
 }
 
 function detectarColunas(ws) {
-  // Linha 3 é o header — detecta posição dinâmica de "Considera" e gravidade
   const hr = ws.getRow(3);
   let colConsidera = null, colGravidade = null;
   for (let c = 1; c <= 12; c++) {
@@ -109,36 +66,32 @@ function parseAba(ws) {
       totais.com_definicao = parseInt(cellText(row.getCell(3))) || 0;
       return;
     }
-    // Linha de NE (col1 é numero ou hyperlink de numero)
     const neNum = parseInt(col1);
     if (!neNum || isNaN(neNum)) return;
 
-    // Filtrar por "Considera" quando a coluna existir
+    // Coluna "Considera" presente: so entram NEs com "Sim"
     if (colConsidera) {
       const considera = normalizarNome(cellText(row.getCell(colConsidera)) || '');
-      if (considera === 'nao') return; // excluir NEs marcadas como Não
+      if (considera !== 'sim') return;
     }
 
     const saiOrigem = cellText(row.getCell(2));
-    const anoSai    = cellText(row.getCell(3));
-    const tipoSai   = cellText(row.getCell(4));
-    const psai      = cellText(row.getCell(5));
-    const sai       = cellText(row.getCell(6));
-    const analise   = cellText(row.getCell(7));
-    // Gravidade: coluna específica se detectada, senão col 8 legado (sem Considera)
+    const anoSai = cellText(row.getCell(3));
+    const tipoSai = cellText(row.getCell(4));
+    const psai = cellText(row.getCell(5));
+    const sai = cellText(row.getCell(6));
+    const analise = cellText(row.getCell(7));
     const colGrav = colGravidade || (colConsidera ? null : 8);
     const gravidade = colGrav ? cellText(row.getCell(colGrav)) : null;
-    const slugPsai = nomeParaSlug(psai);
-    const slugSai  = nomeParaSlug(sai);
     nes.push({
       ne: neNum,
       sai_origem: saiOrigem ? parseInt(saiOrigem) || saiOrigem : null,
       ano_sai: anoSai ? parseInt(anoSai) || null : null,
       tipo_sai: tipoSai || null,
       responsavel_psai: psai || null,
-      responsavel_psai_slug: slugPsai,
+      responsavel_psai_slug: nomeParaSlug(psai),
       responsavel_sai: sai || null,
-      responsavel_sai_slug: slugSai,
+      responsavel_sai_slug: nomeParaSlug(sai),
       analise: analise || null,
       grave: gravidade ? gravidade.toLowerCase().includes('grav') : false,
     });
@@ -148,8 +101,6 @@ function parseAba(ws) {
 }
 
 function labelDeNomeAba(nomeAba) {
-  // "Janeiro 2026 - Importação " → { label: "Jan/26", ano: 2026 }
-  // \S+ (nao \w+) para casar meses acentuados como "Março"
   const m = nomeAba.match(/^(\S+)\s+(\d{4})/);
   if (!m) return null;
   const mesNorm = m[1].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -157,6 +108,15 @@ function labelDeNomeAba(nomeAba) {
   if (!abrev) return null;
   const ano = parseInt(m[2]);
   return { label: `${abrev}/${String(ano).slice(2)}`, ano };
+}
+
+function adicionarNe(porAnalista, slug, label, ne) {
+  if (!slug) return;
+  if (!porAnalista[slug]) porAnalista[slug] = {};
+  if (!porAnalista[slug][label]) porAnalista[slug][label] = [];
+  const bucket = porAnalista[slug][label];
+  if (bucket.some(x => x.ne === ne.ne)) return;
+  bucket.push(ne);
 }
 
 async function parsearExcel(caminhoArquivo) {
@@ -168,8 +128,6 @@ async function parsearExcel(caminhoArquivo) {
     const nome = ws.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     if (!nome.includes('escrita') && !nome.includes('importa')) return;
     const dados = parseAba(ws);
-    // Label = mes/ano (uma coluna por mes; abas Escrita+Importacao do mesmo mes
-    // combinam). A versao continua em dados.versao para referencia.
     const infoNome = labelDeNomeAba(ws.name);
     if (infoNome) {
       dados.label = infoNome.label;
@@ -178,25 +136,13 @@ async function parsearExcel(caminhoArquivo) {
     if (dados.versao || dados.nes.length) versoes.push(dados);
   });
 
-  // Agregar por analista (PSAI) e por especialista (SAI)
   const porAnalista = {};
-  function adicionarNe(slug, label, ne) {
-    if (!slug) return;
-    if (!porAnalista[slug]) porAnalista[slug] = {};
-    if (!porAnalista[slug][label]) porAnalista[slug][label] = [];
-    const bucket = porAnalista[slug][label];
-    // Nao duplicar a mesma NE no mesmo mes (evita dupla contagem Escrita+Importacao)
-    if (bucket.some(x => x.ne === ne.ne)) return;
-    bucket.push(ne);
-  }
   versoes.forEach(v => {
     const label = v.label || v.nome_aba;
     v.nes.forEach(ne => {
-      // Responsável PSAI (analista que definiu)
-      adicionarNe(ne.responsavel_psai_slug, label, ne);
-      // Responsável SAI (especialista — só adiciona se for diferente do PSAI)
+      adicionarNe(porAnalista, ne.responsavel_psai_slug, label, ne);
       if (ne.responsavel_sai_slug && ne.responsavel_sai_slug !== ne.responsavel_psai_slug) {
-        adicionarNe(ne.responsavel_sai_slug, label, ne);
+        adicionarNe(porAnalista, ne.responsavel_sai_slug, label, ne);
       }
     });
   });

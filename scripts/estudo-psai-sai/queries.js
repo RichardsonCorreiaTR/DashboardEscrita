@@ -1,4 +1,4 @@
-﻿/**
+/**
  * queries.js - SQL builders para o estudo PSAI/SAI Nov/2025 - Mar/2026
  *
  * Versoes: 10.5A-11 a 10.6A-03
@@ -8,6 +8,9 @@
 const versao = require('../../src/core/versao');
 
 const VERSOES = ['10.5A-11', '10.5A-12', '10.6A-01', '10.6A-02', '10.6A-03'];
+
+/** SGD do gestor legado (ex-coordenacao) — fora dos totais do estudo */
+const SGD_GESTOR_EXCLUIDO = 1392773;
 
 const FILTRO_BASE = `sai_psai.nomeArea = 'Escrita' AND sai_psai.tipoSAI = 'NE'`;
 
@@ -20,7 +23,7 @@ const FILTRO_PRODUTO = `
   )`;
 
 const EQUIPE = [
-  { nome: 'Vitor Justino', sgd: 1392773, iu: 628 },
+  { nome: 'Gestor legado', sgd: 1392773, iu: 628 },
   { nome: 'Ana Ligia Passarelli', sgd: 902202, iu: 796 },
   { nome: 'Laiz Velho de Almeida', sgd: 241472, iu: 614 },
   { nome: 'Mateus Alves', sgd: 1116513, iu: 1010 },
@@ -139,7 +142,7 @@ function queryDatasVersao(nomeVersao) {
 }
 
 module.exports = {
-  VERSOES, EQUIPE,
+  VERSOES, EQUIPE, SGD_GESTOR_EXCLUIDO,
   queryEntradas, queryDescartes, queryPendentes, queryDefinicaoFlag,
   queryAtividades, queryTramitacoesPsai, queryDatasVersao
 };

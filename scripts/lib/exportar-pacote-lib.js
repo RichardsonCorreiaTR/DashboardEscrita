@@ -6,7 +6,8 @@ const path = require('path');
 
 const SHARED_JS = [
   'format-utils.js', 'metas-config.js', 'equipes-mensal.js', 'equipes-detalhe.js',
-  'equipes-ne-definicao.js', 'equipes-conclusao-pontos.js'
+  'equipes-ne-definicao.js', 'equipes-conclusao-pontos.js',
+  'nes-definicao-grafico.js', 'nes-definicao-tabela.js'
 ];
 
 const BACKEND_CORE = [
@@ -141,6 +142,15 @@ function exportarPacote(root, slug, opts) {
   copiarBackendMetas(root, dest);
   fs.mkdirSync(path.join(dest, 'data/cache'), { recursive: true });
   fs.writeFileSync(path.join(dest, 'data/cache/metas-equipe.json'), JSON.stringify(cache, null, 2));
+  const neCacheSrc = path.join(root, 'data/nes-definicao-cache.json');
+  if (fs.existsSync(neCacheSrc)) {
+    const neRaw = JSON.parse(fs.readFileSync(neCacheSrc, 'utf8'));
+    const neFiltrado = {
+      ...neRaw,
+      por_analista: { [slug]: (neRaw.por_analista && neRaw.por_analista[slug]) || {} }
+    };
+    fs.writeFileSync(path.join(dest, 'data/nes-definicao-cache.json'), JSON.stringify(neFiltrado));
+  }
   fs.writeFileSync(path.join(dest, '.standalone'), '');
   const ref = (opts && opts.referencia) || new Date().toISOString().slice(0, 7);
   fs.writeFileSync(path.join(dest, 'LEIA-ME.txt'), textoLeiaMe(ref, user));

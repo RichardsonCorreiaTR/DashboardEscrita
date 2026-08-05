@@ -95,6 +95,7 @@ const MetasConfig = (() => {
         'Multiplos ciclos por PSAI sao contados individualmente'
       ]
     },
+    'indice-retornos-ne': { formula: 'Indice = SUM(Qtde Tramite) / COUNT(PSAIs NE) no mes', considerado: ['Retornos por complemento ou alteracao de definicao | Meta: <= 0,50', 'Fonte: planilha de acompanhamento (coluna Qtde Tramite)'] },
     'indice-retornos-sal': { formula: 'Indice = SUM(Qtde Tramite) / COUNT(PSAIs SAL) no mes', considerado: ['Retornos por complemento ou alteracao de definicao | Meta: <= 1,00', 'Fonte: planilha de acompanhamento (coluna Qtde Tramite)'] },
     'indice-retornos-sail-sam': { formula: 'Indice = SUM(Qtde Tramite) / COUNT(PSAIs SAIL+SAM) no mes', considerado: ['Retornos por complemento ou alteracao de definicao | Meta: <= 1,50', 'Fonte: planilha de acompanhamento (coluna Qtde Tramite)'] }
   };
@@ -160,6 +161,7 @@ const MetasConfig = (() => {
     'gerar-sai-ne-sal-3d': 'Gerar SAI NE',
     'gerar-sai-sal-5d': 'Gerar SAI SAL',
     'gerar-sai-sail-sam-7d': 'Gerar SAI SAIL/SAM',
+    'indice-retornos-ne': 'Retornos NE',
     'indice-retornos-sal': 'Retornos SAL',
     'indice-retornos-sail-sam': 'Retornos SAIL/SAM'
   };
@@ -213,9 +215,10 @@ const MetasConfig = (() => {
     'indice-revisoes-sam-esc': { titulo: 'SAM Escrita',  meta: '\u2264 0,50' }
   };
 
-  const GRUPO_RETORNOS_IDS = ['indice-retornos-sal', 'indice-retornos-sail-sam'];
+  const GRUPO_RETORNOS_IDS = ['indice-retornos-ne', 'indice-retornos-sal', 'indice-retornos-sail-sam'];
   const GRUPO_RETORNOS_META = {
-    'indice-retornos-sal':      { titulo: 'SAL',       meta: '\u2264 1,00' },
+    'indice-retornos-ne':       { titulo: 'NE',         meta: '\u2264 0,50' },
+    'indice-retornos-sal':      { titulo: 'SAL',        meta: '\u2264 1,00' },
     'indice-retornos-sail-sam': { titulo: 'SAIL / SAM', meta: '\u2264 1,50' }
   };
 
@@ -280,8 +283,14 @@ const MetasConfig = (() => {
   }
 
   function renderConteudoGrupoRetornos(subIds) {
+    const bloco = (l, v) => '<div class="eq-meta__bloco"><span class="eq-meta__bloco-label">' + l +
+      '</span><span class="eq-meta__bloco-valor">' + v + '</span></div>';
     const header = '<div class="eq-meta"><h3 class="eq-meta__titulo">Controle de Retornos</h3>' +
-      '<p class="eq-meta__detalhe">Retornos por complemento ou altera\u00e7\u00e3o de defini\u00e7\u00e3o. \u00cdndice = SUM(Qtde Tr\u00e2mite) / COUNT(PSAIs) por m\u00eas.</p></div>';
+      '<p class="eq-meta__detalhe">Retornos por complemento ou altera\u00e7\u00e3o de defini\u00e7\u00e3o. \u00cdndice = SUM(Qtde Tr\u00e2mite) / COUNT(PSAIs) por m\u00eas.</p>' +
+      '<div class="eq-meta__info">' +
+      bloco('Valor esperado', 'NE \u2264 0,50 | SAL \u2264 1,00 | SAIL/SAM \u2264 1,50') +
+      bloco('Fonte', 'Planilha de acompanhamento (coluna Qtde Tr\u00e2mite)') +
+      '</div></div>';
     const subtipos = subIds.map(id => {
       const cfg = GRUPO_RETORNOS_META[id] || { titulo: id, meta: '' };
       return '<div class="eq-ctrl-rev__subtipo">' +

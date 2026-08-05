@@ -426,7 +426,7 @@
   [1] URGENTE - ESTA SEMANA
   ─────────────────────────
 
-  a) Reuniao Vitor + Sabrina + Ana Paula + Jerusa + Ana Ligia:
+  a) Reuniao Richardson + Sabrina + Ana Paula + Jerusa + Ana Ligia:
      - Mapear ownership do cluster IRRF/Transportador (7 PSAIs!)
      - Ana Ligia + Jerusa: alinhar sobre campo Dependentes (128698 vs 105827)
      - Garantir que DEV da 128909 saiba que 128834 ja foi liberada
@@ -456,7 +456,7 @@
   [3] ESTRUTURAL
   ──────────────
 
-  g) Ritual semanal 15min entre Vitor e Sabrina para sincronizar PSAIs/SAIs
+  g) Ritual semanal 15min entre Richardson e Sabrina para sincronizar PSAIs/SAIs
   h) Antes de tramitar PSAI, verificar se ha outra PSAI do mesmo tema/codigo
   i) Compartilhar artefatos gerados com IA entre os times (Talita ja gera .md)
   j) Para PSAIs que mexem no Extrator DIRF: designar UM responsavel tecnico 

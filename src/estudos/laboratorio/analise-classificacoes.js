@@ -16,24 +16,22 @@ const PESO_COMPLEX = { trivial: 1, baixa: 2, media: 3, alta: 4, sistemica: 5 };
 const PESO_RISCO = { baixo: 1, medio: 2, alto: 3, critico: 4 };
 
 const LABELS_AREA = {
-  motor_calculo: 'Motor de Calculo', api_esocial: 'eSocial',
-  integracao_contabil: 'Integ. Contabil', processamento_lote: 'Proc. em Lote',
-  relatorio: 'Relatorios', relatorios: 'Relatorios',
-  importacao_exportacao: 'Import/Export', parametrizacao: 'Parametrizacao',
-  interface_web: 'Interface Web', interface_usuario: 'Interface',
-  banco_dados: 'Banco de Dados', autenticacao: 'Autenticacao',
-  cadastros: 'Cadastros', seguranca: 'Seguranca',
-  obrigacoes_acessorias: 'Obrig. Acessorias', beneficios: 'Beneficios',
-  sem_classificacao: 'Sem classif.'
+  obrigacoes_acessorias: 'Obrig. Acessorias', impostos_tributos: 'Impostos/Tributos',
+  gps_inss: 'GPS/INSS', darf_recolhimento: 'DARF/Recolhimento',
+  lancamento: 'Lancamento', calculo_apuracao: 'Calculo/Apuracao',
+  importacao_integracao: 'Importacao/Integracao',
+  relatorios: 'Relatorios', relatorio: 'Relatorios',
+  parametrizacao: 'Parametrizacao', infraestrutura: 'Infraestrutura',
+  outros: 'Outros', sem_classificacao: 'Sem classif.'
 };
 
 let _cache = null;
 
 function carregar() {
   if (_cache) return _cache;
-  if (!fs.existsSync(CONTEXTO_PATH)) return null;
-
-  const porPsai = JSON.parse(fs.readFileSync(CONTEXTO_PATH, 'utf-8')).por_psai || {};
+  if (!fs.existsSync(IA_DIR)) return null;
+  const porPsai = fs.existsSync(CONTEXTO_PATH)
+    ? (JSON.parse(fs.readFileSync(CONTEXTO_PATH, 'utf-8')).por_psai || {}) : {};
   const files = fs.readdirSync(IA_DIR);
   const versoes = {};
 

@@ -13,6 +13,7 @@ const planilha = require('../../core/planilha-escrita');
 const cruzamento = require('../../core/planilha-cruzamento');
 const retornos = require('./retornos-planilha');
 const pontosCalc = require('./pontos-calculador');
+const pontosCredito = require('./pontos-credito');
 const tempoSalCalc = require('./tempo-sal-calculador');
 const descartesCalc = require('./descartes-calculador');
 const ssShared = require('../../core/ss-respondidas-shared');
@@ -177,9 +178,10 @@ async function buscarDados(analistas) {
     const grouped = pontosCalc.agruparPontosGerados(sgdRows, a.senioridade, cargoMap);
     pontosGeradosMap[a['i-usuarios']] = grouped[a['codigo-sgd']] || {};
   });
+  const pontosCred = pontosCredito.aplicarNasRows(pontosRaw);
   return {
     revCtrl: { def: anual.agruparControleRevisoes(revDef), ger: anual.agruparControleRevisoes(revGer) },
-    pontos: pontosCalc.agruparPontosDb(pontosRaw, cargoMap),
+    pontos: pontosCalc.agruparPontosDb(pontosCred, cargoMap),
     pontosGerados: pontosGeradosMap,
     psaisDefinidas: pontosCalc.agruparPontosDb(psaisDefRaw, cargoMap),
     tempoGer: anual.agrupar(tempoGer),
@@ -225,9 +227,10 @@ async function buscarDadosAnalista(a) {
   const tMedSal = tMedSalRaw.map(r => ({ ...r, nivel: nivelMap[r.i_sai] || null }));
   const cargoMapLocal = {};
   cargoMapLocal[sgd] = a.senioridade;
+  const pontosCred = await pontosCredito.mesclarPontosAnalista(qe, pontosRaw, sgd, ANO);
   return {
     revCtrl: { def: anual.agruparControleRevisoes(revDef), ger: anual.agruparControleRevisoes(revGer) },
-    pontos: pontosCalc.agruparPontosDbAnalista(pontosRaw, a.senioridade),
+    pontos: pontosCalc.agruparPontosDbAnalista(pontosCred, a.senioridade),
     pontosGerados: { [uid]: pontosCalc.agruparPontosGerados(pontosGeradosRaw, a.senioridade, buildCargoMapGlobal())[sgd] || {} },
     psaisDefinidas: pontosCalc.agruparPontosDb(psaisDefRaw, cargoMapLocal),
     tempoMedioSal: tempoSalCalc.agruparTempoSal(tMedSal),
@@ -248,7 +251,9 @@ function montarResposta(a, dados, metasJson) {
 }
 
 async function detalheRetornos(a, metaId, mes) {
-  const tipos = metaId === 'indice-retornos-sal' ? ['SAL'] : ['SAIL', 'SAM'];
+  const tipos = metaId === 'indice-retornos-ne' ? ['NE']
+    : metaId === 'indice-retornos-sal' ? ['SAL']
+    : ['SAIL', 'SAM'];
   const sais = await planilha.obterSaisAnalista(mes, a);
   const vistos = new Set();
   return sais
@@ -268,21 +273,7 @@ async function buscarDetalhe(a, metaId, mes) {
   // Ambos usam codigo-sgd: psai.i_responsaveis (analista) e sai.i_usuarios (especialista) = codigo-sgd
   if (metaId.startsWith('indice-revisoes')) return qe.executar(detalhe.detalheRevisoes(sgd, ANO, mes, isEsp, metaId));
   if (metaId === 'pontos-definicao') {
-    const rows = await qe.executar(detalhe.detalhePontos(sgd, ANO, mes));
-    return rows.map(r => {
-      const ov = pontosCalc.getOverrides()[String(r.i_sai)];
-      const nivelChave = ov ? ov.chave : String(r.nivel_alteracao || 1);
-      const pontuacao = pontosCalc.pontosSai(r.tipoSAI, nivelChave, a.senioridade);
-      return {
-        i_sai: r.i_sai, tipoSAI: r.tipoSAI, CadastroSAI: r.CadastroSAI,
-        nivel: ov ? ov.nivel + ' \u270F' : (pontosCalc.nivelDbLabel(r.nivel_alteracao) || 'N\u00e3o definido'),
-        nivel_alteracao: r.nivel_alteracao,
-        nivel_inferido: !r.nivel_alteracao && !ov,
-        pontos_fallback: false,
-        pontuacao,
-        override: !!ov
-      };
-    });
+    return pontosCredito.detalhePontosComCredito(qe, detalhe, a, ANO, mes);
   }
   if (metaId.startsWith('gerar-sai')) {
     const tipos = metaId === 'gerar-sai-sal-5d' ? ['SAL']
@@ -311,20 +302,7 @@ async function buscarDetalhe(a, metaId, mes) {
     }));
   }
   if (metaId === 'sais-definidas-esp') {
-    const rows = await qe.executar(detalhe.detalhePontos(sgd, ANO, mes));
-    return rows.map(r => {
-      const ov = pontosCalc.getOverrides()[String(r.i_sai)];
-      const nivelChave = ov ? ov.chave : String(r.nivel_alteracao || 1);
-      const pontuacao = pontosCalc.pontosSai(r.tipoSAI, nivelChave, a.senioridade);
-      return {
-        i_sai: r.i_sai, tipoSAI: r.tipoSAI, CadastroSAI: r.CadastroSAI,
-        nivel: ov ? ov.nivel + ' \u270F' : (pontosCalc.nivelDbLabel(r.nivel_alteracao) || 'N\u00e3o definido'),
-        nivel_alteracao: r.nivel_alteracao,
-        nivel_inferido: !r.nivel_alteracao && !ov,
-        pontuacao,
-        override: !!ov
-      };
-    });
+    return pontosCredito.detalhePontosComCredito(qe, detalhe, a, ANO, mes);
   }
   if (metaId === 'pct-descartes') {
     const [analisadas, descartadas] = await Promise.all([
@@ -345,18 +323,7 @@ async function buscarDetalhe(a, metaId, mes) {
   if (metaId === 'respostas-ss-3d') return carregarSsDetalhe(sgd, mes);
   if (metaId.startsWith('indice-retornos')) return detalheRetornos(a, metaId, mes);
   if (metaId === 'pontos-atividade-principal') {
-    const rows = await qe.executar(detalhe.detalhePontos(sgd, ANO, mes));
-    return rows.map(r => {
-      const ov = pontosCalc.getOverrides()[String(r.i_sai)];
-      const nivelChave = ov ? ov.chave : String(r.nivel_alteracao || 1);
-      const pontuacao = pontosCalc.pontosSai(r.tipoSAI, nivelChave, a.senioridade);
-      return {
-        i_sai: r.i_sai, tipoSAI: r.tipoSAI, CadastroSAI: r.CadastroSAI,
-        nivel: ov ? ov.nivel + ' \u270F' : (pontosCalc.nivelDbLabel(r.nivel_alteracao) || 'N\u00e3o definido'),
-        nivel_alteracao: r.nivel_alteracao, nivel_inferido: !r.nivel_alteracao && !ov,
-        pontuacao, override: !!ov
-      };
-    });
+    return pontosCredito.detalhePontosComCredito(qe, detalhe, a, ANO, mes);
   }
   return [];
 }

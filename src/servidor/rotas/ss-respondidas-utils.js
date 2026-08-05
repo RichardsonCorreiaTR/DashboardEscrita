@@ -52,6 +52,7 @@ function mapearRegistros(rows, mapa) {
       nome: info.nome,
       senioridade: info.senioridade,
       mes: r.mes,
+      modulo: r.modulo || 'Sem módulo',
       entrada: r.entrada,
       data_resposta: r.data_resposta,
       dias_corridos: r.dias_corridos,

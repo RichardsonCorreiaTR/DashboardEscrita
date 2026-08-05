@@ -104,7 +104,8 @@ const EquipesMensal = (() => {
       { label: 'Meta', render: () => metaValor + '%' }
     ];
     if (id.startsWith('indice-retornos')) {
-      const metaVal = id === 'indice-retornos-sal' ? '1,00' : '1,50';
+      const metaVal = id === 'indice-retornos-sail-sam' ? '1,50'
+        : id === 'indice-retornos-ne' ? '0,50' : '1,00';
       return [
         { label: 'Indice', render: d => fmtDecimal(d.indice) },
         { label: 'PSAIs', render: d => d.total_psais },

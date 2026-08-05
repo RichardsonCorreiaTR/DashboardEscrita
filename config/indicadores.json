@@ -114,7 +114,7 @@
       "diretriz": null,
       "cache-ttl-ms": 1800000,
       "status": "ativo",
-      "_nota": "Metas mensais pendentes — aguardando indices do coordenador"
+      "_nota": "Metas mensais % Tempo SAM/SAIL (Jan-Dez) cadastradas no indicador"
     },
     {
       "id": "tempo-trabalho-analise",

@@ -17,7 +17,7 @@ const cache = require('../core/cache');
 const { validarResultado } = require('../core/validator');
 
 /** Incrementar ao mudar estrutura de detalhes (ex.: nomeArea em Ambas). */
-const CACHE_SCHEMA = 3;
+const CACHE_SCHEMA = 6;
 
 /** @type {Map<string, Object>} Mapa de indicadores registrados */
 const registro = new Map();

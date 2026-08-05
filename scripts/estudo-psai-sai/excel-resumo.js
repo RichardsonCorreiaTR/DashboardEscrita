@@ -99,7 +99,7 @@ function criarAbaResumo(wb, analise) {
   const detalheOrdenado = [...analise.detalheAV]
     .sort((a, b) => a.analista.localeCompare(b.analista) || (a.versao || '').localeCompare(b.versao || ''));
   for (const d of detalheOrdenado) {
-    if (d.analista === 'Vitor Justino') continue;
+    if (d.analista === 'Gestor legado') continue;
     const media = d.nes > 0 ? Math.round(d.minutos / d.nes) : 0;
     aplicarLinha(ws, row, [
       d.analista, d.versao || '-', d.nes, d.sais, d.descartadas,

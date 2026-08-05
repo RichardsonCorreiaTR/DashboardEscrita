@@ -108,7 +108,9 @@ gaGerenciadorAtividades.i_usuarios = CAST(UDUSUARIOS.CODIGO_SGD AS INT)
   - Ausencias = Feriado, Ferias, Folga, Saida Particular, Afastamento
   - Encoding: `CAST(NomeAtividade AS BINARY)` para contornar Latin-1 do ODBC
 - **Pontos definicao**: `UP.SAI_PSAI` + `bethadba.sai` por `psai.i_responsaveis` = `codigo-sgd`
+- **Credito de SAI entre analistas**: `config/pontos-overrides.json` → array `creditos` (de_slug + para_slug, i_sai, mes/ano). **Compartilha** pontos+qtd (as duas contam) em `pontos-definicao` / `pontos-atividade-principal`; nao move tempos nem acomp. Persistente e copiado no pacote filho.
 - **PSAIs definidas (sem SAI)**: `UP.SAI_PSAI` com `i_sai=0` e `i_psai_situacoes IN (2, 17)` — Analisada (2) ou Definida (17). Exclui A aprovar (14) e demais situacoes.
+- **Acomp. SAMs/SAILs**: exclui PSAI situacao **A aprovar (14)** em todas as queries (sem SAI util / tempo zero). SAL nao aplica este corte.
 - **Indice revisoes**: `sai_revisoes` + `sai_revisoes_motivos` (motivos A/C: 1,2,4,5)
   - Considerar **somente** motivo 1 (Alteracao na definicao) e motivo 2 (Complemento na definicao)
   - **NAO considerar** motivo 4 (Alteracao motivo externo), motivo 5 (Complemento motivo externo), Formatacao (F=7), Outros (O=8), motivo 6 nem E (3, inativo)
@@ -130,6 +132,11 @@ gaGerenciadorAtividades.i_usuarios = CAST(UDUSUARIOS.CODIGO_SGD AS INT)
   - Conta apenas o PRIMEIRO tramite do coordenador apos cada sit=2
   - Multiplos ciclos por PSAI sao contados individualmente
   - Em NE Escrita 2026 sit=3 NAO e usado; sit=2 e o trigger real
+
+### Casamento de nomes com a planilha de acompanhamento
+- A planilha traz `responsavel_psai` com **primeiro nome + sobrenome curto** (ex.: "Vinicyos Maguns", "Barbara Teixeira"), que nem sempre bate com `nome` do `config/equipe.json`
+- Regra em `src/core/planilha-escrita.js`: primeiro nome (do apelido OU do nome) deve bater; **se o primeiro nome se repete na equipe** (Rafaela Ribeiro/Sampaio, Barbara Leite/Melo), exige tambem um sobrenome em comum
+- Sem essa regra as homonimas somavam os dados uma da outra (retornos, pontos gerados, niveis)
 
 ### Periodo das metas
 - Metas sao por **mes calendario** (jan-dez), NAO por versao

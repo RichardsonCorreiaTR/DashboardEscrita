@@ -36,6 +36,8 @@ const rotasFeedback = require('./rotas/feedback-1on1');
 const rotasNesDefinicao = require('./rotas/nes-definicao');
 const rotasAcompSals = require('./rotas/acomp-sals');
 const rotasAcompSalsTempo = require('./rotas/acomp-sals-tempo');
+const rotasAcompSams = require('./rotas/acomp-sams');
+const rotasAcompSamsTempo = require('./rotas/acomp-sams-tempo');
 const rotasAcompNesTempo = require('./rotas/acomp-nes-tempo');
 
 const PORT = process.env.PORT || 4000;
@@ -120,6 +122,8 @@ app.use('/api', rotasFeedback);
 app.use('/api', rotasNesDefinicao);
 app.use('/api', rotasAcompSals);
 app.use('/api', rotasAcompSalsTempo);
+app.use('/api', rotasAcompSams);
+app.use('/api', rotasAcompSamsTempo);
 app.use('/api', rotasAcompNesTempo);
 
 app.get('/api/saude', (req, res) => {

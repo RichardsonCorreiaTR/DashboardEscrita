@@ -232,6 +232,7 @@ function calcularMetas(analista, dados, metaIds, ano) {
       dados.descartesDataSit?.[sgd],
       extrairQtdMes(dados.analisesSemSai?.[sgd])
     ) },
+    'indice-retornos-ne':       { mensal: mensalRetornos(dados.retornos?.[sgd]?.ne, 0.50) },
     'indice-retornos-sal':      { mensal: mensalRetornos(dados.retornos?.[sgd]?.sal, 1.00) },
     'indice-retornos-sail-sam': { mensal: mensalRetornos(dados.retornos?.[sgd]?.sailSam, 1.50) }
   };

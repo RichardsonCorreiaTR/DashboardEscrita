@@ -1,0 +1,61 @@
+{
+  "versoes": {
+    "10.6A-06": {
+      "total": 68,
+      "auto": 57,
+      "pendentes_ia": 11,
+      "classificados_ia": 0,
+      "status": "pendente",
+      "preparado_em": "2026-08-04T12:11:51.829Z"
+    },
+    "10.6A-01": {
+      "total": 64,
+      "auto": 51,
+      "pendentes_ia": 13,
+      "classificados_ia": 0,
+      "status": "pendente",
+      "preparado_em": "2026-08-04T12:08:44.474Z"
+    },
+    "10.6A-02": {
+      "total": 72,
+      "auto": 56,
+      "pendentes_ia": 16,
+      "classificados_ia": 0,
+      "status": "pendente",
+      "preparado_em": "2026-08-04T12:09:24.896Z"
+    },
+    "10.6A-03": {
+      "total": 69,
+      "auto": 50,
+      "pendentes_ia": 19,
+      "classificados_ia": 0,
+      "status": "pendente",
+      "preparado_em": "2026-08-04T12:09:58.551Z"
+    },
+    "10.6A-04": {
+      "total": 81,
+      "auto": 68,
+      "pendentes_ia": 13,
+      "classificados_ia": 0,
+      "status": "pendente",
+      "preparado_em": "2026-08-04T12:10:39.726Z"
+    },
+    "10.6A-05": {
+      "total": 68,
+      "auto": 57,
+      "pendentes_ia": 11,
+      "classificados_ia": 0,
+      "status": "pendente",
+      "preparado_em": "2026-08-04T12:11:15.493Z"
+    },
+    "10.6A-07": {
+      "total": 81,
+      "auto": 62,
+      "pendentes_ia": 19,
+      "classificados_ia": 0,
+      "status": "pendente",
+      "preparado_em": "2026-08-04T12:12:33.796Z"
+    }
+  },
+  "atualizado_em": "2026-08-04T12:12:33.796Z"
+}

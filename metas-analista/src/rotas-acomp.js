@@ -1,5 +1,5 @@
 /**
- * rotas-acomp.js - API Acomp. NEs/SALs somente do colaborador logado
+ * rotas-acomp.js - API Acomp. NEs/SALs/SAMs somente do colaborador logado
  */
 const { Router } = require('express');
 const helpers = require('./acomp-helpers');
@@ -19,27 +19,38 @@ function criarRotas(slugFixo) {
     return colab;
   }
 
-  router.get('/acomp-sals/tempo-descarte', async (req, res) => {
-    const colab = exigirSelf(req, res);
-    if (!colab) return;
-    try {
-      res.json(await helpers.tempoDescarte(colab.slug, Number(req.query.ano) || new Date().getFullYear()));
-    } catch (err) { res.status(500).json({ erro: err.message }); }
-  });
+  function rotaDescarte(tipoSql) {
+    return async (req, res) => {
+      const colab = exigirSelf(req, res);
+      if (!colab) return;
+      try {
+        res.json(await helpers.tempoDescarte(
+          colab.slug, Number(req.query.ano) || new Date().getFullYear(), tipoSql
+        ));
+      } catch (err) { res.status(500).json({ erro: err.message }); }
+    };
+  }
 
-  router.get('/acomp-sals/tempo-detalhado', async (req, res) => {
-    const colab = exigirSelf(req, res);
-    if (!colab) return;
-    if (req.query.filtros === '1') {
-      return res.json({ filtros: helpers.filtrosSelf(colab), linhas: [] });
-    }
-    const ano = Number(req.query.ano) || new Date().getFullYear();
-    const nivel = req.query.nivel && req.query.nivel !== 'todos' ? Number(req.query.nivel) : null;
-    try {
-      const linhas = await helpers.linhasSal(colab.slug, ano, nivel);
-      res.json({ ano, filtros: helpers.filtrosSelf(colab), linhas });
-    } catch (err) { res.status(500).json({ erro: err.message }); }
-  });
+  function rotaDetalhe(tipoSql) {
+    return async (req, res) => {
+      const colab = exigirSelf(req, res);
+      if (!colab) return;
+      if (req.query.filtros === '1') {
+        return res.json({ filtros: helpers.filtrosSelf(colab), linhas: [] });
+      }
+      const ano = Number(req.query.ano) || new Date().getFullYear();
+      const nivel = req.query.nivel && req.query.nivel !== 'todos' ? Number(req.query.nivel) : null;
+      try {
+        const linhas = await helpers.linhasTipo(colab.slug, ano, nivel, tipoSql);
+        res.json({ ano, filtros: helpers.filtrosSelf(colab), linhas });
+      } catch (err) { res.status(500).json({ erro: err.message }); }
+    };
+  }
+
+  router.get('/acomp-sals/tempo-descarte', rotaDescarte(helpers.TIPO_SAL));
+  router.get('/acomp-sals/tempo-detalhado', rotaDetalhe(helpers.TIPO_SAL));
+  router.get('/acomp-sams/tempo-descarte', rotaDescarte(helpers.TIPO_SAM));
+  router.get('/acomp-sams/tempo-detalhado', rotaDetalhe(helpers.TIPO_SAM));
 
   router.get('/acomp-nes/tempo-detalhado', async (req, res) => {
     const colab = exigirSelf(req, res);

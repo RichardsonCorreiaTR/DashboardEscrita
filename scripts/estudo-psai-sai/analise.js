@@ -105,7 +105,7 @@ function consolidarAnalista(detalhe) {
     m.sais += d.sais; m.descartadas += d.descartadas; m.pendentes += d.pendentes;
   }
   return Object.values(mapa)
-    .filter(a => a.analista !== 'Vitor Justino')
+    .filter(a => a.analista !== 'Gestor legado')
     .map(a => ({ ...a, mediaPorNE: a.nes > 0 ? Math.round(a.minutos / a.nes) : 0 }))
     .sort((a, b) => b.minutos - a.minutos);
 }

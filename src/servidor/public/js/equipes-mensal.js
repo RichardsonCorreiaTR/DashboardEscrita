@@ -116,7 +116,8 @@ const EquipesMensal = (() => {
       const tr = dados.reduce((s, d) => s + (d.total_retornos || 0), 0);
       if (!tp) return null;
       const idx = Math.round(tr / tp * 100) / 100;
-      const meta = metaValor || (id === 'indice-retornos-sal' ? 1.00 : 1.50);
+      const meta = metaValor || (id === 'indice-retornos-sail-sam' ? 1.50
+        : id === 'indice-retornos-ne' ? 0.50 : 1.00);
       return { texto: fmtDecimal(idx), cor: idx <= meta ? corOk : corNok };
     }
     if (id === 'tempo-medio-sal') {
@@ -171,7 +172,7 @@ const EquipesMensal = (() => {
     'indice-revisoes-sal': 'SAL', 'indice-revisoes-ne': 'NE',
     'indice-revisoes-sail': 'SAIL', 'indice-revisoes-sam-imp': 'SAM Imp',
     'indice-revisoes-sam-esc': 'SAM Esc',
-    'indice-retornos-sal': 'SAL', 'indice-retornos-sail-sam': 'SAIL/SAM',
+    'indice-retornos-ne': 'NE', 'indice-retornos-sal': 'SAL', 'indice-retornos-sail-sam': 'SAIL/SAM',
     'gerar-sai-ne-sal-3d': 'NE',
     'gerar-sai-sal-5d': 'SAL',
     'gerar-sai-sail-sam-7d': 'SAIL/SAM',
@@ -185,7 +186,7 @@ const EquipesMensal = (() => {
     'indice-revisoes-sal': '\u2264 0,50', 'indice-revisoes-ne': '\u2264 0,50',
     'indice-revisoes-sail': '\u2264 1,15', 'indice-revisoes-sam-imp': '\u2264 0,80',
     'indice-revisoes-sam-esc': '\u2264 0,50',
-    'indice-retornos-sal': '\u2264 1,00', 'indice-retornos-sail-sam': '\u2264 1,50',
+    'indice-retornos-ne': '\u2264 0,50', 'indice-retornos-sal': '\u2264 1,00', 'indice-retornos-sail-sam': '\u2264 1,50',
     'respostas-ss-3d': '\u2265 95%',
     'gerar-sai-ne-sal-3d': '\u2264 3 d.u.',
     'gerar-sai-sal-5d': '\u2264 5 d.u.',
@@ -193,7 +194,7 @@ const EquipesMensal = (() => {
   };
 
   const ZERO_DEC_IDS = new Set(['indice-revisoes-sal','indice-revisoes-ne','indice-revisoes-sail',
-    'indice-revisoes-sam-imp','indice-revisoes-sam-esc','indice-retornos-sal','indice-retornos-sail-sam']);
+    'indice-revisoes-sam-imp','indice-revisoes-sam-esc','indice-retornos-ne','indice-retornos-sal','indice-retornos-sail-sam']);
 
   function renderCard(id, d, metas, valorMap, curto) {
     const resumo = metas && metas[id]
@@ -248,7 +249,7 @@ const EquipesMensal = (() => {
     const used = new Set([...IDS_TOT_PONTOS, ...IDS_TOT_TEMPOS, ...IDS_TOT_DESCARTES, ...IDS_TOT_DIVERSOS,
       ...IDS_TOT_GERACAO,
       'indice-revisoes-sal', 'indice-revisoes-ne', 'indice-revisoes-sail', 'indice-revisoes-sam-imp', 'indice-revisoes-sam-esc',
-      'indice-retornos-sal', 'indice-retornos-sail-sam']);
+      'indice-retornos-ne', 'indice-retornos-sal', 'indice-retornos-sail-sam']);
     const pontos = pickTotIds(todos, IDS_TOT_PONTOS);
     const revisoes = todos.filter(([id]) => id.startsWith('indice-revisoes'));
     const retornos = todos.filter(([id]) => id.startsWith('indice-retornos'));
@@ -289,7 +290,8 @@ const EquipesMensal = (() => {
     const totalRet = dados.reduce((s, d) => s + (d.total_retornos || 0), 0);
     const indiceAcum = totalPsais > 0 ? Math.round((totalRet / totalPsais) * 100) / 100 : 0;
     const atingidos = dados.filter(d => d.atingida).length;
-    const metaNum = metaValor || (metaId === 'indice-retornos-sal' ? 1.00 : 1.50);
+    const metaNum = metaValor || (metaId === 'indice-retornos-sail-sam' ? 1.50
+      : metaId === 'indice-retornos-ne' ? 0.50 : 1.00);
     const ok = indiceAcum <= metaNum;
     const cor = ok ? 'var(--verde)' : 'var(--vermelho)';
     const corAt = atingidos === dados.length ? 'var(--verde)' : atingidos > 0 ? 'var(--amarelo)' : 'var(--vermelho)';
@@ -753,7 +755,8 @@ const EquipesMensal = (() => {
       { label: 'SAM (min)', render: d => d.media_sam != null ? d.media_sam + ' min' : '-' }
     ];
     if (id.startsWith('indice-retornos')) {
-      const metaVal = id === 'indice-retornos-sal' ? '1,00' : '1,50';
+      const metaVal = id === 'indice-retornos-sail-sam' ? '1,50'
+        : id === 'indice-retornos-ne' ? '0,50' : '1,00';
       return [
         { label: 'Indice', render: d => fmtDecimal(d.indice) },
         { label: 'PSAIs', render: d => d.total_psais },

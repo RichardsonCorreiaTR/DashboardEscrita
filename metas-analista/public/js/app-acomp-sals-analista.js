@@ -1,7 +1,10 @@
 /**
  * app-acomp-sals-analista.js - Resumo Tempo Descarte (somente o logado)
+ * CFG: window.ACOMP_CFG = { apiBase, label }
  */
 const AppAcompSalsAnalista = (() => {
+  const CFG = window.ACOMP_CFG || { apiBase: '/api/acomp-sals', label: 'SAL' };
+  const L = CFG.label;
   const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   const META_ATV = 0.20, META_DESC = 0.30;
   let _ano = new Date().getFullYear();
@@ -37,16 +40,16 @@ const AppAcompSalsAnalista = (() => {
     return '<div class="sal-card' + (stAtv.atingiu && stDsc.atingiu ? ' sal-card--ok' : '') + '">' +
       '<div class="sal-card__header"><span class="sal-card__nome">' + a.apelido + '</span>' +
       '<span class="sal-card__cargo">' + a.senioridade + '</span>' +
-      '<span class="sal-card__psais">' + a.total_psais + ' SALs · ' + a.total_descartadas + ' desc.</span></div>' +
-      linha('Tempo médio/SAL (−20%)', a.media_min, base && base.media_min, stAtv, META_ATV) +
-      linha('Tempo SALs descartadas (−30%)', a.tempo_total_descartadas, base && base.tempo_total_descartadas, stDsc, META_DESC) +
+      '<span class="sal-card__psais">' + a.total_psais + ' ' + L + 's · ' + a.total_descartadas + ' desc.</span></div>' +
+      linha('Tempo médio/' + L + ' (−20%)', a.media_min, base && base.media_min, stAtv, META_ATV) +
+      linha('Tempo ' + L + 's descartadas (−30%)', a.tempo_total_descartadas, base && base.tempo_total_descartadas, stDsc, META_DESC) +
       '<div class="sal-card__detalhe"><button class="btn btn--sm btn--outline" id="btn-detalhe-mes">▾ Detalhe mensal</button></div>' +
       '<div id="sal-tabela-self" class="sal-tabela" style="display:none">' + renderTabela(a) + '</div></div>';
   }
 
   function renderTabela(a) {
     return '<table class="eq-tabela" style="margin-top:.75rem;font-size:.75rem">' +
-      '<thead><tr><th>Mês</th><th>SALs</th><th>Média/SAL</th><th>Descartadas</th><th>Tempo Desc.</th></tr></thead><tbody>' +
+      '<thead><tr><th>Mês</th><th>' + L + 's</th><th>Média</th><th>Descartadas</th><th>Tempo Desc.</th></tr></thead><tbody>' +
       MESES.map((mes, i) => {
         const m = i + 1;
         const av = a.mensal_ativas[m] || { tempo: 0, qtd: 0 };
@@ -63,7 +66,7 @@ const AppAcompSalsAnalista = (() => {
     const el = document.getElementById('sal-conteudo');
     el.innerHTML = '<div class="loading"><div class="loading__spinner"></div><span>Consultando banco...</span></div>';
     try {
-      const dados = await (await fetch('/api/acomp-sals/tempo-descarte?ano=' + _ano)).json();
+      const dados = await (await fetch(CFG.apiBase + '/tempo-descarte?ano=' + _ano)).json();
       if (dados.erro) throw new Error(dados.erro);
       const a = (dados.analistas || [])[0];
       const base = (dados.baseline || [])[0];

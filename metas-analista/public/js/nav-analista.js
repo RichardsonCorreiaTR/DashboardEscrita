@@ -6,16 +6,17 @@ const Nav = (() => {
   const PAGINAS = [
     { id: 'metas', href: '/metas.html', titulo: 'Minhas Metas', icone: '\u25CF' },
     {
-      id: 'acomp-sals', titulo: 'Acomp. SALs', icone: '\u25A1',
+      id: 'acompanhamentos', titulo: 'Acompanhamentos', icone: '\u25C7',
       sub: [
+        { tipo: 'header', titulo: 'SALs' },
         { id: 'sal-tempo-descarte', href: '/acomp-sals.html', titulo: 'Tempo Descarte' },
-        { id: 'sal-tempo-detalhe', href: '/acomp-sals-tempo.html', titulo: 'Tempo por SAL' }
-      ]
-    },
-    {
-      id: 'acomp-nes', titulo: 'Acomp. NEs', icone: '\u25C7',
-      sub: [
-        { id: 'nes-tempo-detalhe', href: '/acomp-nes-tempo.html', titulo: 'Tempo por NE' }
+        { id: 'sal-tempo-detalhe', href: '/acomp-sals-tempo.html', titulo: 'Tempo por SAL' },
+        { tipo: 'header', titulo: 'NEs' },
+        { id: 'nes-definicao', href: '/nes-definicao.html', titulo: 'NEs com Definição' },
+        { id: 'nes-tempo-detalhe', href: '/acomp-nes-tempo.html', titulo: 'Tempo por NE' },
+        { tipo: 'header', titulo: 'SAMs/SAILs' },
+        { id: 'sam-tempo-descarte', href: '/acomp-sams.html', titulo: 'Tempo Descarte' },
+        { id: 'sam-tempo-detalhe', href: '/acomp-sams-tempo.html', titulo: 'Tempo por SAM/SAIL' }
       ]
     }
   ];
@@ -25,12 +26,23 @@ const Nav = (() => {
     if (path === '/acomp-sals.html') return 'sal-tempo-descarte';
     if (path === '/acomp-sals-tempo.html') return 'sal-tempo-detalhe';
     if (path === '/acomp-nes-tempo.html') return 'nes-tempo-detalhe';
+    if (path === '/nes-definicao.html') return 'nes-definicao';
+    if (path === '/acomp-sams.html') return 'sam-tempo-descarte';
+    if (path === '/acomp-sams-tempo.html') return 'sam-tempo-detalhe';
     return 'metas';
   }
 
   function grupoAtivo(atual) {
     const p = PAGINAS.find(pg => pg.sub && pg.sub.some(s => s.id === atual));
     return p ? p.id : null;
+  }
+
+  function renderSub(s, atual) {
+    if (s.tipo === 'header') return '<li class="sidebar__subheader">' + s.titulo + '</li>';
+    return '<li><a href="' + s.href + '" class="sidebar__subitem' +
+      (s.id === atual ? ' sidebar__subitem--ativo' : '') + '"' +
+      (s.id === atual ? ' aria-current="page"' : '') + '>' +
+      '<span class="sidebar__subtexto">' + s.titulo + '</span></a></li>';
   }
 
   function renderItem(p, atual, aberto) {
@@ -43,12 +55,7 @@ const Nav = (() => {
         '<span class="sidebar__texto">' + p.titulo + '</span>' +
         '<span class="sidebar__seta" aria-hidden="true">\u25B8</span></a>' +
         '<ul class="sidebar__submenu" role="group">' +
-        p.sub.map(s =>
-          '<li><a href="' + s.href + '" class="sidebar__subitem' +
-          (s.id === atual ? ' sidebar__subitem--ativo' : '') + '"' +
-          (s.id === atual ? ' aria-current="page"' : '') + '>' +
-          '<span class="sidebar__subtexto">' + s.titulo + '</span></a></li>'
-        ).join('') +
+        p.sub.map(s => renderSub(s, atual)).join('') +
         '</ul></li>';
     }
     return '<li><a href="' + p.href + '" class="sidebar__item' +
@@ -105,7 +112,7 @@ const Nav = (() => {
       '<ul class="sidebar__menu">' +
         PAGINAS.map(p => renderItem(p, atual, aberto)).join('') +
       '</ul>' +
-      '<div class="sidebar__rodape">Portal do Analista v1.1</div>';
+      '<div class="sidebar__rodape">Portal do Analista v1.2</div>';
     ativarSubmenus(container);
     ativarToggleMobile(container);
   }

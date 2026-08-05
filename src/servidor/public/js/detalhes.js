@@ -175,96 +175,6 @@ const Detalhes = (() => {
     inicializarAbas(body);
   }
 
-  /** TEMPO CORRECAO */
-  function renderTempo(r, body) {
-    const d = r.detalhes;
-    const foco = d.tipo_foco || 'NE';
-    const pctBarra = Math.min(100, (r.valor / (r.meta || 1)) * 100);
-    const cor = r.status === 'verde' ? 'var(--verde)' : r.status === 'amarelo' ? 'var(--amarelo)' : 'var(--vermelho)';
-    const bk = d.breakdown_tipo || {};
-    const tiposHTML = Object.entries(bk).map(([t, q]) => infoBox(t, q)).join('');
-    const fm = v => v != null ? v.toLocaleString('pt-BR') : '0';
-    const dv = d.tempo_dev || {}; const ts = d.tempo_teste || {};
-    const pr = d.tempo_prep || {}; const sm = d.tempo_soma || {};
-    const par = d.tempo_paralelo || {};
-    const sais = d.sais || [];
-    const ehTipoFoco = (tipo, f) => (f === 'SAM/SAIL' ? (tipo === 'SAM' || tipo === 'SAIL') : tipo === f);
-    const saisFoco = sais.filter(s => ehTipoFoco(s.tipo, foco));
-    const saisOutras = sais.filter(s => !ehTipoFoco(s.tipo, foco));
-    const saisPar = d.sais_paralelo || [];
-    const colsDet = [...colsSaiPsai,
-      { label: 'Tipo', render: r => r.tipo || '--' },
-      { label: 'Via', render: r => r.via || '--' },
-      { label: 'Dev (min)', render: r => fm(r.dev) },
-      { label: 'Teste (min)', render: r => fm(r.teste) },
-      { label: 'Prep (min)', render: r => fm(r.prep) },
-      { label: 'Total (min)', render: r => `<strong>${fm(r.total)}</strong>` }
-    ];
-    const timeRows = [['Desenvolvimento',dv],['Teste',ts],['Preparacao',pr]].map(([n,c]) =>
-      `<tr><td style="padding:4px 8px;">${n}</td><td style="text-align:right;padding:4px 8px;">${fm(c.total)}</td><td style="text-align:right;padding:4px 8px;">${fm(c.ne)}</td></tr>`
-    ).join('');
-    const temParalelo = par.total > 0;
-    body.innerHTML = `
-      <div class="info-grid">
-        ${infoBox(`% Tempo ${foco}`, r.valor + '%')}
-        ${infoBox('Meta Mes', (r.meta != null ? r.meta : '--') + (r.meta != null ? '%' : ''))}
-        ${infoBox(`${foco}s`, d.total_sai_ne)}
-        ${infoBox(`${foco}s Internas`, d.total_sai_ne_internas ?? '--')}
-        ${infoBox('SAIs Liberadas', d.total_sai_liberada)}
-        ${infoBox('SAIs Paralelo', d.qtd_paralelo != null ? d.qtd_paralelo : '0')}
-        ${infoBox('Na Versao', d.qtd_versao != null ? d.qtd_versao : '--')}
-      </div>
-      <div style="margin:1rem 0;">
-        <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.3rem;">
-          <span>${foco}: ${r.valor}%</span><span>Meta: ${r.meta != null ? r.meta + '%' : '--'}</span>
-        </div>
-        <div style="background:#e2e8f0;border-radius:8px;height:24px;overflow:hidden;">
-          <div style="background:${cor};height:100%;width:${pctBarra}%;border-radius:8px;transition:width 0.5s;"></div>
-        </div>
-      </div>
-      <div style="background:var(--cor-fundo);padding:1rem;border-radius:8px;font-size:0.8rem;margin-top:0.8rem;">
-        <table style="width:100%;border-collapse:collapse;">
-          <tr style="border-bottom:1px solid var(--cor-borda);">
-            <th style="text-align:left;padding:4px 8px;">Componente</th>
-            <th style="text-align:right;padding:4px 8px;">Total (min)</th>
-            <th style="text-align:right;padding:4px 8px;">${foco} (min)</th>
-          </tr>
-          ${timeRows}
-          <tr style="border-top:1px solid var(--cor-borda);font-weight:600;">
-            <td style="padding:4px 8px;">Subtotal Liberadas</td>
-            <td style="text-align:right;padding:4px 8px;">${fm(d.tempo_liberadas)}</td>
-            <td style="text-align:right;padding:4px 8px;">${fm(sm.ne)}</td></tr>
-          ${temParalelo ? `
-          <tr style="color:#6366f1;">
-            <td style="padding:4px 8px;">Paralelo (Dev)</td>
-            <td style="text-align:right;padding:4px 8px;">${fm(par.dev)}</td>
-            <td style="text-align:right;padding:4px 8px;">--</td></tr>
-          <tr style="color:#6366f1;">
-            <td style="padding:4px 8px;">Paralelo (Teste+Prep)</td>
-            <td style="text-align:right;padding:4px 8px;">${fm(par.teste + par.prep)}</td>
-            <td style="text-align:right;padding:4px 8px;">--</td></tr>` : ''}
-          <tr style="border-top:2px solid var(--cor-borda);font-weight:700;">
-            <td style="padding:4px 8px;">TOTAL GERAL</td>
-            <td style="text-align:right;padding:4px 8px;">${fm(sm.total)}</td>
-            <td style="text-align:right;padding:4px 8px;">${fm(sm.ne)}</td></tr>
-        </table>
-        <div style="margin-top:0.6rem;"><strong>Formula:</strong> ${d.formula || '--'}</div>
-      </div>
-      <div style="margin-top:0.8rem;">
-        <div style="font-size:0.85rem;font-weight:600;margin-bottom:0.4rem;">SAIs Liberadas por Tipo</div>
-        <div class="info-grid">${tiposHTML}</div>
-      </div>
-      <h3 style="margin:1.2rem 0 0.5rem;font-size:0.95rem;">Detalhamento por SAI</h3>
-      ${abasHTML([
-        { id: 'tempo-ne', titulo: foco + 's', qtd: saisFoco.length, html: tbl(colsDet, saisFoco) },
-        { id: 'tempo-outras', titulo: 'Outras SAIs', qtd: saisOutras.length, html: tbl(colsDet, saisOutras) },
-        { id: 'tempo-paralelo', titulo: 'Paralelo', qtd: saisPar.length, html: tbl(colsDet, saisPar) },
-        { id: 'tempo-todas', titulo: 'Todas', qtd: sais.length + saisPar.length, html: tbl(colsDet, [...sais, ...saisPar]) }
-      ])}
-    `;
-    inicializarAbas(body);
-  }
-
   /** ENTRADAS NE */
   function renderEntradas(r, body) {
     const d = r.detalhes;
@@ -334,9 +244,15 @@ const Detalhes = (() => {
       'ne-95-dias': render95d,
       'idade-sal': render95d,
       'criticas-graves-5d': renderCriticas,
-      'tempo-correcao-ne': renderTempo,
-      'tempo-implementacao-sal': renderTempo,
-      'tempo-implementacao-sam-sail': renderTempo,
+      'tempo-correcao-ne': (r, body) => DetalhesTempo.render(r, body, {
+        colsSaiPsai, infoBox, abasHTML, tbl, fmtData, inicializarAbas
+      }),
+      'tempo-implementacao-sal': (r, body) => DetalhesTempo.render(r, body, {
+        colsSaiPsai, infoBox, abasHTML, tbl, fmtData, inicializarAbas
+      }),
+      'tempo-implementacao-sam-sail': (r, body) => DetalhesTempo.render(r, body, {
+        colsSaiPsai, infoBox, abasHTML, tbl, fmtData, inicializarAbas
+      }),
       'liberadas-sam-sail': (r, body) => DetalhesSamSail.renderLiberadas(r, body, {
         colsSaiPsai, infoBox, abasHTML, tbl, fmtData, inicializarAbas
       }),

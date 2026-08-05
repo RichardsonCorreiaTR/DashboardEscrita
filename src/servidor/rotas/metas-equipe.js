@@ -15,6 +15,7 @@ const { Router } = require('express');
 const path = require('path');
 const cacheMetas = require('../../core/cache-metas');
 const loader = require('../../indicadores/equipe/metas-loader');
+const { enriquecerRetornosMetas } = require('../../indicadores/equipe/metas-enriquecer-cache');
 
 const CONFIG_DIR = path.join(__dirname, '..', '..', '..', 'config');
 const EQUIP_PATH = path.join(CONFIG_DIR, 'equipe.json');
@@ -90,6 +91,18 @@ router.get('/metas-equipe', apenasCoord, async (req, res) => {
   }
 });
 
+async function responderMetas(res, a, base, fonte, atualizadoEm, aviso) {
+  const metasJson = readMetasEquipe();
+  let resp = loader.enriquecerSsMetas({ ...base }, a);
+  await enriquecerRetornosMetas(resp, a, metasJson);
+  if (fonte === 'cache' && resp.metas && resp.metas['indice-retornos-ne'] && !base.metas?.['indice-retornos-ne']) {
+    cacheMetas.salvar(a.slug, resp);
+  }
+  const payload = { ...resp, ano: loader.getAno(), _fonte: fonte, _atualizado_em: atualizadoEm };
+  if (aviso) payload._aviso = aviso;
+  return res.json(payload);
+}
+
 router.get('/metas-equipe/:slug', meuSlug, async (req, res) => {
   const a = getAnalistas().find(x => x.slug === req.params.slug);
   if (!a) return res.status(404).json({ erro: 'Nao encontrado' });
@@ -97,17 +110,17 @@ router.get('/metas-equipe/:slug', meuSlug, async (req, res) => {
   if (fonte === 'cache') {
     const cached = cacheMetas.obter(a.slug);
     if (!cached) return res.status(404).json({ erro: 'Nenhum cache para ' + a.slug, _fonte: 'cache' });
-    return res.json({ ...loader.enriquecerSsMetas(cached, a), ano: loader.getAno(), _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao() });
+    return responderMetas(res, a, cached, 'cache', cacheMetas.ultimaAtualizacao());
   }
   try {
     const dados = await loader.buscarDadosAnalista(a);
     const metasJson = readMetasEquipe();
     const resp = loader.montarResposta(a, dados, metasJson);
     cacheMetas.salvar(a.slug, resp);
-    res.json({ ...loader.enriquecerSsMetas(resp, a), ano: loader.getAno(), _fonte: 'odbc', _atualizado_em: new Date().toISOString() });
+    return responderMetas(res, a, resp, 'odbc', new Date().toISOString());
   } catch (err) {
     const cached = cacheMetas.obter(a.slug);
-    if (cached) return res.json({ ...cached, ano: loader.getAno(), _fonte: 'cache', _atualizado_em: cacheMetas.ultimaAtualizacao(), _aviso: err.message });
+    if (cached) return responderMetas(res, a, cached, 'cache', cacheMetas.ultimaAtualizacao(), err.message);
     res.status(500).json({ erro: err.message });
   }
 });
